@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Services\PaymentMethodService;
+use App\Traits\ApiResponseTrait;
+use App\Http\Requests\StorePaymentMethodRequest;
+use App\Http\Requests\UpdatePaymentMethodRequest;
+
+class PaymentMethodController extends Controller
+{
+    use ApiResponseTrait;
+    protected PaymentMethodService $service;
+
+    public function __construct(PaymentMethodService $service)
+    {
+        $this->service = $service;
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $methods = $this->service->getAllMethods();
+        return $this->successResponse($methods, 'messages.fetched');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StorePaymentMethodRequest $request)
+    {
+        $method = $this->service->createMethod($request->validated());
+        return $this->successResponse($method, 'messages.created', 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $method = $this->service->getMethodById((int)$id);
+        if (!$method) {
+            return $this->errorResponse('messages.not_found', 404);
+        }
+        return $this->successResponse($method, 'messages.fetched');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdatePaymentMethodRequest $request, string $id)
+    {
+        $updated = $this->service->updateMethod((int)$id, $request->validated());
+        if (!$updated) {
+            return $this->errorResponse('messages.not_found', 404);
+        }
+
+        return $this->successResponse($this->service->getMethodById((int)$id), 'messages.updated');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $deleted = $this->service->deleteMethod((int)$id);
+        if (!$deleted) {
+            return $this->errorResponse('messages.not_found', 404);
+        }
+        return $this->successResponse(null, 'messages.deleted');
+    }
+}

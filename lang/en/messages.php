@@ -1,0 +1,24 @@
+<?php
+
+return [
+    'success' => 'Success',
+    'created' => 'Created successfully',
+    'updated' => 'Updated successfully',
+    'deleted' => 'Deleted successfully',
+    'fetched' => 'Fetched successfully',
+    'authenticated' => 'Authenticated successfully',
+    'logged_out' => 'Logged out successfully',
+    'otp_sent' => 'If your email is in our system, you will receive an OTP shortly.',
+    'otp_verified' => 'OTP verified successfully',
+    'password_reset' => 'Password reset successfully',
+    'token_refreshed' => 'Token refreshed successfully',
+    'not_found' => 'Resource not found',
+    'method_not_allowed' => 'Method not allowed',
+    'unauthorized' => 'This action is unauthorized.',
+    'unauthenticated' => 'Unauthenticated.',
+    'otp_cooldown' => 'Please wait :seconds seconds before requesting another OTP.',
+    'otp_limit_reached' => 'You have reached the maximum number of OTP requests. Please try again in :minutes minutes.',
+    'email_already_verified' => 'Email is already verified.',
+    'otp_not_verified' => 'The provided OTP has not been verified yet.',
+
+];
