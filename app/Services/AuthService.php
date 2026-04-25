@@ -75,6 +75,7 @@ class AuthService
         return [
             'access_token' => $accessToken->plainTextToken,
             'refresh_token' => $refreshToken->plainTextToken,
+            'is_verified' => $creator->isEmailVerified(),
         ];
     }
 

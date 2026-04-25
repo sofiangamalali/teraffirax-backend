@@ -46,6 +46,7 @@ class AuthController extends Controller
         return $this->successResponse([
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
+            'is_verified' => $data['is_verified'],
         ], 'messages.authenticated');
     }
 
@@ -91,6 +92,7 @@ class AuthController extends Controller
         return $this->successResponse([
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
+            'is_verified' => $data['is_verified'],
         ], 'messages.token_refreshed');
     }
 }
