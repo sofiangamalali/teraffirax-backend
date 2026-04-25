@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTOs\OtpDto;
+use App\DTOs\OtpDTO;
 use App\Models\Creator;
 use App\Jobs\SendOtpEmailJob;
 use App\Repositories\Interfaces\OtpRepositoryInterface;
@@ -36,7 +36,7 @@ class OtpService
 
         $otp = $this->generateOtp();
 
-        $this->create(new OtpDto(
+        $this->create(new OtpDTO(
             otp: $otp,
             email: $creator->email,
             type: $type,
@@ -132,7 +132,7 @@ class OtpService
         }
     }
 
-    public function create(OtpDto $dto): void
+    public function create(OtpDTO $dto): void
     {
         $this->otpRepositoryInterface->upsert(
             [

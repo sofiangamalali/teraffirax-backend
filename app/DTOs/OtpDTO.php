@@ -4,7 +4,7 @@ namespace App\DTOs;
 
 use Carbon\Carbon;
 
-class OtpDto
+class OtpDTO
 {
     public function __construct(
         public ?string $email = null,
