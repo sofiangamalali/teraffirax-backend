@@ -24,10 +24,6 @@ class CountryService
         return $this->countryRepository->paginate($perPage);
     }
 
-    public function getAllCountries(): Collection
-    {
-        return $this->countryRepository->all();
-    }
 
     public function getCountryById(int $id): Country
     {

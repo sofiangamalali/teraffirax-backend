@@ -25,10 +25,6 @@ class CategoryService
         return $this->categoryRepository->paginate($perPage);
     }
 
-    public function getAllCategories(): Collection
-    {
-        return $this->categoryRepository->all();
-    }
 
     public function getCategoryById(int $id): Category
     {
