@@ -47,6 +47,7 @@ class AuthController extends Controller
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
             'is_verified' => $data['is_verified'],
+            'email' => $data['email'],
         ], 'messages.authenticated');
     }
 
