@@ -45,13 +45,24 @@ class CreatorRepository implements CreatorRepositoryInterface
 
     public function create(array $data): Creator
     {
-        return $this->model->create($data);
+        $creator = $this->model->create(array_diff_key($data, array_flip(['categories'])));
+
+        if (isset($data['categories'])) {
+            $creator->categories()->sync($data['categories']);
+        }
+
+        return $creator;
     }
 
     public function update(int $id, array $data): Creator
     {
         $creator = $this->findOrFail($id);
-        $creator->update($data);
+        
+        $creator->update(array_diff_key($data, array_flip(['categories'])));
+
+        if (isset($data['categories'])) {
+            $creator->categories()->sync($data['categories']);
+        }
 
         return $creator->fresh();
     }

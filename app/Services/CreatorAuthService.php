@@ -75,10 +75,9 @@ class CreatorAuthService
         return [
             'access_token' => $accessToken->plainTextToken,
             'refresh_token' => $refreshToken->plainTextToken,
-            'is_verified' => $creator->isEmailVerified(),
+            'is_email_verified' => $creator->isEmailVerified(),
             'email' => $creator->email,
-            'account_manager_id' => $creator->account_manager_id,
-            'is_active' => $creator->is_active,
+            'is_active' => $creator->isActive(),
         ];
     }
 

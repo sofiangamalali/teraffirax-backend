@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
-
-
 use App\Http\Controllers\Api\Creator\ProfileController;
 
 Route::prefix('auth')->group(function () {

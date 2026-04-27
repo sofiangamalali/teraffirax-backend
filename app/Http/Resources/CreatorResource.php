@@ -21,7 +21,7 @@ class CreatorResource extends JsonResource
             'phone' => $this->phone,
             'gender' => $this->gender,
             'is_active' => $this->is_active,
-            'is_verified' => $this->isEmailVerified(),
+            'is_email_verified' => $this->isEmailVerified(),
             'country' => new CountryResource($this->whenLoaded('country')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'account_manager_id' => $this->account_manager_id,

@@ -13,7 +13,7 @@ class CreatorDTO
         public readonly ?string $password = null,
         public readonly ?string $gender = null,
         public readonly ?int $country_id = null,
-        public readonly array $categories = [],
+        public readonly ?array $categories = null,
     ) {
     }
 
@@ -29,7 +29,7 @@ class CreatorDTO
             password: $request->input('password'),
             gender: $request->input('gender'),
             country_id: $request->input('country_id') ? (int) $request->input('country_id') : null,
-            categories: $request->input('categories', []),
+            categories: $request->has('categories') ? $request->input('categories') : null,
         );
     }
 
@@ -45,6 +45,7 @@ class CreatorDTO
             'password' => $this->password,
             'gender' => $this->gender,
             'country_id' => $this->country_id,
+            'categories' => $this->categories,
         ], fn($value) => $value !== null);
     }
 }

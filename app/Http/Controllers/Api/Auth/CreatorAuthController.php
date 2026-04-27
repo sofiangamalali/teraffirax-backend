@@ -46,9 +46,8 @@ class CreatorAuthController extends Controller
         return $this->successResponse([
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
-            'is_verified' => $data['is_verified'],
+            'is_email_verified' => $data['is_email_verified'],
             'email' => $data['email'],
-            'account_manager_id' => $data['account_manager_id'],
             'is_active' => $data['is_active'],
         ], 'messages.authenticated');
     }
@@ -95,7 +94,7 @@ class CreatorAuthController extends Controller
         return $this->successResponse([
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
-            'is_verified' => $data['is_verified'],
+            'is_email_verified' => $data['is_email_verified'],
             'account_manager_id' => $data['account_manager_id'],
             'is_active' => $data['is_active'],
         ], 'messages.token_refreshed');

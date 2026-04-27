@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api\Creator;
 
+use App\DTOs\CreatorDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Creator\UpdateProfileRequest;
 use App\Http\Resources\CreatorProfileResource;
+use App\Services\CreatorService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,15 +15,20 @@ class ProfileController extends Controller
 {
     use ApiResponseTrait;
 
+    public function __construct(
+        protected CreatorService $creatorService
+    ) {
+    }
+
     /**
      * Display the authenticated creator's profile.
      */
     public function show(Request $request): JsonResponse
     {
-        $creator = $request->user()->load(['country', 'categories', 'accountManager']);
-        
+        $creator = $this->creatorService->getCreatorById($request->user()->id);
+
         return $this->successResponse(
-            new CreatorProfileResource($creator),
+            new CreatorProfileResource($creator->load(['country', 'categories', 'accountManager'])),
             'messages.fetched'
         );
     }
@@ -28,23 +36,12 @@ class ProfileController extends Controller
     /**
      * Update the authenticated creator's profile.
      */
-    public function update(Request $request): JsonResponse
+    public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $creator = $request->user();
-
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'categories' => 'sometimes|array',
-            'categories.*' => 'exists:categories,id',
-        ]);
-
-        if (isset($validated['name'])) {
-            $creator->update(['name' => $validated['name']]);
-        }
-
-        if (isset($validated['categories'])) {
-            $creator->categories()->sync($validated['categories']);
-        }
+        $creator = $this->creatorService->updateCreator(
+            $request->user()->id,
+            CreatorDTO::fromRequest($request)
+        );
 
         return $this->successResponse(
             new CreatorProfileResource($creator->load(['country', 'categories', 'accountManager'])),

@@ -21,11 +21,10 @@ class CreatorProfileResource extends JsonResource
             'phone' => $this->phone,
             'gender' => $this->gender,
             'is_active' => $this->isActive(),
-            'is_verified' => $this->isEmailVerified(),
+            'is_email_verified' => $this->isEmailVerified(),
             'country' => new CountryResource($this->whenLoaded('country')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'account_manager' => new AccountManagerResource($this->whenLoaded('accountManager')),
-
         ];
     }
 }

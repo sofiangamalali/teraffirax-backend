@@ -8,6 +8,7 @@ use Illuminate\Validation\ValidationException;
 use App\Exceptions\DuplicateTrackingLinkException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Exceptions\Otp\{OtpExpiredException, OtpInvalidException, OtpBlockedException, OtpUsedException};
 
@@ -36,6 +37,13 @@ class GlobalExceptionHandler
                 'status' => 'error',
                 'message' => __('messages.not_found'),
             ], 404);
+        });
+
+        $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('messages.method_not_allowed'),
+            ], 405);
         });
 
         $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
