@@ -16,7 +16,7 @@ use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Services\OtpService;
 use App\Models\PersonalAccessToken;
 
-class AuthService
+class CreatorAuthService
 {
     public function __construct(
         protected CreatorRepositoryInterface $creatorRepository,
@@ -77,6 +77,8 @@ class AuthService
             'refresh_token' => $refreshToken->plainTextToken,
             'is_verified' => $creator->isEmailVerified(),
             'email' => $creator->email,
+            'account_manager_id' => $creator->account_manager_id,
+            'is_active' => $creator->is_active,
         ];
     }
 

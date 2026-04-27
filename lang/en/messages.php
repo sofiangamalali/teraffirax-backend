@@ -20,5 +20,5 @@ return [
     'otp_limit_reached' => 'You have reached the maximum number of OTP requests. Please try again in :minutes minutes.',
     'email_already_verified' => 'Email is already verified.',
     'otp_not_verified' => 'The provided OTP has not been verified yet.',
-
+    'account_inactive' => 'Your account is inactive. Please contact support.',
 ];

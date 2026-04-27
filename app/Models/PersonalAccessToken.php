@@ -24,4 +24,9 @@ class PersonalAccessToken extends Model
     {
         return $this->morphTo();
     }
+
+    public static function findToken($token)
+    {
+        return static::where('token', hash('sha256', $token))->first();
+    }
 }

@@ -23,6 +23,8 @@ class Creator extends Authenticatable
         'amazon_track_id',
         'country_id',
         'email_verified_at',
+        'account_manager_id',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -40,6 +42,7 @@ class Creator extends Authenticatable
             'password' => 'hashed',
             'balance' => 'decimal:2',
             'country_id' => 'integer',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -61,9 +64,17 @@ class Creator extends Authenticatable
     {
         return !is_null($this->email_verified_at);
     }
-
+    public function isActive(): bool
+    {
+        return $this->is_active;
+    }
     public function categories()
     {
         return $this->belongsToMany(Category::class);
+    }
+
+    public function accountManager()
+    {
+        return $this->belongsTo(AccountManager::class);
     }
 }

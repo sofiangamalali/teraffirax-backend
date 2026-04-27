@@ -6,16 +6,16 @@ use App\DTOs\{CreatorDTO, LoginDTO, ResetPasswordWithOtpDTO};
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordWithOtpRequest, VerifyOtpRequest, RefreshTokenRequest, ResendOtpRequest};
 use App\Http\Resources\{CountryResource, CategoryResource};
-use App\Services\AuthService;
+use App\Services\CreatorAuthService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\{JsonResponse, Request};
 
-class AuthController extends Controller
+class CreatorAuthController extends Controller
 {
     use ApiResponseTrait;
 
     public function __construct(
-        protected AuthService $authService,
+        protected CreatorAuthService $authService,
     ) {
     }
 
@@ -48,6 +48,8 @@ class AuthController extends Controller
             'refresh_token' => $data['refresh_token'],
             'is_verified' => $data['is_verified'],
             'email' => $data['email'],
+            'account_manager_id' => $data['account_manager_id'],
+            'is_active' => $data['is_active'],
         ], 'messages.authenticated');
     }
 
@@ -94,6 +96,8 @@ class AuthController extends Controller
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
             'is_verified' => $data['is_verified'],
+            'account_manager_id' => $data['account_manager_id'],
+            'is_active' => $data['is_active'],
         ], 'messages.token_refreshed');
     }
 }

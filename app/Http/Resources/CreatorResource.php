@@ -7,19 +7,25 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CreatorResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
-            'id'              => $this->id,
-            'name'            => $this->name,
-            'phone'           => $this->phone,
-            'email'           => $this->email,
-            'gender'          => $this->gender,
-            'balance'         => (float) $this->balance,
-            'country_id'      => $this->country_id,
-            'country'         => new CountryResource($this->whenLoaded('country')),
-            'created_at'      => $this->created_at?->toDateTimeString(),
-            'updated_at'      => $this->updated_at?->toDateTimeString(),
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'gender' => $this->gender,
+            'is_active' => $this->is_active,
+            'is_verified' => $this->isEmailVerified(),
+            'country' => new CountryResource($this->whenLoaded('country')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
+            'account_manager_id' => $this->account_manager_id,
+            'created_at' => $this->created_at,
         ];
     }
 }
