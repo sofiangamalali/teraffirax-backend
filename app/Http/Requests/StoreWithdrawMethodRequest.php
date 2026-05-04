@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCreatorPaymentMethodRequest extends FormRequest
+class StoreWithdrawMethodRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,12 @@ class StoreCreatorPaymentMethodRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'creator_id' => 'required|exists:creators,id',
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'is_default' => 'boolean',
-            'details' => 'required|array'
+            'country_id' => 'required|exists:countries,id',
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:bank,wallet,other',
+            'logo' => 'nullable|string',
+            'details' => 'required|array',
+            'is_active' => 'boolean'
         ];
     }
 }

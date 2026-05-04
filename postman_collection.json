@@ -1,768 +1,631 @@
 {
-	"info": {
-		"_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-		"name": "Teraffirax",
-		"description": "Complete API collection for Teraffirax project including Auth, Countries, Categories, Creators, Vendors, Products, and Tracking Links.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Auth",
-			"item": [
-				{
-					"name": "Registration Data (Combined)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/auth/registration-data",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"registration-data"
-							]
-						},
-						"description": "Get both countries and categories in one request for registration setup."
-					}
-				},
-				{
-					"name": "Register",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"01123456789\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"gender\": \"male\",\n    \"country_id\": 1,\n    \"categories\": [1, 2]\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/register",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"register"
-							]
-						}
-					}
-				},
-				{
-					"name": "Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"identifier\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"login"
-							]
-						}
-					}
-				},
-				{
-					"name": "Logout",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/auth/logout",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout"
-							]
-						}
-					}
-				},
-				{
-					"name": "Forgot Password",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"john@example.com\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/forgot-password",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"forgot-password"
-							]
-						}
-					}
-				},
-				{
-					"name": "Verify OTP",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"john@example.com\",\n    \"otp\": \"123456\",\n    \"type\": \"password_reset\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/verify-otp",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"verify-otp"
-							]
-						}
-					}
-				},
-				{
-					"name": "Reset Password",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"john@example.com\",\n    \"otp\": \"123456\",\n    \"password\": \"newpassword123\",\n    \"password_confirmation\": \"newpassword123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/reset-password",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"reset-password"
-							]
-						}
-					}
-				},
-				{
-					"name": "Refresh Token",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/refresh-token",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"refresh-token"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Country",
-			"item": [
-				{
-					"name": "List Countries (Paginated)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/countries?per_page=15",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"countries"
-							],
-							"query": [
-								{
-									"key": "per_page",
-									"value": "15"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "List All Countries",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/countries?all=1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"countries"
-							],
-							"query": [
-								{
-									"key": "all",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Get Country",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/countries/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"countries",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Create Country",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Saudi Arabia\",\n    \"iso2\": \"sa\",\n    \"phone_code\": \"+966\",\n    \"phone_min_length\": 9,\n    \"phone_max_length\": 9,\n    \"icon\": \"https://flagcdn.com/sa.svg\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/countries",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"countries"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Category",
-			"item": [
-				{
-					"name": "List Categories (Paginated)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/categories?per_page=15",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"categories"
-							],
-							"query": [
-								{
-									"key": "per_page",
-									"value": "15"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "List All Categories",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/categories?all=1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"categories"
-							],
-							"query": [
-								{
-									"key": "all",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Get Category",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/categories/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"categories",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Create Category",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Electronics\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/categories",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"categories"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Creator",
-			"item": [
-				{
-					"name": "List Creators",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/creators?per_page=15",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"creators"
-							],
-							"query": [
-								{
-									"key": "per_page",
-									"value": "15"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Create Creator",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"01123456789\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\",\n    \"gender\": \"male\",\n    \"country_id\": 1\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/creators",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"creators"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Vendor",
-			"item": [
-				{
-					"name": "List Vendors",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/vendors?per_page=15",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"vendors"
-							],
-							"query": [
-								{
-									"key": "per_page",
-									"value": "15"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Create Vendor",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Apple Inc.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/vendors",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"vendors"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Product",
-			"item": [
-				{
-					"name": "List Products",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/products?per_page=15",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"products"
-							],
-							"query": [
-								{
-									"key": "per_page",
-									"value": "15"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Create Product",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"vendor_id\": 1,\n    \"name\": \"iPhone 15 Pro\",\n    \"price_before\": 999.99,\n    \"price_after\": 899.99,\n    \"discount\": \"10% OFF\",\n    \"product_url\": \"https://apple.com/iphone-15\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/products",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"products"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "TrackingLink",
-			"item": [
-				{
-					"name": "List Tracking Links",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/tracking-links?per_page=15",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"tracking-links"
-							],
-							"query": [
-								{
-									"key": "per_page",
-									"value": "15"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Create Tracking Link",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"creator_id\": 1,\n    \"product_id\": 1,\n    \"redirect_url\": \"https://amazon.com/dp/B0CHX2F5QT\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/tracking-links",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"tracking-links"
-							]
-						}
-					}
-				},
-				{
-					"name": "Test Redirection",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/r/0000000A",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"r",
-								"0000000A"
-							]
-						}
-					}
-				}
-			]
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8000"
-		},
-		{
-			"key": "access_token",
-			"value": ""
-		},
-		{
-			"key": "refresh_token",
-			"value": ""
-		}
-	]
+  "info": {
+    "_postman_id": "c6128b5e-7965-4b91-86f4-5380a53b97fa",
+    "name": "Traffirax",
+    "description": "Complete API collection for CashyTok project including Auth, Countries, Categories, Creators, Vendors, Products, and Tracking Links.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44354812",
+    "_collection_link": "https://go.postman.co/collection/44354812-c6128b5e-7965-4b91-86f4-5380a53b97fa?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Creator",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Registration Data",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/auth/registration-data",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "registration-data"
+                  ]
+                },
+                "description": "Get both countries and categories in one request for registration setup."
+              },
+              "response": []
+            },
+            {
+              "name": "Register",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "description": "ar or en",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"sofian gamal\",\n    \"phone\": \"01149737837\",\n    \"email\": \"engsofiangamal@gmail.com\",\n    \"password\": \"123456789\",\n    \"password_confirmation\": \"123456789\",\n    \"gender\": \"male\",\n    \"country_id\": 1,\n    \"categories\": [1]\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/register",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.environment.set(\"access_token\", jsonData.data.access_token);",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"identifier\": \"01149737837\",\n    \"password\": \"123456789\"\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/login",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "1a1NLtQabpj0Yn7S6MihgBGbqJxZ5CLN6aqdrCgi5oDlGDKJW6Jp1EYZvHwvpIOa",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/auth/logout",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Forgot Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"engsofiangamal@gmail.com\"\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/forgot-password",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "forgot-password"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Reset Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"johns@example.com\",\n    \"otp\": \"378492\",\n    \"password\": \"12345678910\",\n    \"password_confirmation\": \"12345678910\"\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/reset-password",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "reset-password"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Verify OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"engsofiangamal@gmail.com\",\n    \"otp\": \"309375\",\n    \"type\": \"email_verification\" //email_verification,password_reset\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/verify-otp",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "verify-otp"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Resend Otp",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"johns@example.com\",\n    \"otp\": \"492949\",\n    \"type\": \"email_verification\" //email_verification,password_reset\n}\n"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/resend-otp",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "resend-otp"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Refresh Token",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/auth/refresh-token",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "refresh-token"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Profile",
+          "item": [
+            {
+              "name": "Get Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "UrcM4OX0iqTsa0DDxuv9cZzbhxXUqyVC9UHKvd0qyHnnsMCbXOq7BfJOwYHyxjpE",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/profile",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profile"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "t3GRVk44Lbote4U2BHUdjqelUZD9WsCfiryjlwZJEoWqhBHL5H98WQOZpgXzVHV8",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\":\"test update\",\n    \"categories\" :[3,4] \n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/profile",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profile"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Withdraw Methods",
+          "item": [
+            {
+              "name": "Get Withdraw Methods Dropdown",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/withdraw-methods",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "withdraw-methods"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Withdraw Methods",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "dPCcEkVKsQT7YIx31lvKJeE46VUncGg0N7FqebSLtxvg7RZ7ok3d9YGq7IdlM7sR",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\":\"test update\",\n    \"categories\" :[3,4] \n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/my-withdraw-methods",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "my-withdraw-methods"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Withdraw Method",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "dPCcEkVKsQT7YIx31lvKJeE46VUncGg0N7FqebSLtxvg7RZ7ok3d9YGq7IdlM7sR",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"withdraw_method_id\": 1,\n    \"is_default\" : true,\n    \"values\": \n        {\n            \"number\": \"01149737837\"\n        }\n    \n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/my-withdraw-methods",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "my-withdraw-methods"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Withdraw Method",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "dPCcEkVKsQT7YIx31lvKJeE46VUncGg0N7FqebSLtxvg7RZ7ok3d9YGq7IdlM7sR",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"id\":1\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/my-withdraw-methods/1",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "my-withdraw-methods",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "local_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "live_url",
+      "value": ""
+    }
+  ]
 }

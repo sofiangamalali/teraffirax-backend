@@ -4,17 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\PaymentMethodService;
+use App\Services\WithdrawMethodService;
 use App\Traits\ApiResponseTrait;
-use App\Http\Requests\StorePaymentMethodRequest;
-use App\Http\Requests\UpdatePaymentMethodRequest;
+use App\Http\Requests\StoreWithdrawMethodRequest;
+use App\Http\Requests\UpdateWithdrawMethodRequest;
+use App\Http\Resources\WithdrawMethodResource;
 
-class PaymentMethodController extends Controller
+class WithdrawMethodController extends Controller
 {
     use ApiResponseTrait;
-    protected PaymentMethodService $service;
+    protected WithdrawMethodService $service;
 
-    public function __construct(PaymentMethodService $service)
+    public function __construct(WithdrawMethodService $service)
     {
         $this->service = $service;
     }
@@ -22,19 +23,20 @@ class PaymentMethodController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $methods = $this->service->getAllMethods();
-        return $this->successResponse($methods, 'messages.fetched');
+        $countryId = $request->has('country_id') ? (int)$request->country_id : null;
+        $methods = $this->service->getAllMethods($countryId);
+        return $this->successResponse(WithdrawMethodResource::collection($methods->load('fields')), 'messages.fetched');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePaymentMethodRequest $request)
+    public function store(StoreWithdrawMethodRequest $request)
     {
         $method = $this->service->createMethod($request->validated());
-        return $this->successResponse($method, 'messages.created', 201);
+        return $this->successResponse(new WithdrawMethodResource($method), 'messages.created', 201);
     }
 
     /**
@@ -46,13 +48,13 @@ class PaymentMethodController extends Controller
         if (!$method) {
             return $this->errorResponse('messages.not_found', 404);
         }
-        return $this->successResponse($method, 'messages.fetched');
+        return $this->successResponse(new WithdrawMethodResource($method->load('fields')), 'messages.fetched');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePaymentMethodRequest $request, string $id)
+    public function update(UpdateWithdrawMethodRequest $request, string $id)
     {
         $updated = $this->service->updateMethod((int)$id, $request->validated());
         if (!$updated) {

@@ -25,7 +25,7 @@ class StoreWithdrawalRequest extends FormRequest
         return [
             'creator_id' => 'required|exists:creators,id',
             'amount' => 'required|numeric|min:1',
-            'creator_payment_method_id' => 'required|exists:creator_payment_methods,id'
+            'creator_withdraw_method_id' => 'required|exists:creator_withdraw_methods,id'
         ];
     }
 }

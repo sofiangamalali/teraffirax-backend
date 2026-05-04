@@ -15,7 +15,7 @@ class CountrySeeder extends Seeder
         Country::updateOrCreate(
             ['iso2' => 'eg'],
             [
-                'name' => 'Egypt',
+                'name' => ['en' => 'Egypt', 'ar' => 'مصر'],
                 'phone_code' => '+20',
                 'phone_min_length' => 11,
                 'phone_max_length' => 11,

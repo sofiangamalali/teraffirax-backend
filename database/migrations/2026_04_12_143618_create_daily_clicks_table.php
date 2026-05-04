@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('daily_clicks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('creator_id')->constrained('creators')->onDelete('cascade');
+            $table->foreignId('creator_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->integer('clicks_count')->default(0);
+            $table->decimal('total_snapshot', 15, 2)->default(0);
             $table->timestamps();
 
-            $table->index(['creator_id', 'date']);
+            $table->unique(['creator_id', 'date']);
         });
     }
 

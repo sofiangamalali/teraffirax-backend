@@ -2,14 +2,14 @@
 
 namespace App\Repositories\Interfaces;
 
-use App\Models\CreatorPaymentMethod;
+use App\Models\CreatorWithdrawMethod;
 use Illuminate\Database\Eloquent\Collection;
 
-interface CreatorPaymentMethodRepositoryInterface
+interface CreatorWithdrawMethodRepositoryInterface
 {
     public function all(): Collection;
-    public function create(array $data): CreatorPaymentMethod;
-    public function find(int $id): ?CreatorPaymentMethod;
+    public function create(array $data): CreatorWithdrawMethod;
+    public function find(int $id): ?CreatorWithdrawMethod;
     public function update(int $id, array $data): bool;
     public function delete(int $id): bool;
     public function getByCreator(int $creatorId): Collection;

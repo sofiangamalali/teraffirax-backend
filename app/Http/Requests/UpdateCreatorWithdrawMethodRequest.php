@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCreatorPaymentMethodRequest extends FormRequest
+class UpdateCreatorWithdrawMethodRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class UpdateCreatorPaymentMethodRequest extends FormRequest
     {
         return [
             'is_default' => 'boolean',
-            'details' => 'sometimes|required|array'
+            'values' => 'sometimes|required|array'
         ];
     }
 }

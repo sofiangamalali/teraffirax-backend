@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePaymentMethodRequest extends FormRequest
+class UpdateWithdrawMethodRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,6 +23,7 @@ class UpdatePaymentMethodRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'country_id' => 'sometimes|required|exists:countries,id',
             'name' => 'sometimes|required|string|max:255',
             'type' => 'sometimes|required|in:bank,wallet,other',
             'logo' => 'sometimes|nullable|string',

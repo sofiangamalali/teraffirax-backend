@@ -17,7 +17,7 @@ class WithdrawalRepository implements WithdrawalRepositoryInterface
 
     public function all(): Collection
     {
-        return $this->model->with(['creator', 'paymentMethod.paymentMethod'])->latest()->get();
+        return $this->model->with(['creator', 'withdrawMethod.withdrawMethod'])->latest()->get();
     }
 
     public function create(array $data): Withdrawal
@@ -27,7 +27,7 @@ class WithdrawalRepository implements WithdrawalRepositoryInterface
 
     public function find(int $id): ?Withdrawal
     {
-        return $this->model->with(['creator', 'paymentMethod.paymentMethod'])->find($id);
+        return $this->model->with(['creator', 'withdrawMethod.withdrawMethod'])->find($id);
     }
 
     public function updateStatus(int $id, string $status): bool
@@ -39,7 +39,7 @@ class WithdrawalRepository implements WithdrawalRepositoryInterface
     public function getByCreator(int $creatorId): Collection
     {
         return $this->model->where('creator_id', $creatorId)
-            ->with(['paymentMethod.paymentMethod'])
+            ->with(['withdrawMethod.withdrawMethod'])
             ->latest()
             ->get();
     }

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,17 +13,21 @@ return new class extends Migration
         Schema::create('creators', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('gender', ['male', 'female']);
-            $table->decimal('balance', 12, 2)->default(0);
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->decimal('balance', 15, 2)->default(0);
             $table->string('amazon_track_id')->nullable();
+
+            $table->foreignId('country_id')->constrained()->onDelete('cascade');
+            $table->foreignId('account_manager_id')->nullable()->constrained('account_managers')->onDelete('set null');
+
+            $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('is_active')->default(false);
+
             $table->timestamps();
             $table->softDeletes();
-
-            $table->index('phone');
-            $table->index('gender');
         });
     }
 

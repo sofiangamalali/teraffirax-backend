@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Creator;
-use App\Models\CreatorPaymentMethod;
+use App\Models\CreatorWithdrawMethod;
 use App\Models\Withdrawal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,12 +15,12 @@ class WithdrawalApiTest extends TestCase
     public function test_can_create_withdrawal_request()
     {
         $creator = Creator::factory()->create();
-        $link = CreatorPaymentMethod::factory()->create(['creator_id' => $creator->id]);
+        $link = CreatorWithdrawMethod::factory()->create(['creator_id' => $creator->id]);
 
         $data = [
             'creator_id' => $creator->id,
             'amount' => 500,
-            'creator_payment_method_id' => $link->id
+            'creator_withdraw_method_id' => $link->id
         ];
 
         $response = $this->postJson('/api/withdrawals', $data);

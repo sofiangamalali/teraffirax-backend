@@ -2,22 +2,22 @@
 
 namespace App\Services;
 
-use App\Models\PaymentMethod;
-use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
+use App\Models\WithdrawMethod;
+use App\Repositories\Interfaces\WithdrawMethodRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class PaymentMethodService
+class WithdrawMethodService
 {
-    protected PaymentMethodRepositoryInterface $repository;
+    protected WithdrawMethodRepositoryInterface $repository;
 
-    public function __construct(PaymentMethodRepositoryInterface $repository)
+    public function __construct(WithdrawMethodRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
 
-    public function getAllMethods(): Collection
+    public function getAllMethods(?int $countryId = null): Collection
     {
-        return $this->repository->all();
+        return $this->repository->all($countryId);
     }
 
     public function getActiveMethods(): Collection
@@ -25,12 +25,12 @@ class PaymentMethodService
         return $this->repository->getActive();
     }
 
-    public function createMethod(array $data): PaymentMethod
+    public function createMethod(array $data): WithdrawMethod
     {
         return $this->repository->create($data);
     }
 
-    public function getMethodById(int $id): ?PaymentMethod
+    public function getMethodById(int $id): ?WithdrawMethod
     {
         return $this->repository->find($id);
     }

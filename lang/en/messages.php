@@ -21,4 +21,6 @@ return [
     'email_already_verified' => 'Email is already verified.',
     'otp_not_verified' => 'The provided OTP has not been verified yet.',
     'account_inactive' => 'Your account is inactive. Please contact support.',
+    'male' => 'Male',
+    'female' => 'Female',
 ];

@@ -13,7 +13,7 @@ class Withdrawal extends Model
         'creator_id',
         'amount',
         'status',
-        'creator_payment_method_id'
+        'creator_withdraw_method_id'
     ];
 
     public function creator()
@@ -21,8 +21,8 @@ class Withdrawal extends Model
         return $this->belongsTo(Creator::class);
     }
 
-    public function paymentMethod()
+    public function withdrawMethod()
     {
-        return $this->belongsTo(CreatorPaymentMethod::class , 'creator_payment_method_id');
+        return $this->belongsTo(CreatorWithdrawMethod::class , 'creator_withdraw_method_id');
     }
 }

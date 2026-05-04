@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('creator_id')->constrained('creators')->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->enum('status', ['pending', 'done'])->default('pending');
-            $table->foreignId('user_payment_method_id')->constrained('creator_payment_methods')->onDelete('cascade');
+            $table->foreignId('creator_withdraw_method_id')->constrained('creator_withdraw_methods')->onDelete('cascade');
             $table->timestamps();
         });
     }

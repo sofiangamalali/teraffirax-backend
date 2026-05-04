@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name', 100);
+            $table->json('name');
             $table->char('iso2', 2)->unique();
 
             $table->string('phone_code', 10);
             $table->tinyInteger('phone_min_length');
             $table->tinyInteger('phone_max_length');
 
+            $table->string('icon')->nullable();
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();

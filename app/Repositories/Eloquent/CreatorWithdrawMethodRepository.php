@@ -2,15 +2,15 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\CreatorPaymentMethod;
-use App\Repositories\Interfaces\CreatorPaymentMethodRepositoryInterface;
+use App\Models\CreatorWithdrawMethod;
+use App\Repositories\Interfaces\CreatorWithdrawMethodRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class CreatorPaymentMethodRepository implements CreatorPaymentMethodRepositoryInterface
+class CreatorWithdrawMethodRepository implements CreatorWithdrawMethodRepositoryInterface
 {
-    protected CreatorPaymentMethod $model;
+    protected CreatorWithdrawMethod $model;
 
-    public function __construct(CreatorPaymentMethod $model)
+    public function __construct(CreatorWithdrawMethod $model)
     {
         $this->model = $model;
     }
@@ -20,26 +20,26 @@ class CreatorPaymentMethodRepository implements CreatorPaymentMethodRepositoryIn
         return $this->model->all();
     }
 
-    public function create(array $data): CreatorPaymentMethod
+    public function create(array $data): CreatorWithdrawMethod
     {
         return $this->model->create($data);
     }
 
-    public function find(int $id): ?CreatorPaymentMethod
+    public function find(int $id): ?CreatorWithdrawMethod
     {
         return $this->model->find($id);
     }
 
     public function update(int $id, array $data): bool
     {
-        $link = $this->find($id);
-        return $link ? $link->update($data) : false;
+        $method = $this->find($id);
+        return $method ? $method->update($data) : false;
     }
 
     public function delete(int $id): bool
     {
-        $link = $this->find($id);
-        return $link ? $link->delete() : false;
+        $method = $this->find($id);
+        return $method ? $method->delete() : false;
     }
 
     public function getByCreator(int $creatorId): Collection

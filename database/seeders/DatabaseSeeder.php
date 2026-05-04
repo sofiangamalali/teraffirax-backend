@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CountrySeeder::class,
             CategorySeeder::class,
+            WithdrawMethodSeeder::class,
         ]);
     }
 }

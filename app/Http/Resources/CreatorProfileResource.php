@@ -19,7 +19,7 @@ class CreatorProfileResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'gender' => $this->gender,
+            'gender' => $this->gender ? __('messages.' . $this->gender) : null,
             'is_active' => $this->isActive(),
             'is_email_verified' => $this->isEmailVerified(),
             'country' => new CountryResource($this->whenLoaded('country')),

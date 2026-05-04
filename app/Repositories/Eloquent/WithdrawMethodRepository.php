@@ -2,30 +2,34 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\PaymentMethod;
-use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
+use App\Models\WithdrawMethod;
+use App\Repositories\Interfaces\WithdrawMethodRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class PaymentMethodRepository implements PaymentMethodRepositoryInterface
+class WithdrawMethodRepository implements WithdrawMethodRepositoryInterface
 {
-    protected PaymentMethod $model;
+    protected WithdrawMethod $model;
 
-    public function __construct(PaymentMethod $model)
+    public function __construct(WithdrawMethod $model)
     {
         $this->model = $model;
     }
 
-    public function all(): Collection
+    public function all(?int $countryId = null): Collection
     {
-        return $this->model->all();
+        $query = $this->model->query();
+        if ($countryId) {
+            $query->where('country_id', $countryId);
+        }
+        return $query->get();
     }
 
-    public function create(array $data): PaymentMethod
+    public function create(array $data): WithdrawMethod
     {
         return $this->model->create($data);
     }
 
-    public function find(int $id): ?PaymentMethod
+    public function find(int $id): ?WithdrawMethod
     {
         return $this->model->find($id);
     }

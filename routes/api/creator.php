@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Creator\CreatorWithdrawMethodController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
 use App\Http\Controllers\Api\Creator\ProfileController;
@@ -20,10 +21,14 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'creator.active'])->group(function () {
+    // Profile
     Route::get('profile', [ProfileController::class, 'show']);
     Route::put('profile', [ProfileController::class, 'update']);
-});
 
+    // Withdraw Methods
+    Route::get('withdraw-methods', [CreatorWithdrawMethodController::class, 'availableMethods']);
+    Route::apiResource('my-withdraw-methods', CreatorWithdrawMethodController::class)->except(['update', 'show']);
+});
 
 
 
