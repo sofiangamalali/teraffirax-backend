@@ -699,6 +699,203 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Social Integrations",
+          "item": [
+            {
+              "name": "List Integrations",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/social-integrations",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "social-integrations"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Integration",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"platform\": \"telegram\",\n    \"type\": \"channel\",\n    \"name\": \"My Channel\",\n    \"username\": \"my_channel\"\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/social-integrations",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "social-integrations"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Content Templates",
+          "item": [
+            {
+              "name": "List Templates",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/content-templates",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "content-templates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Template",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"social_integration_id\": 1,\n    \"name\": \"Promo Template\",\n    \"content\": \"خصم {{discount}} على {{product_name}} اطلبه من هنا: {{link}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{local_url}}/api/content-templates",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "content-templates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Variables Schema",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local_url}}/api/template-variables?platform=telegram",
+                  "host": [
+                    "{{local_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "template-variables"
+                  ],
+                  "query": [
+                    {
+                      "key": "platform",
+                      "value": "telegram"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }

@@ -2,6 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\ContentTemplate;
+use App\Models\SocialIntegration;
+use App\Policies\ContentTemplatePolicy;
+use App\Policies\SocialIntegrationPolicy;
+use App\Repositories\Eloquent\ContentTemplateRepository;
+use App\Repositories\Eloquent\SocialIntegrationRepository;
+use App\Repositories\Interfaces\ContentTemplateRepositoryInterface;
+use App\Repositories\Interfaces\SocialIntegrationRepositoryInterface;
+use Gate;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\CreatorRepositoryInterface;
@@ -61,6 +70,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(OtpRepositoryInterface::class, OtpRepository::class);
         $this->app->bind(CreatorVendorTrackingIdRepositoryInterface::class, CreatorVendorTrackingIdRepository::class);
+        $this->app->bind(SocialIntegrationRepositoryInterface::class, SocialIntegrationRepository::class);
+        $this->app->bind(ContentTemplateRepositoryInterface::class, ContentTemplateRepository::class);
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);
@@ -79,5 +90,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Creator::observe(CreatorObserver::class);
+
+        Gate::policy(SocialIntegration::class, SocialIntegrationPolicy::class);
+        Gate::policy(ContentTemplate::class, ContentTemplatePolicy::class);
     }
 }

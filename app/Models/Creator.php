@@ -64,6 +64,16 @@ class Creator extends Authenticatable
     {
         return $this->hasMany(CreatorVendorTrackingId::class);
     }
+
+    public function socialIntegrations()
+    {
+        return $this->hasMany(SocialIntegration::class);
+    }
+
+    public function contentTemplates()
+    {
+        return $this->hasMany(ContentTemplate::class);
+    }
     public function isEmailVerified(): bool
     {
         return !is_null($this->email_verified_at);

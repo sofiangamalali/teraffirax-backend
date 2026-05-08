@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
 use App\Http\Controllers\Api\Creator\ProfileController;
 use App\Http\Controllers\Api\CreatorTrackingLinkController;
+use App\Http\Controllers\Api\CreatorSocialIntegrationController;
+use App\Http\Controllers\Api\CreatorContentTemplateController;
 
 Route::prefix('auth')->group(function () {
     Route::get('registration-data', [CreatorAuthController::class, 'registrationData']);
@@ -32,6 +34,13 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
 
     // Tracking Links
     Route::apiResource('tracking-links', CreatorTrackingLinkController::class)->only(['index', 'store']);
+
+    // Social Integrations
+    Route::apiResource('social-integrations', CreatorSocialIntegrationController::class)->only(['index']);
+
+    // Content Templates
+    Route::get('template-variables', [CreatorContentTemplateController::class, 'variables']);
+    Route::apiResource('content-templates', CreatorContentTemplateController::class);
 });
 
 

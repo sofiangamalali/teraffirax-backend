@@ -6,6 +6,7 @@ use App\Models\Creator;
 use App\Models\Country;
 use App\Models\Category;
 use App\Models\Vendor;
+use App\Models\SocialIntegration;
 use App\Models\CreatorVendorTrackingId;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -54,6 +55,20 @@ class CreatorSeeder extends Seeder
                     ]
                 );
             }
+
+            SocialIntegration::updateOrCreate(
+                [
+                    'creator_id' => $creator->id,
+                    'platform' => 'telegram',
+                    'type' => 'channel',
+                ],
+                [
+                    'status' => 'active',
+                    'name' => 'Test Channel',
+                    'username' => 'test_channel',
+                    'external_id' => '123456789',
+                ]
+            );
         });
     }
 }
