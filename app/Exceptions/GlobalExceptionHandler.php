@@ -11,6 +11,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Exceptions\Otp\{OtpExpiredException, OtpInvalidException, OtpBlockedException, OtpUsedException};
+use App\Exceptions\UnsupportedVendorException;
+use App\Exceptions\UnsupportedTrackingGeneratorException;
+use App\Exceptions\CreatorNotSubscribedToVendorException;
 
 class GlobalExceptionHandler
 {
@@ -76,6 +79,34 @@ class GlobalExceptionHandler
                 'status' => 'error',
                 'message' => __('otp.used'),
             ], 400);
+        });
+
+        $exceptions->render(function (CreatorNotSubscribedToVendorException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (UnsupportedVendorException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (UnsupportedTrackingGeneratorException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (VendorNotFoundForProductException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
         });
 
         $exceptions->render(function (\Throwable $e, Request $request) {

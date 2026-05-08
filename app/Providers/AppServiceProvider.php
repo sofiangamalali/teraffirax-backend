@@ -30,9 +30,13 @@ use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Eloquent\CategoryRepository;
 use App\Repositories\Interfaces\OtpRepositoryInterface;
 use App\Repositories\Eloquent\OtpRepository;
+use App\Repositories\Interfaces\CreatorVendorTrackingIdRepositoryInterface;
+use App\Repositories\Eloquent\CreatorVendorTrackingIdRepository;
 use App\Services\SlugService;
 use App\Services\TrackingLinkService;
 use App\Services\DailyClickService;
+use App\Services\Tracking\TrackingUrlGeneratorRegistry;
+use App\Services\Tracking\AmazonTrackingUrlGenerator;
 use App\Models\Creator;
 use App\Observers\CreatorObserver;
 
@@ -56,10 +60,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CountryRepositoryInterface::class, CountryRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(OtpRepositoryInterface::class, OtpRepository::class);
+        $this->app->bind(CreatorVendorTrackingIdRepositoryInterface::class, CreatorVendorTrackingIdRepository::class);
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);
         $this->app->singleton(DailyClickService::class);
+
+        $this->app->singleton(TrackingUrlGeneratorRegistry::class, function ($app) {
+            return new TrackingUrlGeneratorRegistry([
+                $app->make(AmazonTrackingUrlGenerator::class),
+            ]);
+        });
     }
 
     /**

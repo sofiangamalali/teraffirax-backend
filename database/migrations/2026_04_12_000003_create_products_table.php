@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('price_before', 12, 2)->nullable();
             $table->decimal('price_after', 12, 2);
             $table->string('discount')->nullable();
-            $table->string('product_url');
+            $table->text('product_url');
             $table->timestamps();
             $table->softDeletes();
 

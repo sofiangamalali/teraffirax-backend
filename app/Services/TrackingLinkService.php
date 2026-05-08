@@ -3,19 +3,27 @@
 namespace App\Services;
 
 use App\DTOs\TrackingLinkDTO;
+use App\Exceptions\CreatorNotSubscribedToVendorException;
 use App\Models\TrackingLink;
 use App\Repositories\Interfaces\TrackingLinkRepositoryInterface;
+use App\Repositories\Interfaces\CreatorVendorTrackingIdRepositoryInterface;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
+use App\Services\VendorResolverService;
+use App\Services\Tracking\TrackingUrlGeneratorRegistry;
 use Illuminate\Support\Facades\DB;
-use App\Exceptions\DuplicateTrackingLinkException;
 use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class TrackingLinkService
 {
-    public function __construct(protected
-        TrackingLinkRepositoryInterface $linkRepository, protected
-        SlugService $slugService,
-        )
-    {
+    public function __construct(
+        protected TrackingLinkRepositoryInterface $linkRepository,
+        protected SlugService $slugService,
+        protected CreatorVendorTrackingIdRepositoryInterface $creatorVendorTrackingRepo,
+        protected ProductRepositoryInterface $productRepo,
+        protected VendorResolverService $vendorResolverService,
+        protected TrackingUrlGeneratorRegistry $trackingUrlGeneratorRegistry,
+    ) {
     }
 
     public function getPaginatedLinks(int $perPage = 15): LengthAwarePaginator
@@ -26,19 +34,33 @@ class TrackingLinkService
     /**
      * Create a tracking link and generate its slug.
      */
-    public function createTrackingLink(TrackingLinkDTO $dto): TrackingLink
+    public function createTrackingLink(int $creatorId, TrackingLinkDTO $dto): TrackingLink
     {
-        return DB::transaction(function () use ($dto) {
-            $existing = $this->linkRepository->findByCreatorAndProduct(
-                (int)$dto->creator_id,
-                (int)$dto->product_id
+        return DB::transaction(function () use ($creatorId, $dto) {
+            $url = $dto->redirect_url;
+
+            // 1. Find vendor by URL securely
+            $vendor = $this->vendorResolverService->resolveVendor($url);
+
+            // 2. Check if creator has tracking ID for this vendor
+            $trackingRecord = $this->creatorVendorTrackingRepo->findByCreatorAndVendor(
+                (int) $creatorId,
+                (int) $vendor->id
             );
 
-            if ($existing) {
-                throw new DuplicateTrackingLinkException($existing);
+            if (!$trackingRecord) {
+                throw new CreatorNotSubscribedToVendorException();
             }
 
-            $link = $this->linkRepository->create($dto->toArray());
+            // 3. Generate tracking URL using strategy pattern
+            $generator = $this->trackingUrlGeneratorRegistry->resolve($vendor);
+            $redirectUrl = $generator->generate($url, $trackingRecord->tracking_id);
+
+            // 4. Create the tracking link (Allow duplicates as requested)
+            $link = $this->linkRepository->create([
+                'creator_id' => $creatorId,
+                'redirect_url' => $redirectUrl,
+            ]);
 
             $slug = $this->slugService->generateSlug($link->id);
 
@@ -51,8 +73,6 @@ class TrackingLinkService
      */
     public function resolveSlug(string $slug): ?TrackingLink
     {
-        // We could decode first to find by ID (faster index) or just use the unique slug index.
-        // The user mentioned "how to search for it at redirect time": Decode -> ID.
         try {
             $id = $this->slugService->decodeSlug($slug);
             $link = $this->linkRepository->find($id);
@@ -61,8 +81,7 @@ class TrackingLinkService
                 $link->incrementClicks();
                 return $link;
             }
-        }
-        catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             return null;
         }
 
@@ -73,5 +92,4 @@ class TrackingLinkService
     {
         return $this->linkRepository->findOrFail($id);
     }
-
 }

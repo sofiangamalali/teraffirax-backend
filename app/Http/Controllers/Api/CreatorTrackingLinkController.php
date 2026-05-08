@@ -12,26 +12,25 @@ use App\Services\TrackingLinkService;
 use App\Http\Resources\TrackingLinkResource;
 use App\Http\Requests\StoreTrackingLinkRequest;
 
-class TrackingLinkController extends Controller
+class CreatorTrackingLinkController extends Controller
 {
     use ApiResponseTrait;
 
-    public function __construct(protected
-        TrackingLinkService $linkService,
-        )
+    public function __construct(protected TrackingLinkService $linkService)
     {
     }
 
     public function index(Request $request): JsonResponse
     {
-        $links = $this->linkService->getPaginatedLinks($request->query('per_page', 15));
+        $perPage = min((int) $request->query('per_page', 15), 100);
+        $links = $this->linkService->getPaginatedLinks($perPage);
         return $this->paginatedResponse(TrackingLinkResource::collection($links), 'messages.fetched');
     }
 
     public function store(StoreTrackingLinkRequest $request): JsonResponse
     {
         $dto = TrackingLinkDTO::fromRequest($request);
-        $link = $this->linkService->createTrackingLink($dto);
+        $link = $this->linkService->createTrackingLink($request->user()?->id, $dto);
 
         return $this->successResponse(new TrackingLinkResource($link), 'messages.created', 201);
     }
@@ -40,6 +39,4 @@ class TrackingLinkController extends Controller
     {
         return $this->successResponse(new TrackingLinkResource($tracking_link), 'messages.fetched');
     }
-
-
 }

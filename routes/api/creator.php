@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Creator\CreatorWithdrawMethodController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
 use App\Http\Controllers\Api\Creator\ProfileController;
+use App\Http\Controllers\Api\CreatorTrackingLinkController;
 
 Route::prefix('auth')->group(function () {
     Route::get('registration-data', [CreatorAuthController::class, 'registrationData']);
@@ -28,6 +29,9 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
     // Withdraw Methods
     Route::get('withdraw-methods', [CreatorWithdrawMethodController::class, 'availableMethods']);
     Route::apiResource('my-withdraw-methods', CreatorWithdrawMethodController::class)->except(['update', 'show']);
+
+    // Tracking Links
+    Route::apiResource('tracking-links', CreatorTrackingLinkController::class)->only(['index', 'store']);
 });
 
 

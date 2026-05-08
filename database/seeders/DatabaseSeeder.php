@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             CategorySeeder::class,
             WithdrawMethodSeeder::class,
+            VendorSeeder::class,
+            CreatorSeeder::class, //for test
         ]);
     }
 }

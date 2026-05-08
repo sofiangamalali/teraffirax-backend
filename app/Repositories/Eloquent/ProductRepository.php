@@ -11,7 +11,8 @@ class ProductRepository implements ProductRepositoryInterface
 {
     public function __construct(
         protected Product $model,
-    ) {}
+    ) {
+    }
 
     public function all(): Collection
     {
@@ -31,6 +32,11 @@ class ProductRepository implements ProductRepositoryInterface
     public function findOrFail(int $id): Product
     {
         return $this->model->with('vendor')->findOrFail($id);
+    }
+
+    public function findByUrl(string $url): ?Product
+    {
+        return $this->model->with('vendor')->where('product_url', $url)->first();
     }
 
     public function create(array $data): Product

@@ -16,6 +16,8 @@ interface ProductRepositoryInterface
 
     public function findOrFail(int $id): Product;
 
+    public function findByUrl(string $url): ?Product;
+
     public function create(array $data): Product;
 
     public function update(int $id, array $data): Product;

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('creator_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->integer('clicks_count')->default(0);
-            $table->decimal('total_snapshot', 15, 2)->default(0);
+            $table->unsignedBigInteger('total_snapshot')->default(0);
             $table->timestamps();
 
             $table->unique(['creator_id', 'date']);

@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Creator;
-use App\Models\Product;
+use App\Models\Vendor;
+use App\Models\CreatorVendorTrackingId;
 use App\Models\TrackingLink;
+use App\Models\Country;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,76 +14,125 @@ class TrackingLinkApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected Creator $creator;
+    protected string $token;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $country = Country::create([
+            'name' => ['en' => 'Egypt', 'ar' => 'مصر'],
+            'iso2' => 'eg',
+            'phone_code' => '+20',
+            'phone_min_length' => 11,
+            'phone_max_length' => 11,
+        ]);
+
+        $this->creator = Creator::factory()->create([
+            'is_active' => true,
+            'country_id' => $country->id
+        ]);
+
+        $this->token = $this->creator->createToken('test_token')->plainTextToken;
+    }
+
+    protected function withAuth(): self
+    {
+        return $this->withHeader('Authorization', 'Bearer ' . $this->token);
+    }
+
     public function test_can_create_tracking_link()
     {
-        $creator = Creator::factory()->create();
-        $product = Product::factory()->create();
+        $vendor = Vendor::create([
+            'name' => 'Amazon',
+            'domain' => 'amazon.eg',
+            'country_id' => $this->creator->country_id
+        ]);
         
+        CreatorVendorTrackingId::create([
+            'creator_id' => $this->creator->id,
+            'vendor_id' => $vendor->id,
+            'tracking_id' => 'mytag-21'
+        ]);
+
         $data = [
-            'creator_id'   => $creator->id,
-            'product_id'   => $product->id,
-            'redirect_url' => 'https://google.com'
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT'
         ];
 
-        $response = $this->postJson('/api/tracking-links', $data);
+        $response = $this->withAuth()
+                         ->postJson('/api/tracking-links', $data);
 
         $response->assertStatus(201)
-            ->assertJsonPath('data.redirect_url', 'https://google.com')
+            ->assertJsonPath('data.redirect_url', 'https://www.amazon.eg/dp/B0FMR7H8FT?tag=mytag-21')
             ->assertJsonStructure(['data' => ['slug', 'short_url']]);
 
         $this->assertDatabaseHas('tracking_links', [
-            'creator_id' => $creator->id,
-            'redirect_url' => 'https://google.com'
+            'creator_id' => $this->creator->id,
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT?tag=mytag-21'
         ]);
     }
 
-    public function test_cannot_create_duplicate_tracking_link()
+    public function test_cannot_create_tracking_link_for_unsupported_vendor()
     {
-        $creator = Creator::factory()->create();
-        $product = Product::factory()->create();
-        
-        $link = TrackingLink::factory()->create([
-            'creator_id' => $creator->id,
-            'product_id' => $product->id,
-            'slug'       => 'EXISTING'
+        $data = [
+            'redirect_url' => 'https://evil-amazon.eg/dp/B0FMR7H8FT'
+        ];
+
+        $response = $this->withAuth()
+                         ->postJson('/api/tracking-links', $data);
+
+        $response->assertStatus(422)
+            ->assertJsonPath('status', 'error')
+            ->assertJsonPath('message', 'This product URL does not belong to any supported vendor.');
+    }
+
+    public function test_cannot_create_tracking_link_if_not_subscribed_to_vendor()
+    {
+        $vendor = Vendor::create([
+            'name' => 'Amazon',
+            'domain' => 'amazon.eg',
+            'country_id' => $this->creator->country_id
         ]);
 
         $data = [
-            'creator_id'   => $creator->id,
-            'product_id'   => $product->id,
-            'redirect_url' => 'https://new-url.com'
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT'
         ];
 
-        $response = $this->postJson('/api/tracking-links', $data);
+        $response = $this->withAuth()
+                         ->postJson('/api/tracking-links', $data);
 
-        $response->assertStatus(200)
-            ->assertJsonPath('data.slug', 'EXISTING')
-            ->assertJsonPath('message', 'The product already exists for this creator');
+        $response->assertStatus(422)
+            ->assertJsonPath('status', 'error')
+            ->assertJsonPath('message', 'Creator is not associated with this vendor or has no tracking ID.');
     }
 
     public function test_redirection_works_and_increments_clicks()
     {
-        $link = TrackingLink::factory()->create([
-            'id' => 10, // Use fixed ID to test service integration
-            'redirect_url' => 'https://example.com'
+        $vendor = Vendor::create([
+            'name' => 'Amazon',
+            'domain' => 'amazon.eg',
+            'country_id' => $this->creator->country_id
         ]);
         
-        // Manual slug generation for the test model if factory didn't do it right
-        // But our service does it. Let's use the factory slug for initial check, 
-        // OR better, create via API to get a "real" slug.
-        
+        CreatorVendorTrackingId::create([
+            'creator_id' => $this->creator->id,
+            'vendor_id' => $vendor->id,
+            'tracking_id' => 'mytag-21'
+        ]);
+
         $data = [
-            'creator_id'   => Creator::factory()->create()->id,
-            'product_id'   => Product::factory()->create()->id,
-            'redirect_url' => 'https://my-redirect.com'
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT'
         ];
-        
-        $createResponse = $this->postJson('/api/tracking-links', $data);
+
+        $createResponse = $this->withAuth()
+                               ->postJson('/api/tracking-links', $data);
+
         $slug = $createResponse->json('data.slug');
 
         $response = $this->get('/' . $slug);
 
-        $response->assertRedirect('https://my-redirect.com');
+        $response->assertRedirect('https://www.amazon.eg/dp/B0FMR7H8FT?tag=mytag-21');
         
         $this->assertEquals(1, TrackingLink::where('slug', $slug)->first()->clicks_count);
     }

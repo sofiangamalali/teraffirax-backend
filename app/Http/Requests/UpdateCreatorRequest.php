@@ -31,7 +31,6 @@ class UpdateCreatorRequest extends FormRequest
             'password'        => ['sometimes', 'required', 'string', 'min:8'],
             'gender'          => ['sometimes', 'required', 'in:male,female'],
             'balance'         => ['sometimes', 'numeric'],
-            'amazon_track_id' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

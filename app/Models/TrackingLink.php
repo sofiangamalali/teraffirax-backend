@@ -12,7 +12,6 @@ class TrackingLink extends Model
 
     protected $fillable = [
         'creator_id',
-        'product_id',
         'slug',
         'redirect_url',
         'clicks_count',
@@ -24,14 +23,6 @@ class TrackingLink extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Creator::class);
-    }
-
-    /**
-     * Get the product that owns the tracking link.
-     */
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
     }
 
     /**

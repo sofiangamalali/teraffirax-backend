@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->string('password');
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->decimal('balance', 15, 2)->default(0);
-            $table->string('amazon_track_id')->nullable();
 
             $table->foreignId('country_id')->constrained()->onDelete('cascade');
             $table->foreignId('account_manager_id')->nullable()->constrained('account_managers')->onDelete('set null');

@@ -23,7 +23,7 @@ class SlugService
         // Step 2: Convert to Base62
         $encoded = "";
         $temp = $obfuscated;
-        
+
         if ($temp === 0) {
             $encoded = "0";
         } else {
@@ -35,7 +35,7 @@ class SlugService
         }
 
         // Step 3: Pad to fixed length
-        return str_pad($encoded, self::SLUG_LENGTH, '0', STR_PAD_LEFT);
+        return str_pad($encoded, self::SLUG_LENGTH, 'T', STR_PAD_LEFT);
     }
 
     /**
@@ -46,23 +46,24 @@ class SlugService
     public function decodeSlug(string $slug): int
     {
         // Step 1: Base62 decode
+        $slug = ltrim($slug, 'T');
         $num = 0;
         $len = strlen($slug);
-        
+
         for ($i = 0; $i < $len; $i++) {
             $char = $slug[$i];
             $value = strpos(self::CHARS, $char);
-            
+
             if ($value === false) {
                 throw new InvalidArgumentException("Invalid character in slug");
             }
-            
+
             $num = ($num * self::BASE) + $value;
         }
 
         // Step 2: Reverse obfuscation
         $adjusted = $num - self::OFFSET;
-        
+
         if ($adjusted < 0 || $adjusted % self::MULTIPLIER !== 0) {
             throw new InvalidArgumentException("Invalid slug structure");
         }

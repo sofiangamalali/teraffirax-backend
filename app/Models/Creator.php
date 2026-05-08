@@ -20,7 +20,6 @@ class Creator extends Authenticatable
         'password',
         'gender',
         'balance',
-        'amazon_track_id',
         'country_id',
         'email_verified_at',
         'account_manager_id',
@@ -59,6 +58,11 @@ class Creator extends Authenticatable
     public function telegramChannels()
     {
         return $this->hasMany(TelegramChannel::class);
+    }
+
+    public function vendorTrackingIds()
+    {
+        return $this->hasMany(CreatorVendorTrackingId::class);
     }
     public function isEmailVerified(): bool
     {

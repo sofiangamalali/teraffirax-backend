@@ -11,7 +11,8 @@ class TrackingLinkDTO
         public readonly int|string|null $product_id = null,
         public readonly ?string $redirect_url = null,
         public readonly ?string $slug = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Create a DTO from a Form Request.
@@ -32,10 +33,10 @@ class TrackingLinkDTO
     public function toArray(): array
     {
         return array_filter([
-            'creator_id'   => $this->creator_id,
-            'product_id'   => $this->product_id,
+            'creator_id' => $this->creator_id,
+            'product_id' => $this->product_id,
             'redirect_url' => $this->redirect_url,
-            'slug'         => $this->slug,
-        ], fn ($value) => $value !== null);
+            'slug' => $this->slug,
+        ], fn($value) => $value !== null);
     }
 }
