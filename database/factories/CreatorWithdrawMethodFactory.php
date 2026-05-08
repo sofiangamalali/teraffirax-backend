@@ -21,7 +21,6 @@ class CreatorWithdrawMethodFactory extends Factory
             'creator_id' => \App\Models\Creator::factory(),
             'withdraw_method_id' => \App\Models\WithdrawMethod::factory(),
             'is_default' => $this->faker->boolean,
-            'details' => ['account' => $this->faker->bankAccountNumber],
         ];
     }
 }

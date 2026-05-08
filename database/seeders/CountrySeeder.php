@@ -16,6 +16,8 @@ class CountrySeeder extends Seeder
             ['iso2' => 'eg'],
             [
                 'name' => ['en' => 'Egypt', 'ar' => 'مصر'],
+                'currency' => ['en' => 'EGP', 'ar' => 'ج.م'],
+                'timezone' => 'Africa/Cairo',
                 'phone_code' => '+20',
                 'phone_min_length' => 11,
                 'phone_max_length' => 11,

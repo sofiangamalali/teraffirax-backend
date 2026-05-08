@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('content_templates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('creator_id')->constrained()->onDelete('cascade');
-            $table->foreignId('social_integration_id')->constrained()->onDelete('cascade');
+            $table->string('platform');
             $table->string('name');
             $table->text('content');
             $table->boolean('is_default')->default(false);

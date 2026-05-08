@@ -11,7 +11,7 @@ class ContentTemplate extends Model
 
     protected $fillable = [
         'creator_id',
-        'social_integration_id',
+        'platform',
         'name',
         'content',
         'is_default',
@@ -21,13 +21,14 @@ class ContentTemplate extends Model
         'is_default' => 'boolean',
     ];
 
+    protected $attributes = [
+        'is_default' => false,
+    ];
+
     public function creator()
     {
         return $this->belongsTo(Creator::class);
     }
 
-    public function socialIntegration()
-    {
-        return $this->belongsTo(SocialIntegration::class);
-    }
+
 }

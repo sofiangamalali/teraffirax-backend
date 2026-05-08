@@ -93,5 +93,10 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::policy(SocialIntegration::class, SocialIntegrationPolicy::class);
         Gate::policy(ContentTemplate::class, ContentTemplatePolicy::class);
+
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\CreatorRegistered::class,
+            \App\Listeners\CreateDefaultTelegramTemplate::class
+        );
     }
 }

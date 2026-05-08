@@ -21,14 +21,18 @@ class ContentTemplateService
     public function create(ContentTemplateDTO $dto): ContentTemplate
     {
         $data = $dto->toArray();
-        
-        if ($dto->social_integration_id) {
-            $count = $this->repository->countForIntegration($dto->social_integration_id);
+
+        if ($dto->platform) {
+            $count = $this->repository->countForPlatform($dto->creator_id, $dto->platform);
             if ($count === 0) {
                 $data['is_default'] = true;
             }
         }
-        
+
+        if (isset($data['is_default']) && $data['is_default'] === true) {
+            $this->repository->unsetDefaultsForPlatform($dto->creator_id, $dto->platform);
+        }
+
         return $this->repository->create($data);
     }
 
@@ -39,7 +43,13 @@ class ContentTemplateService
 
     public function update(ContentTemplate $contentTemplate, ContentTemplateDTO $dto): bool
     {
-        return $this->repository->update($contentTemplate, $dto->toArray());
+        $data = $dto->toArray();
+
+        if (isset($data['is_default']) && $data['is_default'] === true) {
+            $this->repository->unsetDefaultsForPlatform($contentTemplate->creator_id, $contentTemplate->platform);
+        }
+
+        return $this->repository->update($contentTemplate, $data);
     }
 
     public function delete(ContentTemplate $contentTemplate): bool

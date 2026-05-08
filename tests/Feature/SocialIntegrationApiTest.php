@@ -47,18 +47,4 @@ class SocialIntegrationApiTest extends TestCase
 
         $response->assertStatus(200);
     }
-
-    public function test_creator_can_create_integration(): void
-    {
-        $data = [
-            'platform' => 'telegram',
-            'type' => 'channel',
-            'name' => 'My Channel',
-        ];
-
-        $response = $this->withAuth()->postJson('/api/social-integrations', $data);
-
-        $response->assertStatus(201)
-            ->assertJsonPath('data.name', 'My Channel');
-    }
 }

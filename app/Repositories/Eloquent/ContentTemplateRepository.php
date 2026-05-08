@@ -20,9 +20,11 @@ class ContentTemplateRepository implements ContentTemplateRepositoryInterface
         return $this->model->where('creator_id', $creatorId)->paginate($perPage);
     }
 
-    public function countForIntegration(int $integrationId): int
+    public function countForPlatform(int $creatorId, string $platform): int
     {
-        return $this->model->where('social_integration_id', $integrationId)->count();
+        return $this->model->where('creator_id', $creatorId)
+            ->where('platform', $platform)
+            ->count();
     }
 
     public function create(array $data): ContentTemplate
@@ -43,5 +45,13 @@ class ContentTemplateRepository implements ContentTemplateRepositoryInterface
     public function delete(ContentTemplate $contentTemplate): bool
     {
         return $contentTemplate->delete();
+    }
+
+    public function unsetDefaultsForPlatform(int $creatorId, string $platform): void
+    {
+        $this->model->where('creator_id', $creatorId)
+            ->where('platform', $platform)
+            ->where('is_default', true)
+            ->update(['is_default' => false]);
     }
 }

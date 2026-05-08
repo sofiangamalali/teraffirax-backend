@@ -4,7 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Services\TemplateValidationService;
-use App\Models\SocialIntegration;
+use Illuminate\Validation\Rule;
+use App\Enums\PlatformEnum;
 
 class UpdateContentTemplateRequest extends FormRequest
 {
@@ -16,7 +17,12 @@ class UpdateContentTemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'social_integration_id' => 'sometimes|required|exists:social_integrations,id',
+            'platform' => [
+                'sometimes',
+                'required',
+                'string',
+                Rule::enum(PlatformEnum::class),
+            ],
             'name' => 'sometimes|required|string',
             'content' => [
                 'sometimes',
@@ -24,10 +30,7 @@ class UpdateContentTemplateRequest extends FormRequest
                 'string',
                 function ($attribute, $value, $fail) {
                     try {
-                        $integrationId = $this->social_integration_id ?: $this->route('content_template')->social_integration_id;
-                        $integration = SocialIntegration::find($integrationId);
-                        $platform = $integration ? $integration->platform : 'telegram';
-                        
+                        $platform = $this->platform ?: $this->route('content_template')->platform;
                         app(TemplateValidationService::class)->validate($platform, $value);
                     } catch (\InvalidArgumentException $e) {
                         $fail($e->getMessage());

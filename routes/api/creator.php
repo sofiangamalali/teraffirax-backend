@@ -40,7 +40,7 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
 
     // Content Templates
     Route::get('template-variables', [CreatorContentTemplateController::class, 'variables']);
-    Route::apiResource('content-templates', CreatorContentTemplateController::class);
+    Route::apiResource('content-templates', CreatorContentTemplateController::class)->only(['index', 'update']);
 });
 
 

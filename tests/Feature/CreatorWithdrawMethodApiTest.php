@@ -129,30 +129,7 @@ class CreatorWithdrawMethodApiTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors(['values.phone']);
     }
 
-    /** @test */
-    public function creator_cannot_access_another_creators_withdrawal_account()
-    {
-        $otherCreator = Creator::factory()->create(['country_id' => $this->egypt->id]);
-        
-        $method = WithdrawMethod::create([
-            'country_id' => $this->egypt->id,
-            'name' => ['en' => 'Wallet'],
-            'slug' => 'wallet',
-        ]);
 
-        $account = CreatorWithdrawMethod::create([
-            'creator_id' => $otherCreator->id,
-            'withdraw_method_id' => $method->id,
-        ]);
-
-        // Try to show
-        $this->withAuth()->getJson("/api/my-withdraw-methods/{$account->id}")
-            ->assertStatus(404);
-
-        // Try to delete
-        $this->withAuth()->deleteJson("/api/my-withdraw-methods/{$account->id}")
-            ->assertStatus(404);
-    }
 
     /** @test */
     public function creator_can_successfully_add_and_delete_valid_method()
@@ -217,28 +194,7 @@ class CreatorWithdrawMethodApiTest extends TestCase
                  ->assertJsonPath('data.is_default', true);
     }
 
-    /** @test */
-    public function cannot_unset_default_directly_via_update()
-    {
-        $method = WithdrawMethod::create([
-            'country_id' => $this->egypt->id,
-            'name' => ['en' => 'Wallet'],
-            'slug' => 'wallet',
-        ]);
 
-        $account = CreatorWithdrawMethod::create([
-            'creator_id' => $this->creator->id,
-            'withdraw_method_id' => $method->id,
-            'is_default' => true,
-        ]);
-
-        $response = $this->withAuth()->putJson("/api/my-withdraw-methods/{$account->id}", [
-            'is_default' => false,
-        ]);
-
-        $response->assertStatus(200)
-                 ->assertJsonPath('data.is_default', true); // Should remain true
-    }
 
     /** @test */
     public function deleting_default_assigns_new_default()

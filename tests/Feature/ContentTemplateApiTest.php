@@ -59,7 +59,7 @@ class ContentTemplateApiTest extends TestCase
     public function test_creator_can_create_template(): void
     {
         $data = [
-            'social_integration_id' => $this->integration->id,
+            'platform' => 'telegram',
             'name' => 'Promo Template',
             'content' => 'خصم {{discount}} على {{product_name}} اطلبه من هنا: {{link}}',
         ];
@@ -74,7 +74,7 @@ class ContentTemplateApiTest extends TestCase
     public function test_creator_cannot_create_template_with_invalid_variables(): void
     {
         $data = [
-            'social_integration_id' => $this->integration->id,
+            'platform' => 'telegram',
             'name' => 'Invalid Template',
             'content' => 'This has invalid variable {{invalid_var}}',
         ];

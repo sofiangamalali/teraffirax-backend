@@ -20,11 +20,13 @@ class TemplateValidationService
         return array_unique($matches[1]);
     }
 
-    /**
-     * Validate template variables against the registry.
-     */
     public function validate(string $platform, string $content): void
     {
+
+        if (preg_match('/https?:\/\//i', $content)) {
+            throw new InvalidArgumentException("Template content cannot contain direct links");
+        }
+
         $variables = $this->extractVariables($content);
         $allowedKeys = $this->registry->getAllowedKeys($platform);
 

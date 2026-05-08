@@ -70,5 +70,18 @@ class WithdrawMethodSeeder extends Seeder
                 'regex' => '^[0-9]+$'
             ]
         ]);
+
+        $instapay->fields()->create([
+            'name' => 'username',
+            'label' => ['en' => 'InstaPay Address', 'ar' => 'عنوان انستا باي'],
+            'type' => 'text',
+            'placeholder' => ['en' => 'username@instapay', 'ar' => 'اسم المستخدم@instapay'],
+            'sort_order' => 2,
+            'validation' => [
+                'required' => true,
+                'type' => 'string',
+                'regex' => '^[a-zA-Z0-9._]+@instapay$'
+            ]
+        ]);
     }
 }

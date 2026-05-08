@@ -11,7 +11,7 @@ class Country extends Model
 {
     use HasFactory, HasTranslations;
 
-    public $translatable = ['name'];
+    public $translatable = ['name', 'currency'];
 
     protected $fillable = [
         'name',
@@ -21,6 +21,8 @@ class Country extends Model
         'phone_max_length',
         'icon',
         'is_active',
+        'currency',
+        'timezone',
     ];
 
     protected $casts = [

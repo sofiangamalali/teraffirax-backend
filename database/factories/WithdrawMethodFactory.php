@@ -18,10 +18,10 @@ class WithdrawMethodFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
+            'country_id' => \App\Models\Country::factory(),
+            'name' => ['en' => $this->faker->word, 'ar' => $this->faker->word],
+            'slug' => $this->faker->slug,
             'logo' => null,
-            'type' => $this->faker->randomElement(['bank', 'wallet', 'other']),
-            'details' => ['info' => $this->faker->sentence],
             'is_active' => true,
         ];
     }
