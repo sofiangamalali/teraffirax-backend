@@ -47,6 +47,15 @@ class CreatorWithdrawMethodRepository implements CreatorWithdrawMethodRepository
         return $this->model->where('creator_id', $creatorId)->get();
     }
 
+    public function getOldestByCreator(int $creatorId, int $excludeId): ?CreatorWithdrawMethod
+    {
+        return $this->model
+            ->where('creator_id', $creatorId)
+            ->where('id', '!=', $excludeId)
+            ->oldest()
+            ->first();
+    }
+
     public function unsetOtherDefaults(int $id, int $creatorId): void
     {
         $this->model->where('creator_id', $creatorId)

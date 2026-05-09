@@ -590,6 +590,34 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Commissions",
+			"item": [
+				{
+					"name": "List Commissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/commissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"commissions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

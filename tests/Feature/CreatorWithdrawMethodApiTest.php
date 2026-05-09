@@ -222,4 +222,59 @@ class CreatorWithdrawMethodApiTest extends TestCase
 
         $this->assertTrue($account2->fresh()->is_default);
     }
+
+    /** @test */
+    public function creator_can_set_method_as_default()
+    {
+        $method = WithdrawMethod::create([
+            'country_id' => $this->egypt->id,
+            'name' => ['en' => 'Wallet'],
+            'slug' => 'wallet',
+        ]);
+
+        $account1 = CreatorWithdrawMethod::create([
+            'creator_id' => $this->creator->id,
+            'withdraw_method_id' => $method->id,
+            'is_default' => true,
+        ]);
+
+        $account2 = CreatorWithdrawMethod::create([
+            'creator_id' => $this->creator->id,
+            'withdraw_method_id' => $method->id,
+            'is_default' => false,
+        ]);
+
+        $response = $this->withAuth()->patchJson("/api/my-withdraw-methods/{$account2->id}/set-default");
+
+        $response->assertStatus(200)
+                 ->assertJsonPath('data.is_default', true);
+
+        $this->assertFalse($account1->fresh()->is_default);
+        $this->assertTrue($account2->fresh()->is_default);
+    }
+
+    /** @test */
+    public function creator_cannot_set_other_creators_method_as_default()
+    {
+        $method = WithdrawMethod::create([
+            'country_id' => $this->egypt->id,
+            'name' => ['en' => 'Wallet'],
+            'slug' => 'wallet',
+        ]);
+
+        $otherCreator = Creator::factory()->create([
+            'country_id' => $this->egypt->id,
+            'is_active' => true,
+        ]);
+
+        $account = CreatorWithdrawMethod::create([
+            'creator_id' => $otherCreator->id,
+            'withdraw_method_id' => $method->id,
+            'is_default' => false,
+        ]);
+
+        $response = $this->withAuth()->patchJson("/api/my-withdraw-methods/{$account->id}/set-default");
+
+        $response->assertStatus(403);
+    }
 }

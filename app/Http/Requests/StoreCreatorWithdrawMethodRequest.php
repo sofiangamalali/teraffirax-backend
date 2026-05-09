@@ -31,7 +31,7 @@ class StoreCreatorWithdrawMethodRequest extends FormRequest
                 'exists:withdraw_methods,id',
                 new CheckWithdrawMethodCountry(),
             ],
-            'is_default' => 'boolean',
+            'is_default' => 'nullable|boolean',
             'values' => 'required|array'
         ];
 

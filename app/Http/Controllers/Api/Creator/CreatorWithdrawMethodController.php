@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Creator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCreatorWithdrawMethodRequest;
 use App\Http\Requests\UpdateCreatorWithdrawMethodRequest;
+use App\Http\Requests\SetDefaultWithdrawMethodRequest;
 use App\Http\Resources\CreatorWithdrawMethodResource;
 use App\Http\Resources\WithdrawMethodResource;
 use App\Models\WithdrawMethod;
@@ -128,5 +129,22 @@ class CreatorWithdrawMethodController extends Controller
         }
 
         return $this->successResponse(null, 'messages.deleted');
+    }
+
+    /**
+     * Set the specified withdrawal method as default.
+     */
+    public function setDefault(SetDefaultWithdrawMethodRequest $request, string $id)
+    {
+        $updated = $this->creatorService->setDefaultMethod((int) $id);
+
+        if (!$updated) {
+            return $this->errorResponse('messages.failed_to_update', 500);
+        }
+
+        return $this->successResponse(
+            new CreatorWithdrawMethodResource($this->creatorService->getMethodById((int) $id)),
+            'messages.updated'
+        );
     }
 }

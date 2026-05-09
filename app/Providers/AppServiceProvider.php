@@ -2,14 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\ContentTemplate;
-use App\Models\SocialIntegration;
-use App\Policies\ContentTemplatePolicy;
-use App\Policies\SocialIntegrationPolicy;
-use App\Repositories\Eloquent\ContentTemplateRepository;
-use App\Repositories\Eloquent\SocialIntegrationRepository;
-use App\Repositories\Interfaces\ContentTemplateRepositoryInterface;
-use App\Repositories\Interfaces\SocialIntegrationRepositoryInterface;
+use App\Models\{ContentTemplate, SocialIntegration, Commission};
+use App\Policies\{ContentTemplatePolicy, SocialIntegrationPolicy, CommissionPolicy};
+use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository};
+use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface};
 use Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -72,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CreatorVendorTrackingIdRepositoryInterface::class, CreatorVendorTrackingIdRepository::class);
         $this->app->bind(SocialIntegrationRepositoryInterface::class, SocialIntegrationRepository::class);
         $this->app->bind(ContentTemplateRepositoryInterface::class, ContentTemplateRepository::class);
+        $this->app->bind(CommissionRepositoryInterface::class, CommissionRepository::class);
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);
@@ -93,10 +90,6 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::policy(SocialIntegration::class, SocialIntegrationPolicy::class);
         Gate::policy(ContentTemplate::class, ContentTemplatePolicy::class);
-
-        \Illuminate\Support\Facades\Event::listen(
-            \App\Events\CreatorRegistered::class,
-            \App\Listeners\CreateDefaultTelegramTemplate::class
-        );
+        Gate::policy(Commission::class, CommissionPolicy::class);
     }
 }

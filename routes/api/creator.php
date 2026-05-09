@@ -1,12 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\Creator\CreatorWithdrawMethodController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
-use App\Http\Controllers\Api\Creator\ProfileController;
-use App\Http\Controllers\Api\CreatorTrackingLinkController;
-use App\Http\Controllers\Api\CreatorSocialIntegrationController;
-use App\Http\Controllers\Api\CreatorContentTemplateController;
+use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CommissionController};
+use App\Http\Controllers\Api\{CreatorTrackingLinkController, CreatorSocialIntegrationController, CreatorContentTemplateController};
 
 Route::prefix('auth')->group(function () {
     Route::get('registration-data', [CreatorAuthController::class, 'registrationData']);
@@ -30,7 +27,8 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
 
     // Withdraw Methods
     Route::get('withdraw-methods', [CreatorWithdrawMethodController::class, 'availableMethods']);
-    Route::apiResource('my-withdraw-methods', CreatorWithdrawMethodController::class)->except(['update', 'show']);
+    Route::patch('my-withdraw-methods/{id}/set-default', [CreatorWithdrawMethodController::class, 'setDefault']);
+    Route::apiResource('my-withdraw-methods', CreatorWithdrawMethodController::class)->except(['show']);
 
     // Tracking Links
     Route::apiResource('tracking-links', CreatorTrackingLinkController::class)->only(['index', 'store']);
@@ -41,6 +39,9 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
     // Content Templates
     Route::get('template-variables', [CreatorContentTemplateController::class, 'variables']);
     Route::apiResource('content-templates', CreatorContentTemplateController::class)->only(['index', 'update']);
+
+    // Commissions
+    Route::get('commissions', [CommissionController::class, 'index']);
 });
 
 

@@ -83,6 +83,7 @@ database/
 
 - MUST be used for ALL responses
 - No raw model return
+- MUST use `FormatsDatesWithTimezone` trait in Creator-facing resources to format date fields
 
 ---
 
@@ -170,6 +171,7 @@ You MUST:
 - No skipping Policies
 - No skipping Tests
 - No returning raw JSON manually
+- No using Fully Qualified Class Names (FQCN) in code → use `use` statements to import classes
 
 ---
 
@@ -204,6 +206,7 @@ You MUST return:
 - Use pagination for listing endpoints
 - Hash passwords where needed
 - Use transactions for critical operations
+- Group `use` statements for the same parent namespace (e.g., `use App\Models\{User, Creator};`)
 
 ---
 

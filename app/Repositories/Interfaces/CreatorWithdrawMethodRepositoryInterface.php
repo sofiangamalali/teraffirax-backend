@@ -13,5 +13,6 @@ interface CreatorWithdrawMethodRepositoryInterface
     public function update(int $id, array $data): bool;
     public function delete(int $id): bool;
     public function getByCreator(int $creatorId): Collection;
+    public function getOldestByCreator(int $creatorId, int $excludeId): ?CreatorWithdrawMethod;
     public function unsetOtherDefaults(int $id, int $creatorId): void;
 }

@@ -113,6 +113,11 @@ class CreatorWithdrawMethodService
         });
     }
 
+    public function setDefaultMethod(int $id): bool
+    {
+        return $this->updateMethod($id, ['is_default' => true]);
+    }
+
     public function deleteMethod(int $id): bool
     {
         return DB::transaction(function () use ($id) {
@@ -121,9 +126,9 @@ class CreatorWithdrawMethodService
 
             $deleted = $this->repository->delete($id);
 
-            // If the deleted method was default, make another one default
+            // If the deleted method was default, promote the oldest remaining one
             if ($deleted && $method->is_default) {
-                $newDefault = $this->repository->getByCreator($method->creator_id)->first();
+                $newDefault = $this->repository->getOldestByCreator($method->creator_id, $id);
                 if ($newDefault) {
                     $this->repository->update($newDefault->id, ['is_default' => true]);
                 }
