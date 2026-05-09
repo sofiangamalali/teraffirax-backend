@@ -95,7 +95,6 @@ class CreatorAuthController extends Controller
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
             'is_email_verified' => $data['is_email_verified'],
-            'account_manager_id' => $data['account_manager_id'],
             'is_active' => $data['is_active'],
         ], 'messages.token_refreshed');
     }
