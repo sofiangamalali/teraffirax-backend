@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Traits\FormatsDatesWithTimezone;
 
-class CommissionResource extends JsonResource
+class CreatorCommissionResource extends JsonResource
 {
     use FormatsDatesWithTimezone;
     /**

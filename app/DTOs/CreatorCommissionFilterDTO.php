@@ -4,7 +4,7 @@ namespace App\DTOs;
 
 use Illuminate\Http\Request;
 
-class CommissionFilterDTO
+class CreatorCommissionFilterDTO
 {
     public function __construct(
         public readonly ?string $start_date = null,

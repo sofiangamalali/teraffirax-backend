@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
-use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CommissionController};
+use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CreatorCommissionController};
 use App\Http\Controllers\Api\{CreatorTrackingLinkController, CreatorSocialIntegrationController, CreatorContentTemplateController};
 use App\Http\Controllers\Api\CreatorWithdrawRequestController;
 
@@ -42,7 +42,7 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
     Route::apiResource('content-templates', CreatorContentTemplateController::class)->only(['index', 'update']);
 
     // Commissions
-    Route::get('commissions', [CommissionController::class, 'index']);
+    Route::get('commissions', [CreatorCommissionController::class, 'index']);
 
     // Withdraw Requests
     Route::get('withdraw-requests/filter-options', [CreatorWithdrawRequestController::class, 'getFilterOptions']);

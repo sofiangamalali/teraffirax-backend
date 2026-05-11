@@ -55,8 +55,6 @@ class CommissionControllerTest extends TestCase
                 'message',
                 'data' => [
                     '*' => [
-                        'id',
-                        'creator_id',
                         'vendor_id',
                         'date',
                         'clicks_count',

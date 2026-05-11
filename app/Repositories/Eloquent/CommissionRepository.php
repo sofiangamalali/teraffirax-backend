@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\DTOs\CommissionFilterDTO;
+use App\DTOs\CreatorCommissionFilterDTO;
 use App\Models\Commission;
 use App\Repositories\Interfaces\CommissionRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -13,7 +13,7 @@ class CommissionRepository implements CommissionRepositoryInterface
         protected Commission $model,
     ) {}
 
-    public function getForCreator(int $creatorId, CommissionFilterDTO $filters, int $perPage = 15): LengthAwarePaginator
+    public function getForCreator(int $creatorId, CreatorCommissionFilterDTO $filters, int $perPage = 15): LengthAwarePaginator
     {
         $query = $this->model->where('creator_id', $creatorId);
 

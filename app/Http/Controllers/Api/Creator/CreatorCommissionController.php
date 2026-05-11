@@ -2,31 +2,31 @@
 
 namespace App\Http\Controllers\Api\Creator;
 
-use App\DTOs\CommissionFilterDTO;
+use App\DTOs\CreatorCommissionFilterDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ListCommissionRequest;
-use App\Http\Resources\CommissionResource;
-use App\Services\CommissionService;
+use App\Http\Requests\ListCreatorCommissionRequest;
+use App\Http\Resources\CreatorCommissionResource;
+use App\Services\CreatorCommissionService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 use App\Models\Commission;
 
-class CommissionController extends Controller
+class CreatorCommissionController extends Controller
 {
     use ApiResponseTrait;
 
     public function __construct(
-        protected CommissionService $commissionService,
+        protected CreatorCommissionService $commissionService,
     ) {}
 
     /**
      * Display a listing of the creator's commissions.
      */
-    public function index(ListCommissionRequest $request): JsonResponse
+    public function index(ListCreatorCommissionRequest $request): JsonResponse
     {
         $this->authorize('viewAny', Commission::class);
 
-        $filters = CommissionFilterDTO::fromRequest($request);
+        $filters = CreatorCommissionFilterDTO::fromRequest($request);
         $perPage = $request->input('per_page', 15);
 
         $commissions = $this->commissionService->getCreatorCommissions(
@@ -36,7 +36,7 @@ class CommissionController extends Controller
         );
 
         return $this->paginatedResponse(
-            CommissionResource::collection($commissions),
+            CreatorCommissionResource::collection($commissions),
             'messages.fetched'
         );
     }
