@@ -10,6 +10,7 @@ interface CreatorWithdrawMethodRepositoryInterface
     public function all(): Collection;
     public function create(array $data): CreatorWithdrawMethod;
     public function find(int $id): ?CreatorWithdrawMethod;
+    public function findForCreator(int $id, int $creatorId): ?CreatorWithdrawMethod;
     public function update(int $id, array $data): bool;
     public function delete(int $id): bool;
     public function getByCreator(int $creatorId): Collection;

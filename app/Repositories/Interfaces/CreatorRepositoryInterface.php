@@ -16,6 +16,8 @@ interface CreatorRepositoryInterface
 
     public function findOrFail(int $id): Creator;
     
+    public function findWithLock(int $id): ?Creator;
+    
     public function findByEmail(string $email): ?Creator;
 
     public function findByPhone(string $phone): ?Creator;

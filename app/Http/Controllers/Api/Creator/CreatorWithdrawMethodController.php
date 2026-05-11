@@ -122,6 +122,11 @@ class CreatorWithdrawMethodController extends Controller
             return $this->errorResponse('messages.not_found', 404);
         }
 
+        // Check if there are any withdraw requests referencing this method
+        if ($method->withdrawRequests()->exists()) {
+            return $this->errorResponse(__('Cannot delete payment method because it has associated withdrawal requests.'), 400);
+        }
+
         $deleted = $this->creatorService->deleteMethod((int) $id);
 
         if (!$deleted) {

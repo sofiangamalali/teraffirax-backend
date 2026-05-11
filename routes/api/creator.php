@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
 use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CommissionController};
 use App\Http\Controllers\Api\{CreatorTrackingLinkController, CreatorSocialIntegrationController, CreatorContentTemplateController};
+use App\Http\Controllers\Api\CreatorWithdrawRequestController;
 
 Route::prefix('auth')->group(function () {
     Route::get('registration-data', [CreatorAuthController::class, 'registrationData']);
@@ -42,6 +43,11 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
 
     // Commissions
     Route::get('commissions', [CommissionController::class, 'index']);
+
+    // Withdraw Requests
+    Route::get('withdraw-requests/filter-options', [CreatorWithdrawRequestController::class, 'getFilterOptions']);
+    Route::post('withdraw-requests', [CreatorWithdrawRequestController::class, 'withdraw']);
+    Route::get('withdraw-requests', [CreatorWithdrawRequestController::class, 'index']);
 });
 
 

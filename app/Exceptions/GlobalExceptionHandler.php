@@ -109,6 +109,13 @@ class GlobalExceptionHandler
             ], 422);
         });
 
+        $exceptions->render(function (\App\Exceptions\WithdrawalException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 400);
+        });
+
         $exceptions->render(function (\Throwable $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([

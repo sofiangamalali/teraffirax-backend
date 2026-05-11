@@ -30,6 +30,11 @@ class CreatorWithdrawMethodRepository implements CreatorWithdrawMethodRepository
         return $this->model->find($id);
     }
 
+    public function findForCreator(int $id, int $creatorId): ?CreatorWithdrawMethod
+    {
+        return $this->model->where('id', $id)->where('creator_id', $creatorId)->first();
+    }
+
     public function update(int $id, array $data): bool
     {
         $method = $this->find($id);

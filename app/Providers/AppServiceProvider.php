@@ -40,6 +40,9 @@ use App\Repositories\Eloquent\CreatorVendorTrackingIdRepository;
 use App\Repositories\Interfaces\SettingRepositoryInterface;
 use App\Repositories\Eloquent\SettingRepository;
 use App\Services\SettingService;
+use App\Repositories\Interfaces\WithdrawRequestRepositoryInterface;
+use App\Repositories\Eloquent\WithdrawRequestRepository;
+use App\Services\WithdrawRequestService;
 
 use App\Services\SlugService;
 use App\Services\TrackingLinkService;
@@ -60,6 +63,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
         $this->app->singleton(SettingService::class);
+        $this->app->bind(WithdrawRequestRepositoryInterface::class, WithdrawRequestRepository::class);
+        $this->app->singleton(WithdrawRequestService::class);
         $this->app->bind(CreatorRepositoryInterface::class, CreatorRepository::class);
         $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);

@@ -33,6 +33,11 @@ class CreatorRepository implements CreatorRepositoryInterface
         return $this->model->findOrFail($id);
     }
 
+    public function findWithLock(int $id): ?Creator
+    {
+        return $this->model->where('id', $id)->lockForUpdate()->first();
+    }
+
     public function findByEmail(string $email): ?Creator
     {
         return $this->model->where('email', $email)->first();

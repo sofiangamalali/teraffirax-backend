@@ -37,4 +37,9 @@ class CreatorWithdrawMethod extends Model
     {
         return $this->hasMany(CreatorWithdrawMethodValue::class);
     }
+
+    public function withdrawRequests(): HasMany
+    {
+        return $this->hasMany(WithdrawRequest::class, 'creator_withdraw_method_id');
+    }
 }
