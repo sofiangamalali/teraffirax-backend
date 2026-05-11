@@ -10,6 +10,8 @@ interface VendorRepositoryInterface
 {
     public function all(): Collection;
 
+    public function getActive(): Collection;
+
     public function paginate(int $perPage = 15): LengthAwarePaginator;
 
     public function find(int $id): ?Vendor;

@@ -92,4 +92,31 @@ class CommissionControllerTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('2026-05-10', $response->json('data.0.date'));
     }
+
+    public function test_can_get_filter_options()
+    {
+        $country = \App\Models\Country::first();
+        
+        \App\Models\Vendor::create([
+            'name' => 'Amazon',
+            'country_id' => $country->id,
+            'domain' => 'amazon.com',
+        ]);
+
+        $response = $this->withAuth()
+            ->getJson('/api/commissions/filter-options');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'vendors' => [
+                        '*' => [
+                            'id',
+                            'name',
+                        ]
+                    ]
+                ]
+            ]);
+    }
 }

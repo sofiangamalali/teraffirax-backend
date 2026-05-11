@@ -18,6 +18,11 @@ class VendorRepository implements VendorRepositoryInterface
         return $this->model->all();
     }
 
+    public function getActive(): Collection
+    {
+        return $this->model->all();
+    }
+
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
         return $this->model->paginate($perPage);

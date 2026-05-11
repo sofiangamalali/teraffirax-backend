@@ -42,6 +42,7 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
     Route::apiResource('content-templates', CreatorContentTemplateController::class)->only(['index', 'update']);
 
     // Commissions
+    Route::get('commissions/filter-options', [CreatorCommissionController::class, 'getFilterOptions']);
     Route::get('commissions', [CreatorCommissionController::class, 'index']);
 
     // Withdraw Requests

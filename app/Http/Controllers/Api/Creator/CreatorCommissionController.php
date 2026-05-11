@@ -6,6 +6,7 @@ use App\DTOs\CreatorCommissionFilterDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListCreatorCommissionRequest;
 use App\Http\Resources\CreatorCommissionResource;
+use App\Http\Resources\VendorResource;
 use App\Services\CreatorCommissionService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
@@ -39,5 +40,17 @@ class CreatorCommissionController extends Controller
             CreatorCommissionResource::collection($commissions),
             'messages.fetched'
         );
+    }
+
+    /**
+     * Get options for filters (vendors).
+     */
+    public function getFilterOptions(): JsonResponse
+    {
+        $options = $this->commissionService->getFilterOptions();
+
+        return $this->successResponse([
+            'vendors' => VendorResource::collection($options['vendors']),
+        ]);
     }
 }
