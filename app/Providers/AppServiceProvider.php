@@ -37,6 +37,10 @@ use App\Repositories\Interfaces\OtpRepositoryInterface;
 use App\Repositories\Eloquent\OtpRepository;
 use App\Repositories\Interfaces\CreatorVendorTrackingIdRepositoryInterface;
 use App\Repositories\Eloquent\CreatorVendorTrackingIdRepository;
+use App\Repositories\Interfaces\SettingRepositoryInterface;
+use App\Repositories\Eloquent\SettingRepository;
+use App\Services\SettingService;
+
 use App\Services\SlugService;
 use App\Services\TrackingLinkService;
 use App\Services\DailyClickService;
@@ -52,6 +56,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        require_once app_path('Support/helpers.php');
+
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
+        $this->app->singleton(SettingService::class);
         $this->app->bind(CreatorRepositoryInterface::class, CreatorRepository::class);
         $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
@@ -91,5 +99,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(SocialIntegration::class, SocialIntegrationPolicy::class);
         Gate::policy(ContentTemplate::class, ContentTemplatePolicy::class);
         Gate::policy(Commission::class, CommissionPolicy::class);
+
+
     }
 }

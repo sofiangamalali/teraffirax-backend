@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\PhoneNumberLengthRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCreatorRequest extends FormRequest
@@ -18,19 +19,18 @@ class UpdateCreatorRequest extends FormRequest
         $activeCountryId = $this->input('country_id') ?? (is_object($creator) ? $creator->country_id : null);
 
         return [
-            'name'            => ['sometimes', 'required', 'string', 'max:255'],
-            'country_id'      => ['sometimes', 'required', 'integer', 'exists:countries,id'],
-            'phone'           => [
-                'sometimes', 
-                'required', 
-                'string', 
-                'unique:creators,phone,' . $creatorId, 
-                new \App\Rules\PhoneNumberLengthRule($activeCountryId)
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'country_id' => ['sometimes', 'required', 'integer', 'exists:countries,id'],
+            'phone' => [
+                'sometimes',
+                'required',
+                'string',
+                'unique:creators,phone,' . $creatorId,
+                new PhoneNumberLengthRule($activeCountryId)
             ],
-            'email'           => ['sometimes', 'required', 'email', 'unique:creators,email,' . $creatorId, 'max:255'],
-            'password'        => ['sometimes', 'required', 'string', 'min:8'],
-            'gender'          => ['sometimes', 'required', 'in:male,female'],
-            'balance'         => ['sometimes', 'numeric'],
+            'email' => ['sometimes', 'required', 'email', 'unique:creators,email,' . $creatorId, 'max:255'],
+            'password' => ['sometimes', 'required', 'string', 'min:8'],
+            'gender' => ['sometimes', 'required', 'in:male,female'],
         ];
     }
 }

@@ -67,7 +67,7 @@ class CreatorAuthService
     protected function issueTokens(Creator $creator): array
     {
         // Issue Access Token (valid for 60 minutes)
-        $accessToken = $creator->createToken('access_token', ['access'], now()->addMinutes(1));
+        $accessToken = $creator->createToken('access_token', ['access'], now()->addMinutes(60));
 
         // Issue Refresh Token (valid for 30 days)
         $refreshToken = $creator->createToken('refresh_token', ['refresh'], now()->addDays(30));

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CreatorController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\WithdrawalController;
+use App\Http\Controllers\Api\SettingController;
 
 Route::apiResource('creators', CreatorController::class);
 Route::apiResource('vendors', VendorController::class);
@@ -15,3 +16,4 @@ Route::apiResource('countries', CountryController::class);
 Route::apiResource('categories', CategoryController::class);
 
 Route::patch('withdrawals/{id}/status', [WithdrawalController::class, 'updateStatus']);
+Route::apiResource('settings', SettingController::class);

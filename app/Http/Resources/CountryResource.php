@@ -20,8 +20,6 @@ class CountryResource extends JsonResource
             'phone_min_length' => $this->phone_min_length,
             'phone_max_length' => $this->phone_max_length,
             'icon' => $this->icon,
-            'currency' => $this->currency,
-            'timezone' => $this->timezone,
         ];
     }
 }

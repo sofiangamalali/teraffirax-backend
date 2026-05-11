@@ -24,7 +24,9 @@ class CreatorFactory extends Factory
             'phone' => $this->faker->unique()->phoneNumber,
             'password' => 'password', // Casts to hashed automatically
             'gender' => $this->faker->randomElement(['male', 'female']),
-            'balance' => 0,
+            'pending_balance' => 0,
+            'available_balance' => 0,
+            'withdrawn_balance' => 0,
             'country_id' => Country::factory(),
             'is_active' => true,
         ];

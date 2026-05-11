@@ -19,7 +19,9 @@ class Creator extends Authenticatable
         'email',
         'password',
         'gender',
-        'balance',
+        'pending_balance',
+        'available_balance',
+        'withdrawn_balance',
         'country_id',
         'email_verified_at',
         'account_manager_id',
@@ -39,9 +41,11 @@ class Creator extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'balance' => 'decimal:2',
+            'pending_balance' => 'decimal:2',
+            'available_balance' => 'decimal:2',
+            'withdrawn_balance' => 'decimal:2',
             'country_id' => 'integer',
-            'is_active' => 'boolean',
+            'is_active' => 'boolean'
         ];
     }
 
@@ -53,11 +57,6 @@ class Creator extends Authenticatable
     public function trackingLinks()
     {
         return $this->hasMany(TrackingLink::class);
-    }
-
-    public function telegramChannels()
-    {
-        return $this->hasMany(TelegramChannel::class);
     }
 
     public function vendorTrackingIds()

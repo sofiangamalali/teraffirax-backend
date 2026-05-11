@@ -17,7 +17,9 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('gender', ['male', 'female'])->nullable();
-            $table->decimal('balance', 15, 2)->default(0);
+            $table->decimal('pending_balance', 15, 2)->default(0);
+            $table->decimal('available_balance', 15, 2)->default(0);
+            $table->decimal('withdrawn_balance', 15, 2)->default(0);
 
             $table->foreignId('country_id')->constrained()->onDelete('cascade');
             $table->foreignId('account_manager_id')->nullable()->constrained('account_managers')->onDelete('set null');
