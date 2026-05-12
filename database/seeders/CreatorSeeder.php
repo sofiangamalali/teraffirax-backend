@@ -31,7 +31,7 @@ class CreatorSeeder extends Seeder
                     'password' => Hash::make('password'),
                     'gender' => 'male',
                     'pending_balance' => 0,
-                    'available_balance' => 0,
+                    'available_balance' => 15000,
                     'withdrawn_balance' => 0,
                     'country_id' => $egypt ? $egypt->id : 1,
                     'email_verified_at' => now(),
