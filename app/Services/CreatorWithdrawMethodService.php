@@ -46,11 +46,11 @@ class CreatorWithdrawMethodService
         return DB::transaction(function () use ($data) {
             // 1. Get the withdraw method and its fields
             $method = WithdrawMethod::with('fields')->findOrFail($data['withdraw_method_id']);
-            
+
             // 2. Generate dynamic rules and validate the values
             $rules = $this->validationService->convertToLaravelRules($method->fields);
             $values = $data['values'] ?? [];
-            
+
             $validator = Validator::make($values, $rules);
             if ($validator->fails()) {
                 throw new ValidationException($validator);
@@ -82,7 +82,7 @@ class CreatorWithdrawMethodService
             if ($creatorMethod->is_default) {
                 $this->repository->unsetOtherDefaults($creatorMethod->id, $creatorMethod->creator_id);
             }
-            
+
             return $creatorMethod->load('values');
         });
     }
@@ -96,7 +96,8 @@ class CreatorWithdrawMethodService
     {
         return DB::transaction(function () use ($id, $data) {
             $method = $this->repository->find($id);
-            if (!$method) return false;
+            if (!$method)
+                return false;
 
             // Prevent unsetting default directly
             if (isset($data['is_default']) && !$data['is_default'] && $method->is_default) {
@@ -104,25 +105,31 @@ class CreatorWithdrawMethodService
             }
 
             $updated = $this->repository->update($id, $data);
-            
+
             if ($updated && isset($data['is_default']) && $data['is_default']) {
                 $this->repository->unsetOtherDefaults($id, $method->creator_id);
             }
-            
+
             return $updated;
         });
     }
 
     public function setDefaultMethod(int $id): bool
     {
-        return $this->updateMethod($id, ['is_default' => true]);
+        return DB::transaction(function () use ($id) {
+            $method = $this->repository->find($id);
+            $this->repository->update($id, ['is_default' => true]);
+            $this->repository->unsetOtherDefaults($id, $method->creator_id);
+            return true;
+        });
     }
 
     public function deleteMethod(int $id): bool
     {
         return DB::transaction(function () use ($id) {
             $method = $this->repository->find($id);
-            if (!$method) return false;
+            if (!$method)
+                return false;
 
             $deleted = $this->repository->delete($id);
 

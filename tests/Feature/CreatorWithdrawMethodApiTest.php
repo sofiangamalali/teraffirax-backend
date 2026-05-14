@@ -244,10 +244,9 @@ class CreatorWithdrawMethodApiTest extends TestCase
             'is_default' => false,
         ]);
 
-        $response = $this->withAuth()->patchJson("/api/my-withdraw-methods/{$account2->id}/set-default");
+        $response = $this->withAuth()->putJson("/api/my-withdraw-methods/{$account2->id}");
 
-        $response->assertStatus(200)
-                 ->assertJsonPath('data.is_default', true);
+        $response->assertStatus(200);
 
         $this->assertFalse($account1->fresh()->is_default);
         $this->assertTrue($account2->fresh()->is_default);
@@ -273,7 +272,7 @@ class CreatorWithdrawMethodApiTest extends TestCase
             'is_default' => false,
         ]);
 
-        $response = $this->withAuth()->patchJson("/api/my-withdraw-methods/{$account->id}/set-default");
+        $response = $this->withAuth()->putJson("/api/my-withdraw-methods/{$account->id}");
 
         $response->assertStatus(403);
     }

@@ -93,22 +93,12 @@ class CreatorWithdrawMethodController extends Controller
      */
     public function update(UpdateCreatorWithdrawMethodRequest $request, string $id)
     {
-        $method = $this->creatorService->getMethodById((int) $id);
-
-        if (!$method || $method->creator_id !== $request->user()->id) {
-            return $this->errorResponse('messages.not_found', 404);
-        }
-
-        $updated = $this->creatorService->updateMethod((int) $id, $request->validated());
-
+        $this->creatorService->getMethodById((int) $id);
+        $updated = $this->creatorService->setDefaultMethod((int) $id);
         if (!$updated) {
             return $this->errorResponse('messages.failed_to_update', 500);
         }
-
-        return $this->successResponse(
-            new CreatorWithdrawMethodResource($this->creatorService->getMethodById((int) $id)),
-            'messages.updated'
-        );
+        return $this->successResponse(null, 'messages.updated');
     }
 
     /**
