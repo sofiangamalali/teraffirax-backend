@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CreatorWithdrawMethodService
 {
@@ -124,12 +127,22 @@ class CreatorWithdrawMethodService
         });
     }
 
-    public function deleteMethod(int $id): bool
+    public function deleteMethod(int $id, int $creatorId): bool
     {
-        return DB::transaction(function () use ($id) {
+        return DB::transaction(function () use ($id, $creatorId) {
             $method = $this->repository->find($id);
-            if (!$method)
-                return false;
+            
+            if (!$method) {
+                throw new NotFoundHttpException();
+            }
+
+            if ($method->creator_id !== $creatorId) {
+                throw new AccessDeniedHttpException('messages.unauthorized');
+            }
+
+            if ($method->withdrawRequests()->exists()) {
+                throw new HttpException(400, __('Cannot delete payment method because it has associated withdrawal requests.'));
+            }
 
             $deleted = $this->repository->delete($id);
 

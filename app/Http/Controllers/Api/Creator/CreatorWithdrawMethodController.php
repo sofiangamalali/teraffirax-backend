@@ -71,22 +71,6 @@ class CreatorWithdrawMethodController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $request, string $id)
-    {
-        $method = $this->creatorService->getMethodById((int) $id);
-
-        if (!$method || $method->creator_id !== $request->user()->id) {
-            return $this->errorResponse('messages.not_found', 404);
-        }
-
-        return $this->successResponse(
-            new CreatorWithdrawMethodResource($method),
-            'messages.fetched'
-        );
-    }
 
     /**
      * Update the specified resource in storage.
@@ -106,40 +90,9 @@ class CreatorWithdrawMethodController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $method = $this->creatorService->getMethodById((int) $id);
-
-        if (!$method || $method->creator_id !== $request->user()->id) {
-            return $this->errorResponse('messages.not_found', 404);
-        }
-
-        // Check if there are any withdraw requests referencing this method
-        if ($method->withdrawRequests()->exists()) {
-            return $this->errorResponse(__('Cannot delete payment method because it has associated withdrawal requests.'), 400);
-        }
-
-        $deleted = $this->creatorService->deleteMethod((int) $id);
-
-        if (!$deleted) {
-            return $this->errorResponse('messages.failed_to_delete', 500);
-        }
+        $this->creatorService->deleteMethod((int) $id, $request->user()->id);
 
         return $this->successResponse(null, 'messages.deleted');
     }
 
-    /**
-     * Set the specified withdrawal method as default.
-     */
-    public function setDefault(SetDefaultWithdrawMethodRequest $request, string $id)
-    {
-        $updated = $this->creatorService->setDefaultMethod((int) $id);
-
-        if (!$updated) {
-            return $this->errorResponse('messages.failed_to_update', 500);
-        }
-
-        return $this->successResponse(
-            new CreatorWithdrawMethodResource($this->creatorService->getMethodById((int) $id)),
-            'messages.updated'
-        );
-    }
 }
