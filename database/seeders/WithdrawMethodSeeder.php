@@ -25,7 +25,7 @@ class WithdrawMethodSeeder extends Seeder
             [
                 'country_id' => $egypt->id,
                 'name' => ['en' => 'E-Wallets', 'ar' => 'المحافظ الإلكترونية'],
-                'logo' => 'wallet.png',
+                'logo' => 'e-wallet.jpg',
                 'is_active' => true,
             ]
         );
@@ -51,7 +51,7 @@ class WithdrawMethodSeeder extends Seeder
             [
                 'country_id' => $egypt->id,
                 'name' => ['en' => 'InstaPay', 'ar' => 'انستا باي'],
-                'logo' => 'instapay.png',
+                'logo' => 'instapay.jpg',
                 'is_active' => true,
             ]
         );
