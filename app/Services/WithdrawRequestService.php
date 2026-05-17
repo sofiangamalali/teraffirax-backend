@@ -81,9 +81,18 @@ class WithdrawRequestService
         ], WithdrawRequestStatusEnum::cases());
 
         $methods = $this->creatorWithdrawMethodRepository->getByCreator($creatorId)
+            ->load(['withdrawMethod', 'values'])
             ->map(fn($method) => [
                 'value' => $method->id,
-                'label' => $method->method_name ?? "Method #{$method->id}"
+                'label' => $method->withdrawMethod?->name,
+                'is_default' => $method->is_default,
+                'method' => [
+                    'id' => $method->withdrawMethod?->id,
+                    'name' => $method->withdrawMethod?->name,
+                    'slug' => $method->withdrawMethod?->slug,
+                    'logo' => $method->withdrawMethod?->logo_url,
+                ],
+                'values' => $method->values->pluck('field_value', 'field_name')->toArray(),
             ])->toArray();
 
         return [
