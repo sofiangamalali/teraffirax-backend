@@ -38,7 +38,6 @@ Route::middleware(['auth', 'creator.active'])->group(function () {
 
     // Withdraw Methods
     Route::get('withdraw-methods', [CreatorWithdrawMethodController::class, 'availableMethods']);
-    Route::patch('my-withdraw-methods/{id}/set-default', [CreatorWithdrawMethodController::class, 'setDefault']);
     Route::apiResource('my-withdraw-methods', CreatorWithdrawMethodController::class)->except(['show']);
 
     // Tracking Links
