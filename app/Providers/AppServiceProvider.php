@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\{ContentTemplate, SocialIntegration, Commission};
 use App\Policies\{ContentTemplatePolicy, SocialIntegrationPolicy, CommissionPolicy};
-use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository};
-use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface};
+use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository};
+use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface};
 use Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -82,6 +82,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SocialIntegrationRepositoryInterface::class, SocialIntegrationRepository::class);
         $this->app->bind(ContentTemplateRepositoryInterface::class, ContentTemplateRepository::class);
         $this->app->bind(CommissionRepositoryInterface::class, CommissionRepository::class);
+        $this->app->bind(CreatorDashboardRepositoryInterface::class, CreatorDashboardRepository::class);
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);

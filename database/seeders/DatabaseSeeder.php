@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             WithdrawMethodSeeder::class,
             VendorSeeder::class,
             CreatorSeeder::class, //for test
+            CreatorDashboardVideoSeeder::class,
         ]);
     }
 }

@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\Creator\CreatorCampaignController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
-use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CreatorCommissionController};
+use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CreatorCommissionController, CreatorDashboardController};
 use App\Http\Controllers\Api\{CreatorTrackingLinkController, CreatorSocialIntegrationController, CreatorContentTemplateController};
 use App\Http\Controllers\Api\CreatorWithdrawRequestController;
 
@@ -23,6 +23,12 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'creator.active'])->group(function () {
+    // Dashboard
+    Route::get('dashboard/wallet', [CreatorDashboardController::class, 'wallet']);
+    Route::get('dashboard/graph', [CreatorDashboardController::class, 'graph']);
+    Route::get('dashboard/videos', [CreatorDashboardController::class, 'videos']);
+    Route::get('dashboard/filters', [CreatorDashboardController::class, 'filters']);
+
     // Campaigns
     Route::get('campaigns', [CreatorCampaignController::class, 'index']);
 

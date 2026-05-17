@@ -310,6 +310,144 @@
 			]
 		},
 		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "View Wallet",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/wallet",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard",
+								"wallet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Graph",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/graph?days=30",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard",
+								"graph"
+							],
+							"query": [
+								{
+									"key": "days",
+									"value": "30",
+									"description": "Presets: 30, 60, 90"
+								},
+								{
+									"key": "date_from",
+									"value": "2026-05-01",
+									"description": "Start Date (Y-m-d)",
+									"disabled": true
+								},
+								{
+									"key": "date_to",
+									"value": "2026-05-15",
+									"description": "End Date (Y-m-d)",
+									"disabled": true
+								},
+								{
+									"key": "vendor_id",
+									"value": "1",
+									"description": "Vendor ID",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Videos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/videos?per_page=15&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard",
+								"videos"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/filters",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard",
+								"filters"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Withdraw Methods",
 			"item": [
 				{
