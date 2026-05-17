@@ -11,7 +11,8 @@ class VendorRepository implements VendorRepositoryInterface
 {
     public function __construct(
         protected Vendor $model,
-    ) {}
+    ) {
+    }
 
     public function all(): Collection
     {
@@ -20,7 +21,7 @@ class VendorRepository implements VendorRepositoryInterface
 
     public function getActive(): Collection
     {
-        return $this->model->all();
+        return $this->model->where('is_active', true)->get();
     }
 
     public function paginate(int $perPage = 15): LengthAwarePaginator

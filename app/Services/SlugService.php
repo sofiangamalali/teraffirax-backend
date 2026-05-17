@@ -55,7 +55,7 @@ class SlugService
             $value = strpos(self::CHARS, $char);
 
             if ($value === false) {
-                throw new InvalidArgumentException("Invalid character in slug");
+                throw new InvalidArgumentException(__("Invalid character in slug"));
             }
 
             $num = ($num * self::BASE) + $value;
@@ -65,7 +65,7 @@ class SlugService
         $adjusted = $num - self::OFFSET;
 
         if ($adjusted < 0 || $adjusted % self::MULTIPLIER !== 0) {
-            throw new InvalidArgumentException("Invalid slug structure");
+            throw new InvalidArgumentException(__("Invalid slug structure"));
         }
 
         return $adjusted / self::MULTIPLIER;

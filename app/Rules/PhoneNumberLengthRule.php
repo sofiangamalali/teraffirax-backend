@@ -31,7 +31,7 @@ class PhoneNumberLengthRule implements ValidationRule
         $country = Country::find($this->countryId);
 
         if (!$country) {
-            $fail('The selected country is invalid.');
+            $fail(__('The selected country is invalid.'));
             return;
         }
 
@@ -39,9 +39,9 @@ class PhoneNumberLengthRule implements ValidationRule
 
         if ($length < $country->phone_min_length || $length > $country->phone_max_length) {
             if ($country->phone_min_length === $country->phone_max_length) {
-                $fail("The :attribute must be exactly {$country->phone_min_length} digits.");
+                $fail(__('The :attribute must be exactly :length digits.', ['length' => $country->phone_min_length]));
             } else {
-                $fail("The :attribute must be between {$country->phone_min_length} and {$country->phone_max_length} digits.");
+                $fail(__('The :attribute must be between :min and :max digits.', ['min' => $country->phone_min_length, 'max' => $country->phone_max_length]));
             }
         }
     }

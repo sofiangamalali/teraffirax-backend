@@ -1,0 +1,21 @@
+{
+    "Method not found or not associated with this account.": "طريقة السحب غير موجودة أو غير مرتبطة بهذا الحساب.",
+    "Creator not found.": "المنشئ غير موجود.",
+    "Minimum withdrawal amount is :amount": "الحد الأدنى لمبلغ السحب هو :amount",
+    "Cannot delete payment method because it has associated withdrawal requests.": "لا يمكن حذف طريقة الدفع لوجود طلبات سحب مرتبطة بها.",
+    "The selected country is invalid.": "الدولة المحددة غير صالحة.",
+    "The :attribute must be exactly :length digits.": "يجب أن يتكون حقل :attribute من :length أرقام بالضبط.",
+    "The :attribute must be between :min and :max digits.": "يجب أن يكون حقل :attribute بين :min و :max أرقام.",
+    "This withdrawal method is not available in your country.": "طريقة السحب هذه غير متوفرة في بلدك.",
+    "Cannot change withdrawal status back to pending once it is done.": "لا يمكن إرجاع حالة السحب إلى قيد الانتظار بعد اكتماله.",
+    "Withdrawal request created successfully.": "تم إنشاء طلب السحب بنجاح.",
+    "This product URL does not belong to any supported vendor.": "رابط المنتج هذا لا ينتمي لأي تاجر معتمد.",
+    "Creator is not associated with this vendor or has no tracking ID.": "المنشئ غير مرتبط بهذا التاجر أو لا يملك معرف تتبع.",
+    "No tracking URL generator found for this vendor.": "لم يتم العثور على مولد روابط تتبع لهذا التاجر.",
+    "This vendor is currently inactive and cannot be used.": "هذا التاجر غير نشط حالياً ولا يمكن استخدامه.",
+    "Vendor not found for this product.": "التاجر غير موجود لهذا المنتج.",
+    "Template content cannot contain direct links": "محتوى القالب لا يمكن أن يحتوي على روابط مباشرة.",
+    "Invalid variables found in template: :variables": "متغيرات غير صالحة في القالب: :variables",
+    "Invalid character in slug": "رمز غير صالح في الرابط المختصر.",
+    "Invalid slug structure": "بنية الرابط المختصر غير صالحة."
+}

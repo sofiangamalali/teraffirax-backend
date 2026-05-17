@@ -22,7 +22,7 @@ class ValidWithdrawalStatusTransition implements ValidationRule
         $withdrawal = Withdrawal::find($this->withdrawalId);
 
         if ($withdrawal && $withdrawal->status === 'done' && $value === 'pending') {
-            $fail('Cannot change withdrawal status back to pending once it is done.');
+            $fail(__('Cannot change withdrawal status back to pending once it is done.'));
         }
     }
 }

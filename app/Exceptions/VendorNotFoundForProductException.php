@@ -8,6 +8,6 @@ class VendorNotFoundForProductException extends Exception
 {
     public function __construct()
     {
-        parent::__construct("Vendor not found for this product.");
+        parent::__construct(__("Vendor not found for this product."));
     }
 }

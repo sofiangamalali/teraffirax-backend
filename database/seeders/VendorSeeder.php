@@ -31,7 +31,7 @@ class VendorSeeder extends Seeder
         Vendor::updateOrCreate(
             ['domain' => 'https://www.amazon.eg'],
             [
-                'name' => 'Amazon Egypt',
+                'name' => 'Amazon',
                 'country_id' => $egypt->id,
                 'logo' => 'amazon.png',
                 'is_active' => true,

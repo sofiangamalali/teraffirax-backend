@@ -24,7 +24,7 @@ class TemplateValidationService
     {
 
         if (preg_match('/https?:\/\//i', $content)) {
-            throw new InvalidArgumentException("Template content cannot contain direct links");
+            throw new InvalidArgumentException(__("Template content cannot contain direct links"));
         }
 
         $variables = $this->extractVariables($content);
@@ -33,7 +33,7 @@ class TemplateValidationService
         $invalidVariables = array_diff($variables, $allowedKeys);
 
         if (!empty($invalidVariables)) {
-            throw new InvalidArgumentException("Invalid variables found in template: " . implode(', ', $invalidVariables));
+            throw new InvalidArgumentException(__("Invalid variables found in template: :variables", ['variables' => implode(', ', $invalidVariables)]));
         }
     }
 }

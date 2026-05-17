@@ -8,6 +8,6 @@ class UnsupportedTrackingGeneratorException extends Exception
 {
     public function __construct()
     {
-        parent::__construct("No tracking URL generator found for this vendor.");
+        parent::__construct(__("No tracking URL generator found for this vendor."));
     }
 }

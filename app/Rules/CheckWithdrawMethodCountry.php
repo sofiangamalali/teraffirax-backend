@@ -18,7 +18,7 @@ class CheckWithdrawMethodCountry implements ValidationRule
         $method = WithdrawMethod::find($value);
 
         if ($method && $method->country_id && $method->country_id !== request()->user()->country_id) {
-            $fail('This withdrawal method is not available in your country.');
+            $fail(__('This withdrawal method is not available in your country.'));
         }
     }
 }

@@ -17,16 +17,14 @@ class CreatorCommissionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'vendor_id' => $this->vendor_id,
             'vendor' => new VendorResource($this->whenLoaded('vendor')),
-            'date' => $this->date ? $this->date->format('Y-m-d') : null,
+            'date' => $this->formatWithTimezone($this->date, $request),
             'clicks_count' => $this->clicks_count,
             'items_count' => $this->items_count,
             'returned_count' => $this->returned_count,
             'revenue_amount' => $this->revenue_amount,
             'commission_amount' => $this->commission_amount,
             'created_at' => $this->formatWithTimezone($this->created_at, $request),
-            'updated_at' => $this->formatWithTimezone($this->updated_at, $request),
             'currency' => $this->currency,
         ];
     }
