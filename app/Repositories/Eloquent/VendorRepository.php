@@ -57,4 +57,12 @@ class VendorRepository implements VendorRepositoryInterface
 
         return $vendor->delete();
     }
+
+    public function paginateByCountry(int $countryId, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->model
+            ->where('country_id', $countryId)
+            ->with('country')
+            ->paginate($perPage);
+    }
 }

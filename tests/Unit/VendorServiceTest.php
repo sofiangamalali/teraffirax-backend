@@ -53,6 +53,20 @@ class VendorServiceTest extends TestCase
         $this->assertEquals('Test Vendor', $result->name);
     }
 
+    public function test_can_get_paginated_active_vendors_by_country()
+    {
+        $paginator = Mockery::mock(\Illuminate\Contracts\Pagination\LengthAwarePaginator::class);
+        
+        $this->repository->shouldReceive('paginateActiveByCountry')
+            ->once()
+            ->with(1, 15)
+            ->andReturn($paginator);
+
+        $result = $this->service->getPaginatedActiveVendorsByCountry(1, 15);
+
+        $this->assertSame($paginator, $result);
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();

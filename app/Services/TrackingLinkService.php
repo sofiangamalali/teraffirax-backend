@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\TrackingLinkDTO;
 use App\Exceptions\CreatorNotSubscribedToVendorException;
+use App\Exceptions\VendorInactiveException;
 use App\Models\TrackingLink;
 use App\Repositories\Interfaces\TrackingLinkRepositoryInterface;
 use App\Repositories\Interfaces\CreatorVendorTrackingIdRepositoryInterface;
@@ -41,6 +42,10 @@ class TrackingLinkService
 
             // 1. Find vendor by URL securely
             $vendor = $this->vendorResolverService->resolveVendor($url);
+
+            if (!$vendor->is_active) {
+                throw new VendorInactiveException();
+            }
 
             // 2. Check if creator has tracking ID for this vendor
             $trackingRecord = $this->creatorVendorTrackingRepo->findByCreatorAndVendor(

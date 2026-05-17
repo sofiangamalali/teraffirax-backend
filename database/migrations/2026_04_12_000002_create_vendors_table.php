@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('country_id')->constrained()->onDelete('cascade');
             $table->string('domain')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

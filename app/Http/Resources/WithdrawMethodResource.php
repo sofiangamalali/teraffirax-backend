@@ -18,7 +18,7 @@ class WithdrawMethodResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'logo' => $this->logo,
+            'logo' => $this->logo_url,
             'is_active' => $this->is_active,
             'country' => new CountryResource($this->whenLoaded('country')),
             'fields' => WithdrawMethodFieldResource::collection($this->whenLoaded('fields')),

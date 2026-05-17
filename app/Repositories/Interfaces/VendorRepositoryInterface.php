@@ -23,4 +23,6 @@ interface VendorRepositoryInterface
     public function update(int $id, array $data): Vendor;
 
     public function delete(int $id): bool;
+
+    public function paginateByCountry(int $countryId, int $perPage = 15): LengthAwarePaginator;
 }

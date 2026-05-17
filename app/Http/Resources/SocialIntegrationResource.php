@@ -17,6 +17,7 @@ class SocialIntegrationResource extends JsonResource
         return [
             'id' => $this->id,
             'platform' => $this->platform,
+            'platform_logo' => $this->platform_logo_url,
             'type' => $this->type,
             'status' => $this->status,
             'name' => $this->name,

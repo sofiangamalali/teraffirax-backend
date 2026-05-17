@@ -14,6 +14,7 @@ use App\Exceptions\Otp\{OtpExpiredException, OtpInvalidException, OtpBlockedExce
 use App\Exceptions\UnsupportedVendorException;
 use App\Exceptions\UnsupportedTrackingGeneratorException;
 use App\Exceptions\CreatorNotSubscribedToVendorException;
+use App\Exceptions\VendorInactiveException;
 
 class GlobalExceptionHandler
 {
@@ -82,6 +83,13 @@ class GlobalExceptionHandler
         });
 
         $exceptions->render(function (CreatorNotSubscribedToVendorException $e, Request $request) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (VendorInactiveException $e, Request $request) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),

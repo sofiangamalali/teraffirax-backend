@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Creator\CreatorCampaignController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\CreatorAuthController;
 use App\Http\Controllers\Api\Creator\{CreatorWithdrawMethodController, ProfileController, CreatorCommissionController};
@@ -22,6 +23,9 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'creator.active'])->group(function () {
+    // Campaigns
+    Route::get('campaigns', [CreatorCampaignController::class, 'index']);
+
     // Profile
     Route::get('profile', [ProfileController::class, 'show']);
     Route::put('profile', [ProfileController::class, 'update']);

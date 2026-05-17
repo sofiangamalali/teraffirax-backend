@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 use Spatie\Translatable\HasTranslations;
+use App\Traits\HasLogo;
 
 class WithdrawMethod extends Model
 {
-    use HasFactory, SoftDeletes, HasTranslations;
+    use HasFactory, SoftDeletes, HasTranslations, HasLogo;
 
     public $translatable = ['name'];
 
@@ -36,5 +36,15 @@ class WithdrawMethod extends Model
     public function country()
     {
         return $this->belongsTo(Country::class);
+    }
+
+    /**
+     * Get the resolved logo URL.
+     *
+     * @return string|null
+     */
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->resolveLogoUrl($this->logo, 'withdraw-methods');
     }
 }

@@ -33,6 +33,28 @@ class VendorSeeder extends Seeder
             [
                 'name' => 'Amazon Egypt',
                 'country_id' => $egypt->id,
+                'logo' => 'amazon.png',
+                'is_active' => true,
+            ]
+        );
+
+        Vendor::updateOrCreate(
+            ['domain' => 'https://www.noon.com'],
+            [
+                'name' => 'Noon',
+                'country_id' => $egypt->id,
+                'logo' => 'noon.png',
+                'is_active' => false,
+            ]
+        );
+
+        Vendor::updateOrCreate(
+            ['domain' => 'https://www.jumia.com.eg'],
+            [
+                'name' => 'Jumia',
+                'country_id' => $egypt->id,
+                'logo' => 'jumia.png',
+                'is_active' => false,
             ]
         );
     }

@@ -50,4 +50,9 @@ class VendorService
             return $this->vendorRepository->delete($id);
         });
     }
+
+    public function getPaginatedVendorsByCountry(int $countryId, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->vendorRepository->paginateByCountry($countryId, $perPage);
+    }
 }

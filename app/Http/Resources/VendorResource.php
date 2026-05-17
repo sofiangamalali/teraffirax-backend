@@ -12,6 +12,8 @@ class VendorResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'logo' => $this->logo_url,
+            'is_active' => $this->is_active,
             'country_id' => $this->country_id,
             'country' => new CountryResource($this->whenLoaded('country')),
         ];
