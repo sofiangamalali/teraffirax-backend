@@ -23,4 +23,6 @@ return [
     'account_inactive' => 'Your account is inactive. Please contact support.',
     'male' => 'Male',
     'female' => 'Female',
+    'pending' => 'Pending',
+    'failed' => 'Failed',
 ];

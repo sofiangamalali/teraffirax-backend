@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasApiTokens;
+use App\Traits\HasCurrency;
 use Database\Factories\CreatorFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Creator extends Authenticatable
 {
     /** @use HasFactory<CreatorFactory> */
-    use HasFactory, SoftDeletes, HasApiTokens;
+    use HasFactory, SoftDeletes, HasApiTokens, HasCurrency;
 
     protected $fillable = [
         'name',

@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Enums\WithdrawRequestStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCurrency;
 
 class WithdrawRequest extends Model
 {
-    use HasFactory;
+    use HasFactory, HasCurrency;
 
     protected $fillable = [
         'creator_id',

@@ -9,6 +9,7 @@ use App\Models\Vendor;
 use App\Models\SocialIntegration;
 use App\Models\CreatorVendorTrackingId;
 use App\Models\Commission;
+use App\Models\ContentTemplate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -101,6 +102,18 @@ class CreatorSeeder extends Seeder
                     'name' => 'Test Channel',
                     'username' => 'test_channel',
                     'external_id' => '123456789',
+                ]
+            );
+
+            ContentTemplate::updateOrCreate(
+                [
+                    'creator_id' => $creator->id,
+                    'platform' => 'telegram',
+                    'is_default' => true,
+                ],
+                [
+                    'name' => 'القالب الافتراضي',
+                    'content' => "خصم {{discount}}% على {{product_name}} بسعر {{product_price}} ج\n\nلينك العرض: {{link}}",
                 ]
             );
         });
