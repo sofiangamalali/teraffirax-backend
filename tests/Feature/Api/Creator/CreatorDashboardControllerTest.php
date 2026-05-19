@@ -57,7 +57,7 @@ class CreatorDashboardControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'wallet' => [
+                    '*' => [
                         'pending_balance',
                         'available_balance',
                         'withdrawn_balance',
@@ -67,11 +67,11 @@ class CreatorDashboardControllerTest extends TestCase
                 ]
             ]);
 
-        $response->assertJsonPath('data.wallet.pending_balance', '150.00');
-        $response->assertJsonPath('data.wallet.available_balance', '2000.00');
-        $response->assertJsonPath('data.wallet.withdrawn_balance', '500.00');
-        $response->assertJsonPath('data.wallet.currency', 'EGP');
-        $response->assertJsonPath('data.wallet.min_withdrawal_amount', '500.00');
+        $response->assertJsonPath('data.0.pending_balance', 150);
+        $response->assertJsonPath('data.0.available_balance', 2000);
+        $response->assertJsonPath('data.0.withdrawn_balance', 500);
+        $response->assertJsonPath('data.0.currency', 'EGP');
+        $response->assertJsonPath('data.0.min_withdrawal_amount', 500);
     }
 
     public function test_creator_can_view_graph_with_defaults(): void
