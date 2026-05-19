@@ -29,7 +29,7 @@ class CreatorDashboardController extends Controller
 
         return $this->successResponse(
             [
-                'wallet' => new CreatorWalletResource($data),
+                new CreatorWalletResource($data),
             ],
             'messages.fetched'
         );
