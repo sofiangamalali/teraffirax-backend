@@ -28,7 +28,9 @@ class CreatorDashboardController extends Controller
         $data = $this->dashboardService->getWalletData($request->user()->id);
 
         return $this->successResponse(
-            new CreatorWalletResource($data),
+            [
+                'wallet' => new CreatorWalletResource($data),
+            ],
             'messages.fetched'
         );
     }

@@ -28,6 +28,7 @@ class CreatorDashboardService
             'available_balance' => (double) $creator->available_balance,
             'withdrawn_balance' => (double) $creator->withdrawn_balance,
             'currency' => $creator->country?->currency ?? 'EGP',
+            'min_withdrawal_amount' => (double) setting('withdrawal.min_amount', 500),
         ];
     }
 

@@ -19,6 +19,7 @@ class CreatorWalletResource extends JsonResource
             'available_balance' => number_format($this['available_balance'], 2, '.', ''),
             'withdrawn_balance' => number_format($this['withdrawn_balance'], 2, '.', ''),
             'currency' => $this['currency'],
+            'min_withdrawal_amount' => number_format($this['min_withdrawal_amount'], 2, '.', ''),
         ];
     }
 }

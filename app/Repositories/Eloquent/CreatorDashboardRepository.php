@@ -20,7 +20,8 @@ class CreatorDashboardRepository implements CreatorDashboardRepositoryInterface
     {
         $query = $this->model->newQuery()
             ->where('creator_id', $creatorId)
-            ->whereBetween('date', [$startDate, $endDate]);
+            ->whereDate('date', '>=', $startDate)
+            ->whereDate('date', '<=', $endDate);
 
         if ($vendorId !== null) {
             $query->where('vendor_id', $vendorId);
