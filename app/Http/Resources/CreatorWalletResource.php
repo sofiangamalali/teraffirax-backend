@@ -15,11 +15,11 @@ class CreatorWalletResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'pending_balance' => number_format($this['pending_balance'], 2, '.', ''),
-            'available_balance' => number_format($this['available_balance'], 2, '.', ''),
-            'withdrawn_balance' => number_format($this['withdrawn_balance'], 2, '.', ''),
+            'pending_balance' => $this['pending_balance'],
+            'available_balance' => $this['available_balance'],
+            'withdrawn_balance' => $this['withdrawn_balance'],
             'currency' => $this['currency'],
-            'min_withdrawal_amount' => number_format($this['min_withdrawal_amount'], 2, '.', ''),
+            'min_withdrawal_amount' => $this['min_withdrawal_amount'],
         ];
     }
 }
