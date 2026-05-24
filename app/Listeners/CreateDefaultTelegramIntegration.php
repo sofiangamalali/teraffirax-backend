@@ -29,7 +29,7 @@ class CreateDefaultTelegramIntegration
             'platform' => 'telegram',
             'type' => 'channel',
             'status' => 'pending',
-            'name' => 'قناتي على تليجرام',
+            'name' => 'My Telegram Channel',
         ]);
     }
 }

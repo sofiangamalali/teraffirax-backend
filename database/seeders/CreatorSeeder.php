@@ -95,8 +95,8 @@ class CreatorSeeder extends Seeder
                     'is_default' => true,
                 ],
                 [
-                    'name' => 'القالب الافتراضي',
-                    'content' => "خصم {{discount}}% على {{product_name}} بسعر {{product_price}} ج\n\nلينك العرض: {{link}}",
+                    'name' => 'Default Template',
+                    'content' => "{{discount}}% discount on {{product_name}} at {{product_price}} EGP\n\nOffer link: {{link}}",
                 ]
             );
         });

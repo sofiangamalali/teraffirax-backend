@@ -24,12 +24,12 @@ class CreateDefaultTelegramTemplate
     {
         $creator = $event->creator;
 
-        $content = "خصم {{discount}}% على {{product_name}} بسعر {{product_price}} ج\n\nلينك العرض: {{link}}";
+        $content = "{{discount}}% discount on {{product_name}} at {{product_price}} EGP\n\nOffer link: {{link}}";
 
         ContentTemplate::create([
             'creator_id' => $creator->id,
             'platform' => 'telegram',
-            'name' => 'القالب الافتراضي',
+            'name' => 'Default Template',
             'content' => $content,
             'is_default' => true,
         ]);

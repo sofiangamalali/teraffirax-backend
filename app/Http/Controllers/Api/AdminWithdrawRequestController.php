@@ -16,12 +16,13 @@ class AdminWithdrawRequestController extends Controller
 
     public function __construct(
         protected WithdrawRequestService $service
-    ) {}
+    ) {
+    }
 
     public function approve(Request $request, string $id): JsonResponse
     {
         $adminId = $request->user()->id; // Assuming user() is the admin/account_manager
-        
+
         $withdrawRequest = $this->service->approveRequest($id, $adminId);
 
         return $this->successResponse($withdrawRequest, 'Withdrawal request approved successfully.');
@@ -30,11 +31,11 @@ class AdminWithdrawRequestController extends Controller
     public function complete(CompleteWithdrawalRequest $request, string $id): JsonResponse
     {
         $adminId = $request->user()->id;
-        
+
         $withdrawRequest = $this->service->completeRequest(
-            $id, 
-            $request->transfer_reference, 
-            $request->receipt_url, 
+            $id,
+            $request->transfer_reference,
+            $request->receipt_url,
             $adminId
         );
 
@@ -44,10 +45,10 @@ class AdminWithdrawRequestController extends Controller
     public function reject(RejectWithdrawalRequest $request, string $id): JsonResponse
     {
         $adminId = $request->user()->id;
-        
+
         $withdrawRequest = $this->service->rejectRequest(
-            $id, 
-            $request->rejection_reason, 
+            $id,
+            $request->rejection_reason,
             $adminId
         );
 

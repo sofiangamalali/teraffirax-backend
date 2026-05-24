@@ -22,7 +22,8 @@ class WithdrawRequestService
         protected CreatorRepositoryInterface $creatorRepository,
         protected CreatorWithdrawMethodRepositoryInterface $creatorWithdrawMethodRepository,
         protected BalanceLedgerRepositoryInterface $balanceLedgerRepository,
-    ) {}
+    ) {
+    }
 
     public function withdraw(WithdrawRequestDTO $dto): WithdrawRequest
     {
@@ -89,7 +90,7 @@ class WithdrawRequestService
     public function approveRequest(string $requestId, int $adminId): WithdrawRequest
     {
         $request = $this->withdrawRequestRepository->findById($requestId);
-        
+
         if (!$request || $request->status !== WithdrawRequestStatusEnum::PENDING) {
             throw new WithdrawalException("Request is not pending or not found.");
         }
@@ -104,7 +105,7 @@ class WithdrawRequestService
     public function completeRequest(string $requestId, string $transferReference, string $receiptUrl, int $adminId): WithdrawRequest
     {
         $request = $this->withdrawRequestRepository->findById($requestId);
-        
+
         if (!$request || $request->status !== WithdrawRequestStatusEnum::APPROVED) {
             throw new WithdrawalException("Request is not approved or not found.");
         }
@@ -121,7 +122,7 @@ class WithdrawRequestService
             ]);
 
             $withdrawnBefore = $creator->withdrawn_balance;
-            
+
             // Increment withdrawn balance
             $creator->update([
                 'withdrawn_balance' => $withdrawnBefore + $request->amount
@@ -145,7 +146,7 @@ class WithdrawRequestService
     public function rejectRequest(string $requestId, string $reason, int $adminId): WithdrawRequest
     {
         $request = $this->withdrawRequestRepository->findById($requestId);
-        
+
         if (!$request || !in_array($request->status, [WithdrawRequestStatusEnum::PENDING, WithdrawRequestStatusEnum::APPROVED])) {
             throw new WithdrawalException("Request cannot be rejected.");
         }

@@ -19,7 +19,8 @@ class CreatorWithdrawRequestController extends Controller
 
     public function __construct(
         protected WithdrawRequestService $withdrawRequestService
-    ) {}
+    ) {
+    }
 
     /**
      * List requests with filters.
@@ -27,11 +28,11 @@ class CreatorWithdrawRequestController extends Controller
     public function index(ListWithdrawRequestsRequest $request): JsonResponse
     {
         $creatorId = $request->user()->id;
-        
+
         $filters = $request->validated();
-        
+
         $requests = $this->withdrawRequestService->getPaginatedForCreator($creatorId, $filters);
-        
+
         return $this->paginatedResponse(
             WithdrawRequestResource::collection($requests),
             'messages.fetched'
@@ -51,7 +52,7 @@ class CreatorWithdrawRequestController extends Controller
         );
 
         $withdrawRequest = $this->withdrawRequestService->withdraw($dto);
-        
+
         return $this->successResponse(
             new WithdrawRequestResource($withdrawRequest),
             'Withdrawal request created successfully.',
