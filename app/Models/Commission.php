@@ -14,7 +14,9 @@ class Commission extends Model
     protected $fillable = [
         'creator_id',
         'vendor_id',
-        'date',
+        'earned_at',
+        'calculated_at',
+        'matured_at',
         'clicks_count',
         'items_count',
         'returned_count',
@@ -23,7 +25,9 @@ class Commission extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'earned_at' => 'datetime',
+        'calculated_at' => 'datetime',
+        'matured_at' => 'datetime',
         'clicks_count' => 'integer',
         'items_count' => 'integer',
         'returned_count' => 'integer',

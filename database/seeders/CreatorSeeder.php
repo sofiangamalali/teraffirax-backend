@@ -32,7 +32,7 @@ class CreatorSeeder extends Seeder
                     'password' => Hash::make('password'),
                     'gender' => 'male',
                     'pending_balance' => 0,
-                    'available_balance' => 15000,
+                    'available_balance' => 0,
                     'withdrawn_balance' => 0,
                     'country_id' => $egypt ? $egypt->id : 1,
                     'email_verified_at' => now(),
@@ -59,36 +59,19 @@ class CreatorSeeder extends Seeder
                     ]
                 );
 
-                // Add commission data
-                Commission::updateOrCreate(
-                    [
+                // Add 5 old commissions
+                for ($i = 1; $i <= 5; $i++) {
+                    Commission::create([
                         'creator_id' => $creator->id,
                         'vendor_id' => $vendor->id,
-                        'date' => now()->subDays(1)->format('Y-m-d'),
-                    ],
-                    [
-                        'clicks_count' => 150,
-                        'items_count' => 10,
-                        'returned_count' => 1,
-                        'revenue_amount' => 500.00,
-                        'commission_amount' => 50.00,
-                    ]
-                );
-
-                Commission::updateOrCreate(
-                    [
-                        'creator_id' => $creator->id,
-                        'vendor_id' => $vendor->id,
-                        'date' => now()->format('Y-m-d'),
-                    ],
-                    [
-                        'clicks_count' => 200,
-                        'items_count' => 15,
-                        'returned_count' => 0,
-                        'revenue_amount' => 750.00,
-                        'commission_amount' => 75.00,
-                    ]
-                );
+                        'earned_at' => now()->subDays(90 + $i)->format('Y-m-d'),
+                        'clicks_count' => rand(100, 500),
+                        'items_count' => rand(5, 20),
+                        'returned_count' => rand(0, 2),
+                        'revenue_amount' => 1000.00,
+                        'commission_amount' => 100.00,
+                    ]);
+                }
             }
 
             $integration = SocialIntegration::updateOrCreate(

@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\{ContentTemplate, SocialIntegration, Commission};
 use App\Policies\{ContentTemplatePolicy, SocialIntegrationPolicy, CommissionPolicy};
-use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository};
-use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface};
+use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository, BalanceLedgerRepository, CronRunLogRepository, ReconciliationAlertRepository};
+use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface, BalanceLedgerRepositoryInterface, CronRunLogRepositoryInterface, ReconciliationAlertRepositoryInterface};
 use Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -83,6 +83,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ContentTemplateRepositoryInterface::class, ContentTemplateRepository::class);
         $this->app->bind(CommissionRepositoryInterface::class, CommissionRepository::class);
         $this->app->bind(CreatorDashboardRepositoryInterface::class, CreatorDashboardRepository::class);
+        $this->app->bind(BalanceLedgerRepositoryInterface::class, BalanceLedgerRepository::class);
+        $this->app->bind(CronRunLogRepositoryInterface::class, CronRunLogRepository::class);
+        $this->app->bind(ReconciliationAlertRepositoryInterface::class, ReconciliationAlertRepository::class);
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);

@@ -12,6 +12,31 @@ class WithdrawRequestRepository implements WithdrawRequestRepositoryInterface
         return WithdrawRequest::create($data);
     }
 
+    public function update(string $id, array $data): WithdrawRequest
+    {
+        $withdrawRequest = $this->findById($id);
+        if ($withdrawRequest) {
+            $withdrawRequest->update($data);
+            return $withdrawRequest->fresh();
+        }
+        throw new \Exception("WithdrawRequest not found");
+    }
+
+    public function findById(string $id): ?WithdrawRequest
+    {
+        return WithdrawRequest::find($id);
+    }
+
+    public function hasPendingOrApprovedForCreator(int $creatorId): bool
+    {
+        return WithdrawRequest::where('creator_id', $creatorId)
+            ->whereIn('status', [
+                \App\Enums\WithdrawRequestStatusEnum::PENDING,
+                \App\Enums\WithdrawRequestStatusEnum::APPROVED,
+            ])
+            ->exists();
+    }
+
     public function getPaginatedForCreator(int $creatorId, array $filters, int $perPage = 15)
     {
         $query = WithdrawRequest::with('withdrawMethod')->where('creator_id', $creatorId);
