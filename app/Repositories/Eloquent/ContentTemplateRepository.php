@@ -17,13 +17,13 @@ class ContentTemplateRepository implements ContentTemplateRepositoryInterface
 
     public function paginateForCreator(int $creatorId, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->model->where('creator_id', $creatorId)->paginate($perPage);
+        return $this->model->where('creator_id', $creatorId)->with('socialIntegration')->paginate($perPage);
     }
 
-    public function countForPlatform(int $creatorId, string $platform): int
+    public function countForIntegration(int $creatorId, int $integrationId): int
     {
         return $this->model->where('creator_id', $creatorId)
-            ->where('platform', $platform)
+            ->where('social_integration_id', $integrationId)
             ->count();
     }
 
@@ -34,7 +34,7 @@ class ContentTemplateRepository implements ContentTemplateRepositoryInterface
 
     public function find(int $id): ?ContentTemplate
     {
-        return $this->model->find($id);
+        return $this->model->with('socialIntegration')->find($id);
     }
 
     public function update(ContentTemplate $contentTemplate, array $data): bool
@@ -47,11 +47,25 @@ class ContentTemplateRepository implements ContentTemplateRepositoryInterface
         return $contentTemplate->delete();
     }
 
-    public function unsetDefaultsForPlatform(int $creatorId, string $platform): void
+    public function unsetDefaultsForIntegration(int $creatorId, int $integrationId, ?int $excludeId = null): void
     {
-        $this->model->where('creator_id', $creatorId)
-            ->where('platform', $platform)
-            ->where('is_default', true)
-            ->update(['is_default' => false]);
+        $query = $this->model->where('creator_id', $creatorId)
+            ->where('social_integration_id', $integrationId)
+            ->where('is_default', true);
+
+        if ($excludeId !== null) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        $query->update(['is_default' => false]);
+    }
+
+    public function getOldestForIntegration(int $creatorId, int $integrationId, int $excludeId): ?ContentTemplate
+    {
+        return $this->model->where('creator_id', $creatorId)
+            ->where('social_integration_id', $integrationId)
+            ->where('id', '!=', $excludeId)
+            ->orderBy('id', 'asc')
+            ->first();
     }
 }

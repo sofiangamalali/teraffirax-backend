@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasLogo;
 
 class ContentTemplate extends Model
 {
-    use HasFactory;
+    use HasFactory, HasLogo;
 
     protected $fillable = [
         'creator_id',
-        'platform',
+        'social_integration_id',
         'name',
         'content',
         'is_default',
@@ -30,5 +31,18 @@ class ContentTemplate extends Model
         return $this->belongsTo(Creator::class);
     }
 
+    public function socialIntegration()
+    {
+        return $this->belongsTo(SocialIntegration::class);
+    }
 
+    /**
+     * Get the full URL of the platform's logo.
+     *
+     * @return string|null
+     */
+    public function getPlatformLogoUrlAttribute(): ?string
+    {
+        return $this->socialIntegration?->platform_logo_url;
+    }
 }

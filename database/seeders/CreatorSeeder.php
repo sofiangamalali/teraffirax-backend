@@ -91,7 +91,7 @@ class CreatorSeeder extends Seeder
                 );
             }
 
-            SocialIntegration::updateOrCreate(
+            $integration = SocialIntegration::updateOrCreate(
                 [
                     'creator_id' => $creator->id,
                     'platform' => 'telegram',
@@ -108,7 +108,7 @@ class CreatorSeeder extends Seeder
             ContentTemplate::updateOrCreate(
                 [
                     'creator_id' => $creator->id,
-                    'platform' => 'telegram',
+                    'social_integration_id' => $integration->id,
                     'is_default' => true,
                 ],
                 [

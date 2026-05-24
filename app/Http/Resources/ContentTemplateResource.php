@@ -18,6 +18,7 @@ class ContentTemplateResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'content' => $this->content,
+            'social_integration' => new SocialIntegrationResource($this->socialIntegration),
             'is_default' => $this->is_default,
         ];
     }

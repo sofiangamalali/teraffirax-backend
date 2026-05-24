@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Services\TemplateValidationService;
 use Illuminate\Validation\Rule;
-use App\Enums\PlatformEnum;
+use App\Models\SocialIntegration;
 
 class StoreContentTemplateRequest extends FormRequest
 {
@@ -17,10 +17,12 @@ class StoreContentTemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'platform' => [
+            'social_integration_id' => [
                 'required',
-                'string',
-                Rule::enum(PlatformEnum::class),
+                'integer',
+                Rule::exists('social_integrations', 'id')->where(function ($query) {
+                    return $query->where('creator_id', $this->user()->id);
+                }),
             ],
             'name' => 'required|string',
             'content' => [
@@ -28,7 +30,12 @@ class StoreContentTemplateRequest extends FormRequest
                 'string',
                 function ($attribute, $value, $fail) {
                     try {
-                        app(TemplateValidationService::class)->validate($this->platform, $value);
+                        if ($this->social_integration_id) {
+                            $integration = SocialIntegration::find($this->social_integration_id);
+                            if ($integration) {
+                                app(TemplateValidationService::class)->validate($integration->platform, $value);
+                            }
+                        }
                     } catch (\InvalidArgumentException $e) {
                         $fail($e->getMessage());
                     }

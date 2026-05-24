@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->json('name');
+            $table->json('currency')->nullable();
+            $table->string('timezone')->nullable();
             $table->char('iso2', 2)->unique();
 
             $table->string('phone_code', 10);

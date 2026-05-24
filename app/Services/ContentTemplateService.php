@@ -6,6 +6,7 @@ use App\DTOs\ContentTemplateDTO;
 use App\Models\ContentTemplate;
 use App\Repositories\Interfaces\ContentTemplateRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class ContentTemplateService
 {
@@ -20,20 +21,23 @@ class ContentTemplateService
 
     public function create(ContentTemplateDTO $dto): ContentTemplate
     {
-        $data = $dto->toArray();
+        return DB::transaction(function () use ($dto) {
+            $data = $dto->toArray();
 
-        if ($dto->platform) {
-            $count = $this->repository->countForPlatform($dto->creator_id, $dto->platform);
-            if ($count === 0) {
-                $data['is_default'] = true;
+            if ($dto->social_integration_id) {
+                $count = $this->repository->countForIntegration($dto->creator_id, $dto->social_integration_id);
+                if ($count === 0) {
+                    $data['is_default'] = true;
+                }
             }
-        }
 
-        if (isset($data['is_default']) && $data['is_default'] === true) {
-            $this->repository->unsetDefaultsForPlatform($dto->creator_id, $dto->platform);
-        }
+            if (isset($data['is_default']) && $data['is_default'] === true) {
+                // For create, we do not have an ID yet, so we just unset all.
+                $this->repository->unsetDefaultsForIntegration($dto->creator_id, $dto->social_integration_id);
+            }
 
-        return $this->repository->create($data);
+            return $this->repository->create($data);
+        });
     }
 
     public function find(int $id): ?ContentTemplate
@@ -43,17 +47,38 @@ class ContentTemplateService
 
     public function update(ContentTemplate $contentTemplate, ContentTemplateDTO $dto): bool
     {
-        $data = $dto->toArray();
+        return DB::transaction(function () use ($contentTemplate, $dto) {
+            $data = $dto->toArray();
 
-        if (isset($data['is_default']) && $data['is_default'] === true) {
-            $this->repository->unsetDefaultsForPlatform($contentTemplate->creator_id, $contentTemplate->platform);
-        }
+            // Prevent unsetting default directly
+            if (isset($data['is_default']) && !$data['is_default'] && $contentTemplate->is_default) {
+                unset($data['is_default']);
+            }
 
-        return $this->repository->update($contentTemplate, $data);
+            $updated = $this->repository->update($contentTemplate, $data);
+
+            if ($updated && isset($data['is_default']) && $data['is_default'] === true) {
+                $this->repository->unsetDefaultsForIntegration($contentTemplate->creator_id, $contentTemplate->social_integration_id, $contentTemplate->id);
+            }
+
+            return $updated;
+        });
     }
 
     public function delete(ContentTemplate $contentTemplate): bool
     {
-        return $this->repository->delete($contentTemplate);
+        return DB::transaction(function () use ($contentTemplate) {
+            $deleted = $this->repository->delete($contentTemplate);
+
+            // If the deleted template was default, promote the oldest remaining one for this platform
+            if ($deleted && $contentTemplate->is_default) {
+                $newDefault = $this->repository->getOldestForIntegration($contentTemplate->creator_id, $contentTemplate->social_integration_id, $contentTemplate->id);
+                if ($newDefault) {
+                    $this->repository->update($newDefault, ['is_default' => true]);
+                }
+            }
+
+            return $deleted;
+        });
     }
 }

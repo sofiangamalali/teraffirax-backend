@@ -17,11 +17,13 @@ class Vendor extends Model
         'country_id',
         'domain',
         'logo',
+        'commission',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'commission' => 'float',
     ];
 
     public function country()

@@ -14,8 +14,14 @@
     "No tracking URL generator found for this vendor.": "لم يتم العثور على مولد روابط تتبع لهذا التاجر.",
     "This vendor is currently inactive and cannot be used.": "هذا التاجر غير نشط حالياً ولا يمكن استخدامه.",
     "Vendor not found for this product.": "التاجر غير موجود لهذا المنتج.",
-    "Template content cannot contain direct links": "محتوى القالب لا يمكن أن يحتوي على روابط مباشرة.",
+    "Template content cannot contain HTML tags or scripts.": "محتوى القالب لا يمكن أن يحتوي على أكواد HTML أو سكربتات.",
+    "Template content cannot contain direct links.": "محتوى القالب لا يمكن أن يحتوي على روابط مباشرة.",
     "Invalid variables found in template: :variables": "متغيرات غير صالحة في القالب: :variables",
     "Invalid character in slug": "رمز غير صالح في الرابط المختصر.",
-    "Invalid slug structure": "بنية الرابط المختصر غير صالحة."
+    "Invalid slug structure": "بنية الرابط المختصر غير صالحة.",
+    "Missing required variables in template: :variables": "متغيرات مطلوبة مفقودة في القالب: :variables",
+    "Discount Percentage": "نسبة الخصم",
+    "Product Name": "اسم المنتج",
+    "Product Price": "سعر المنتج",
+    "Product Link": "رابط المنتج"
 }

@@ -8,7 +8,7 @@ class ContentTemplateDTO
 {
     public function __construct(
         public readonly int|string|null $creator_id = null,
-        public readonly ?string $platform = null,
+        public readonly int|string|null $social_integration_id = null,
         public readonly ?string $name = null,
         public readonly ?string $content = null,
         public readonly ?bool $is_default = null,
@@ -22,7 +22,7 @@ class ContentTemplateDTO
     {
         return new self(
             creator_id: $request->user()?->id,
-            platform: $request->input('platform'),
+            social_integration_id: $request->input('social_integration_id'),
             name: $request->input('name'),
             content: $request->input('content'),
             is_default: $request->input('is_default'),
@@ -36,7 +36,7 @@ class ContentTemplateDTO
     {
         return array_filter([
             'creator_id' => $this->creator_id,
-            'platform' => $this->platform,
+            'social_integration_id' => $this->social_integration_id,
             'name' => $this->name,
             'content' => $this->content,
             'is_default' => $this->is_default,

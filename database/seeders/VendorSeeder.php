@@ -34,6 +34,7 @@ class VendorSeeder extends Seeder
                 'name' => 'Amazon',
                 'country_id' => $egypt->id,
                 'logo' => 'amazon.png',
+                'commission' => 7.00,
                 'is_active' => true,
             ]
         );

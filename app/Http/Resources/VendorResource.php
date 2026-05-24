@@ -13,6 +13,7 @@ class VendorResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'logo' => $this->logo_url,
+            'commission' => $this->commission,
             'is_active' => $this->is_active,
             'country_id' => $this->country_id,
             'country' => new CountryResource($this->whenLoaded('country')),
