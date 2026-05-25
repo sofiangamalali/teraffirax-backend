@@ -44,7 +44,7 @@ class WithdrawRequest extends Model
 
     public function withdrawMethod()
     {
-        return $this->belongsTo(CreatorWithdrawMethod::class, 'creator_withdraw_method_id');
+        return $this->belongsTo(CreatorWithdrawMethod::class, 'creator_withdraw_method_id')->withTrashed();
     }
 
     public function reviewedBy()

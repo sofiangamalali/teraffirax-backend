@@ -30,7 +30,7 @@ class CreatorWithdrawMethod extends Model
 
     public function withdrawMethod(): BelongsTo
     {
-        return $this->belongsTo(WithdrawMethod::class);
+        return $this->belongsTo(WithdrawMethod::class)->withTrashed();
     }
 
     public function values(): HasMany

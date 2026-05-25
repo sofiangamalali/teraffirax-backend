@@ -96,7 +96,7 @@ class CreatorSeeder extends Seeder
                 ],
                 [
                     'name' => 'Default Template',
-                    'content' => "{{discount}}% discount on {{product_name}} at {{product_price}} EGP\n\nOffer link: {{link}}",
+                    'content' => "{{discount}}% خصم على {{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
                 ]
             );
         });

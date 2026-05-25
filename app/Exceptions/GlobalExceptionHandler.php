@@ -124,6 +124,13 @@ class GlobalExceptionHandler
             ], 400);
         });
 
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, Request $request) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        });
+
         $exceptions->render(function (\Throwable $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([

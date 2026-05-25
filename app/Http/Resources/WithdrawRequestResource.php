@@ -16,6 +16,7 @@ class WithdrawRequestResource extends JsonResource
             'amount' => $this->amount,
             'currency' => $this->currency,
             'status' => __('messages.' . $this->status->value),
+            'withdraw_method' => $this->withdrawMethod?->withdrawMethod?->name,
             'creator_withdraw_method' => new CreatorWithdrawMethodResource($this->withdrawMethod),
             'created_at' => $this->formatWithTimezone($this->created_at, $request),
             'updated_at' => $this->formatWithTimezone($this->updated_at, $request),

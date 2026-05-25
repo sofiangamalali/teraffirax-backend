@@ -86,13 +86,27 @@ class WithdrawRequestControllerTest extends TestCase
                     '*' => [
                         'amount',
                         'status',
-                        'creator_withdraw_method',
+                        'withdraw_method',
+                        'creator_withdraw_method' => [
+                            'id',
+                            'is_default',
+                            'method' => [
+                                'id',
+                                'name',
+                                'slug',
+                                'logo',
+                                'is_active',
+                            ],
+                            'values',
+                        ],
                         'created_at',
                         'updated_at',
                     ]
                 ],
                 'meta'
-            ]);
+            ])
+            ->assertJsonPath('data.0.withdraw_method', 'Bank')
+            ->assertJsonPath('data.0.creator_withdraw_method.method.name', 'Bank');
     }
 
     public function test_can_filter_withdraw_requests_by_status()
@@ -108,7 +122,7 @@ class WithdrawRequestControllerTest extends TestCase
             'creator_id' => $this->creator->id,
             'creator_withdraw_method_id' => $this->method->id,
             'amount' => 600,
-            'status' => 'success',
+            'status' => 'completed',
         ]);
 
         $response = $this->withAuth()
@@ -129,7 +143,9 @@ class WithdrawRequestControllerTest extends TestCase
             ->assertJson([
                 'status' => true,
                 'message' => 'Withdrawal request created successfully.',
-            ]);
+            ])
+            ->assertJsonPath('data.withdraw_method', 'Bank')
+            ->assertJsonPath('data.creator_withdraw_method.method.name', 'Bank');
 
         $this->assertDatabaseHas('withdraw_requests', [
             'creator_id' => $this->creator->id,

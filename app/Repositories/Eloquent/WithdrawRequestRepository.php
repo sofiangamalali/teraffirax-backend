@@ -39,7 +39,7 @@ class WithdrawRequestRepository implements WithdrawRequestRepositoryInterface
 
     public function getPaginatedForCreator(int $creatorId, array $filters, int $perPage = 15)
     {
-        $query = WithdrawRequest::with('withdrawMethod')->where('creator_id', $creatorId);
+        $query = WithdrawRequest::with(['withdrawMethod.withdrawMethod', 'withdrawMethod.values'])->where('creator_id', $creatorId);
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);

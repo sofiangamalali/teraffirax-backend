@@ -52,6 +52,7 @@ class CreatorWithdrawRequestController extends Controller
         );
 
         $withdrawRequest = $this->withdrawRequestService->withdraw($dto);
+        $withdrawRequest->load(['withdrawMethod.withdrawMethod', 'withdrawMethod.values']);
 
         return $this->successResponse(
             new WithdrawRequestResource($withdrawRequest),
