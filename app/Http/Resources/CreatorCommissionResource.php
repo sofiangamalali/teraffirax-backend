@@ -25,7 +25,6 @@ class CreatorCommissionResource extends JsonResource
             'returned_count' => $this->returned_count,
             'revenue_amount' => $this->revenue_amount,
             'commission_amount' => $this->commission_amount,
-            'created_at' => $this->formatWithTimezone($this->created_at, $request),
             'currency' => $this->currency,
         ];
     }
