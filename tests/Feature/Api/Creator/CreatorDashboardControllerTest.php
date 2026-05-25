@@ -79,7 +79,7 @@ class CreatorDashboardControllerTest extends TestCase
         // Create sample commissions for the creator
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => now()->format('Y-m-d'),
+            'earned_at' => now()->format('Y-m-d'),
             'clicks_count' => 100,
             'items_count' => 10,
             'returned_count' => 1,
@@ -130,7 +130,7 @@ class CreatorDashboardControllerTest extends TestCase
         // Create commission outside the 30 days window
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => now()->subDays(40)->format('Y-m-d'),
+            'earned_at' => now()->subDays(40)->format('Y-m-d'),
             'clicks_count' => 50,
             'items_count' => 5,
             'commission_amount' => 20.00,
@@ -139,7 +139,7 @@ class CreatorDashboardControllerTest extends TestCase
         // Create commission inside the 30 days window
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => now()->subDays(10)->format('Y-m-d'),
+            'earned_at' => now()->subDays(10)->format('Y-m-d'),
             'clicks_count' => 100,
             'items_count' => 10,
             'commission_amount' => 50.00,
@@ -158,14 +158,14 @@ class CreatorDashboardControllerTest extends TestCase
     {
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-05-01',
+            'earned_at' => '2026-05-01',
             'clicks_count' => 50,
             'commission_amount' => 20.00,
         ]);
 
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-05-15',
+            'earned_at' => '2026-05-15',
             'clicks_count' => 100,
             'commission_amount' => 50.00,
         ]);
@@ -182,21 +182,21 @@ class CreatorDashboardControllerTest extends TestCase
     {
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-01-15',
+            'earned_at' => '2026-01-15',
             'clicks_count' => 10,
             'commission_amount' => 5.00,
         ]);
 
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-01-20',
+            'earned_at' => '2026-01-20',
             'clicks_count' => 20,
             'commission_amount' => 10.00,
         ]);
 
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-02-10',
+            'earned_at' => '2026-02-10',
             'clicks_count' => 30,
             'commission_amount' => 15.00,
         ]);

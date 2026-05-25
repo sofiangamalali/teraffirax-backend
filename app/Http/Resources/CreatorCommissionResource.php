@@ -18,7 +18,8 @@ class CreatorCommissionResource extends JsonResource
     {
         return [
             'vendor' => new VendorResource($this->whenLoaded('vendor')),
-            'date' => $this->formatWithTimezone($this->date, $request),
+            'vendor_id' => $this->vendor_id,
+            'date' => $this->formatWithTimezone($this->earned_at, $request),
             'clicks_count' => $this->clicks_count,
             'items_count' => $this->items_count,
             'returned_count' => $this->returned_count,

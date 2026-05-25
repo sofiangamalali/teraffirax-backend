@@ -52,8 +52,8 @@ class CreatorDashboardService
 
         $grouped = $commissions->groupBy(function ($item) use ($exceedsThreeMonths) {
             return $exceedsThreeMonths
-                ? $item->date->format('Y-m')
-                : $item->date->format('Y-m-d');
+                ? $item->earned_at->format('Y-m')
+                : $item->earned_at->format('Y-m-d');
         });
 
         $graphData = [];

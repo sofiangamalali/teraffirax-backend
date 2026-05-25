@@ -77,12 +77,12 @@ class CommissionControllerTest extends TestCase
     {
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-05-01',
+            'earned_at' => '2026-05-01',
         ]);
 
         Commission::factory()->create([
             'creator_id' => $this->creator->id,
-            'date' => '2026-05-10',
+            'earned_at' => '2026-05-10',
         ]);
 
         $response = $this->withAuth()
@@ -90,7 +90,7 @@ class CommissionControllerTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertCount(1, $response->json('data'));
-        $this->assertEquals('2026-05-10', $response->json('data.0.date'));
+        $this->assertStringStartsWith('2026-05-10', $response->json('data.0.date'));
     }
 
     public function test_can_get_filter_options()

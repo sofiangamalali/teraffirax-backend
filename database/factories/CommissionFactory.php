@@ -15,7 +15,7 @@ class CommissionFactory extends Factory
         return [
             'creator_id' => Creator::factory(),
             'vendor_id' => null,
-            'date' => $this->faker->date(),
+            'earned_at' => $this->faker->date(),
             'clicks_count' => $this->faker->randomNumber(3),
             'items_count' => $this->faker->randomNumber(2),
             'returned_count' => $this->faker->randomNumber(1),

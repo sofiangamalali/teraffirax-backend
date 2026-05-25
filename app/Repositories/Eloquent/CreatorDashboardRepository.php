@@ -20,13 +20,13 @@ class CreatorDashboardRepository implements CreatorDashboardRepositoryInterface
     {
         $query = $this->model->newQuery()
             ->where('creator_id', $creatorId)
-            ->whereDate('date', '>=', $startDate)
-            ->whereDate('date', '<=', $endDate);
+            ->whereDate('earned_at', '>=', $startDate)
+            ->whereDate('earned_at', '<=', $endDate);
 
         if ($vendorId !== null) {
             $query->where('vendor_id', $vendorId);
         }
 
-        return $query->orderBy('date', 'asc')->get();
+        return $query->orderBy('earned_at', 'asc')->get();
     }
 }

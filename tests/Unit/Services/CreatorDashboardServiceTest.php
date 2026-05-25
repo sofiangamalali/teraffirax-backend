@@ -10,9 +10,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Mockery;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreatorDashboardServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected CreatorDashboardService $service;
     protected $creatorRepoMock;
     protected $dashboardRepoMock;
@@ -66,14 +69,14 @@ class CreatorDashboardServiceTest extends TestCase
 
         $commissions = new Collection([
             new Commission([
-                'date' => Carbon::parse('2026-05-17'),
+                'earned_at' => Carbon::parse('2026-05-17'),
                 'clicks_count' => 100,
                 'items_count' => 10,
                 'returned_count' => 1,
                 'commission_amount' => 50.00,
             ]),
             new Commission([
-                'date' => Carbon::parse('2026-05-16'),
+                'earned_at' => Carbon::parse('2026-05-16'),
                 'clicks_count' => 50,
                 'items_count' => 5,
                 'returned_count' => 0,
@@ -127,14 +130,14 @@ class CreatorDashboardServiceTest extends TestCase
 
         $commissions = new Collection([
             new Commission([
-                'date' => Carbon::parse('2026-05-17'),
+                'earned_at' => Carbon::parse('2026-05-17'),
                 'clicks_count' => 10,
                 'items_count' => 1,
                 'returned_count' => 0,
                 'commission_amount' => 5.00,
             ]),
             new Commission([
-                'date' => Carbon::parse('2026-04-10'),
+                'earned_at' => Carbon::parse('2026-04-10'),
                 'clicks_count' => 20,
                 'items_count' => 2,
                 'returned_count' => 0,
