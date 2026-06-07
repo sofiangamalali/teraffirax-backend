@@ -57,6 +57,30 @@ class AuthApiTest extends TestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('creators', ['email' => 'john@example.com']);
         $this->assertDatabaseCount('category_creator', 2);
+
+        $creator = Creator::where('email', 'john@example.com')->first();
+        $this->assertNotNull($creator);
+
+        $this->assertDatabaseHas('social_integrations', [
+            'creator_id' => $creator->id,
+            'platform' => 'telegram',
+            'type' => 'channel',
+            'status' => 'active',
+            'name' => 'Test Channel',
+            'username' => 'test_channel',
+            'external_id' => '123456789',
+        ]);
+
+        $integration = $creator->socialIntegrations()->first();
+        $this->assertNotNull($integration);
+
+        $this->assertDatabaseHas('content_templates', [
+            'creator_id' => $creator->id,
+            'social_integration_id' => $integration->id,
+            'is_default' => true,
+            'name' => 'Default Template',
+            'content' => "{{discount}}% خصم على {{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
+        ]);
     }
 
     public function test_can_login_with_email()

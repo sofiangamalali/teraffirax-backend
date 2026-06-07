@@ -108,7 +108,5 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(SocialIntegration::class, SocialIntegrationPolicy::class);
         Gate::policy(ContentTemplate::class, ContentTemplatePolicy::class);
         Gate::policy(Commission::class, CommissionPolicy::class);
-
-
     }
 }
