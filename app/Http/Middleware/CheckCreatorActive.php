@@ -15,6 +15,10 @@ class CheckCreatorActive
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->user() && !($request->user() instanceof \App\Models\Creator)) {
+            return response()->json(['message' => __('messages.unauthorized')], 403);
+        }
+
         if ($request->user() && !$request->user()->is_active) {
             return response()->json([
                 'status' => 'error',

@@ -1,19 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\VendorController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\CreatorController;
-use App\Http\Controllers\Api\CountryController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\WithdrawalController;
-use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\Auth\AdminAuthController;
+use App\Http\Controllers\Api\Admin\{AdminCreatorController, AdminCreatorSocialIntegrationController};
 
-Route::apiResource('creators', CreatorController::class);
-Route::apiResource('vendors', VendorController::class);
-Route::apiResource('products', ProductController::class);
-Route::apiResource('countries', CountryController::class);
-Route::apiResource('categories', CategoryController::class);
+Route::post('auth/login', [AdminAuthController::class, 'login']);
 
-Route::patch('withdrawals/{id}/status', [WithdrawalController::class, 'updateStatus']);
-Route::apiResource('settings', SettingController::class);
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('auth/logout', [AdminAuthController::class, 'logout']);
+
+    Route::get('creators', [AdminCreatorController::class, 'index']);
+    Route::patch('creators/{id}/toggle-active', [AdminCreatorController::class, 'toggleActive']);
+
+    Route::get('creators/{id}/social-integrations', [AdminCreatorSocialIntegrationController::class, 'socialIntegrations']);
+    Route::put('creators/{id}/social-integrations/{integration_id}', [AdminCreatorSocialIntegrationController::class, 'updateSocialIntegration']);
+});
+
+

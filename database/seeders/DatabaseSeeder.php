@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             VendorSeeder::class,
             CreatorSeeder::class, //for test
             CreatorDashboardVideoSeeder::class,
+            AdminSeeder::class,
         ]);
     }
 }

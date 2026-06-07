@@ -30,8 +30,13 @@ class AuthenticateToken
 
         $accessToken->forceFill(['last_used_at' => now()])->save();
 
-        auth()->setUser($accessToken->tokenable);
-        $request->setUserResolver(fn () => $accessToken->tokenable);
+        $user = $accessToken->tokenable;
+        if (method_exists($user, 'withAccessToken')) {
+            $user->withAccessToken($accessToken);
+        }
+
+        auth()->setUser($user);
+        $request->setUserResolver(fn () => $user);
 
         return $next($request);
     }

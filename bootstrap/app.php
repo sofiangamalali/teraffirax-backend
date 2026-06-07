@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth' => \App\Http\Middleware\AuthenticateToken::class,
             'creator.active' => \App\Http\Middleware\CheckCreatorActive::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'creator' => \App\Http\Middleware\EnsureUserIsCreator::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

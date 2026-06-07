@@ -17,7 +17,7 @@ Route::prefix('auth')->group(function () {
     Route::post('resend-otp', [CreatorAuthController::class, 'resendOtp']);
     Route::post('refresh-token', [CreatorAuthController::class, 'refreshToken']);
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'creator'])->group(function () {
         Route::post('logout', [CreatorAuthController::class, 'logout']);
     });
 });

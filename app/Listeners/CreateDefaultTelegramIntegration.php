@@ -34,8 +34,8 @@ class CreateDefaultTelegramIntegration
                 [
                     'status' => 'active',
                     'name' => 'Test Channel',
-                    'username' => 'test_channel',
-                    'external_id' => '123456789',
+                    'username' => $creator->id . '_telegraam',
+                    'external_id' => $creator->id . '_telegraam',
                 ]
             );
 
