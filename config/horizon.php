@@ -54,7 +54,7 @@ return [
 
     'prefix' => env(
         'HORIZON_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_horizon:'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_horizon:'
     ),
 
     /*
@@ -164,27 +164,27 @@ return [
                 'connection' => 'redis',
                 'queue' => ['telegram-selection'],
                 'balance' => 'simple',
-                'minProcesses' => 1,
-                'maxProcesses' => 1,
-                'processes' => 1,
+                'minProcesses' => 2,
+                'maxProcesses' => 2,
+                'processes' => 2,
                 'timeout' => 60,
             ],
             'telegram-validation-supervisor' => [
                 'connection' => 'redis',
                 'queue' => ['telegram-validation'],
                 'balance' => 'simple',
-                'minProcesses' => 2,
-                'maxProcesses' => 2,
-                'processes' => 2,
+                'minProcesses' => 4,
+                'maxProcesses' => 4,
+                'processes' => 4,
                 'timeout' => 120,
             ],
             'telegram-publishing-supervisor' => [
                 'connection' => 'redis',
                 'queue' => ['telegram-publishing'],
                 'balance' => 'simple',
-                'minProcesses' => 1,
-                'maxProcesses' => 1,
-                'processes' => 1,
+                'minProcesses' => 2,
+                'maxProcesses' => 2,
+                'processes' => 2,
                 'timeout' => 60,
             ],
         ],
