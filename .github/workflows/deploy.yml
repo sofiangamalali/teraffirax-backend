@@ -32,4 +32,5 @@ jobs:
             $PHP artisan config:cache
             $PHP artisan route:cache
             $PHP artisan view:cache
-            $PHP artisan migrate:fresh --seed --force
+            $PHP artisan migrate --force
+            systemctl restart horizon.service
