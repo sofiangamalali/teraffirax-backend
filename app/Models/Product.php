@@ -13,11 +13,20 @@ class Product extends Model
 
     protected $fillable = [
         'vendor_id',
+        'category_id',
+        'vendor_category_id',
+        'external_id',
         'name',
+        'url',
         'price_before',
         'price_after',
-        'discount',
-        'product_url',
+        'discount_percentage',
+        'rank_in_vendor_category',
+        'commission',
+        'score',
+        'status',
+        'flagged_at',
+        'last_validated_at',
     ];
 
     /**
@@ -26,6 +35,22 @@ class Product extends Model
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    /**
+     * Get the category that owns the product.
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the vendor category that owns the product.
+     */
+    public function vendorCategory(): BelongsTo
+    {
+        return $this->belongsTo(VendorCategory::class);
     }
 
     /**
@@ -38,6 +63,12 @@ class Product extends Model
         return [
             'price_before' => 'decimal:2',
             'price_after'  => 'decimal:2',
+            'discount_percentage' => 'float',
+            'rank_in_vendor_category' => 'integer',
+            'commission' => 'float',
+            'score' => 'integer',
+            'flagged_at' => 'datetime',
+            'last_validated_at' => 'datetime',
         ];
     }
 }

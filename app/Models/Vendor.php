@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasLogo;
 
@@ -14,6 +15,7 @@ class Vendor extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'country_id',
         'domain',
         'logo',
@@ -44,7 +46,25 @@ class Vendor extends Model
      */
     public function creatorTrackingIds(): HasMany
     {
-        return $this->hasMany(CreatorVendorTrackingId::class);
+        return $this->hasMany(CreatorVendorTracking::class);
+    }
+
+    /**
+     * Get the vendor categories associated with the vendor.
+     */
+    public function vendorCategories(): HasMany
+    {
+        return $this->hasMany(VendorCategory::class);
+    }
+
+    /**
+     * Get the categories associated with the vendor through vendor_categories.
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'vendor_categories')
+            ->withPivot('external_id', 'external_name', 'status', 'commission', 'parent_vendor_category_id')
+            ->withTimestamps();
     }
 
     /**

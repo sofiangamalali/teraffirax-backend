@@ -12,3 +12,7 @@ Schedule::command('commissions:calculate')
         Artisan::call('commissions:mature');
         Artisan::call('balances:reconcile');
     });
+
+Schedule::command('app:send-telegram-products')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();

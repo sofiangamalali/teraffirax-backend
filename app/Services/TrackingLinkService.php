@@ -7,7 +7,7 @@ use App\Exceptions\CreatorNotSubscribedToVendorException;
 use App\Exceptions\VendorInactiveException;
 use App\Models\TrackingLink;
 use App\Repositories\Interfaces\TrackingLinkRepositoryInterface;
-use App\Repositories\Interfaces\CreatorVendorTrackingIdRepositoryInterface;
+use App\Repositories\Interfaces\CreatorVendorTrackingRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Services\VendorResolverService;
 use App\Services\Tracking\TrackingUrlGeneratorRegistry;
@@ -20,7 +20,7 @@ class TrackingLinkService
     public function __construct(
         protected TrackingLinkRepositoryInterface $linkRepository,
         protected SlugService $slugService,
-        protected CreatorVendorTrackingIdRepositoryInterface $creatorVendorTrackingRepo,
+        protected CreatorVendorTrackingRepositoryInterface $creatorVendorTrackingRepo,
         protected ProductRepositoryInterface $productRepo,
         protected VendorResolverService $vendorResolverService,
         protected TrackingUrlGeneratorRegistry $trackingUrlGeneratorRegistry,
@@ -59,7 +59,7 @@ class TrackingLinkService
 
             // 3. Generate tracking URL using strategy pattern
             $generator = $this->trackingUrlGeneratorRegistry->resolve($vendor);
-            $redirectUrl = $generator->generate($url, $trackingRecord->tracking_id);
+            $redirectUrl = $generator->generate($url, $trackingRecord->track_id);
 
             // 4. Create the tracking link (Allow duplicates as requested)
             $link = $this->linkRepository->create([

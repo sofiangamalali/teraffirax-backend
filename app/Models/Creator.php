@@ -62,7 +62,7 @@ class Creator extends Authenticatable
 
     public function vendorTrackingIds()
     {
-        return $this->hasMany(CreatorVendorTrackingId::class);
+        return $this->hasMany(CreatorVendorTracking::class);
     }
 
     public function socialIntegrations()
@@ -84,7 +84,7 @@ class Creator extends Authenticatable
     }
     public function categories()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class)->withPivot('last_posted_at')->withTimestamps();
     }
 
     public function accountManager()

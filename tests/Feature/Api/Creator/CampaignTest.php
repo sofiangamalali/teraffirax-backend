@@ -5,7 +5,7 @@ namespace Tests\Feature\Api\Creator;
 use App\Models\Country;
 use App\Models\Creator;
 use App\Models\Vendor;
-use App\Models\CreatorVendorTrackingId;
+use App\Models\CreatorVendorTracking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -118,10 +118,10 @@ class CampaignTest extends TestCase
         ]);
 
         // 2. Add subscription tracking ID for creator
-        CreatorVendorTrackingId::create([
+        CreatorVendorTracking::create([
             'creator_id' => $this->creator->id,
             'vendor_id' => $vendor->id,
-            'tracking_id' => 'noon123',
+            'track_id' => 'noon123',
         ]);
 
         // Request creation of a tracking link for the inactive vendor

@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Creator;
 use App\Models\Vendor;
-use App\Models\CreatorVendorTrackingId;
+use App\Models\CreatorVendorTracking;
 use App\Models\TrackingLink;
 use App\Models\Country;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -50,10 +50,10 @@ class TrackingLinkApiTest extends TestCase
             'country_id' => $this->creator->country_id
         ]);
         
-        CreatorVendorTrackingId::create([
+        CreatorVendorTracking::create([
             'creator_id' => $this->creator->id,
             'vendor_id' => $vendor->id,
-            'tracking_id' => 'mytag-21'
+            'track_id' => 'mytag-21'
         ]);
 
         $data = [
@@ -115,10 +115,10 @@ class TrackingLinkApiTest extends TestCase
             'country_id' => $this->creator->country_id
         ]);
         
-        CreatorVendorTrackingId::create([
+        CreatorVendorTracking::create([
             'creator_id' => $this->creator->id,
             'vendor_id' => $vendor->id,
-            'tracking_id' => 'mytag-21'
+            'track_id' => 'mytag-21'
         ]);
 
         $data = [

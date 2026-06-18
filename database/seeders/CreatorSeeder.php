@@ -7,7 +7,7 @@ use App\Models\Country;
 use App\Models\Category;
 use App\Models\Vendor;
 use App\Models\SocialIntegration;
-use App\Models\CreatorVendorTrackingId;
+use App\Models\CreatorVendorTracking;
 use App\Models\Commission;
 use App\Models\ContentTemplate;
 use Illuminate\Database\Seeder;
@@ -49,13 +49,13 @@ class CreatorSeeder extends Seeder
 
             $vendor = Vendor::where('domain', 'https://www.amazon.eg')->first();
             if ($vendor) {
-                CreatorVendorTrackingId::updateOrCreate(
+                CreatorVendorTracking::updateOrCreate(
                     [
                         'creator_id' => $creator->id,
                         'vendor_id' => $vendor->id,
                     ],
                     [
-                        'tracking_id' => 'dealsegypt21-21',
+                        'track_id' => 'dealsegypt21-21',
                     ]
                 );
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique()->nullable();
             $table->foreignId('country_id')->constrained()->onDelete('cascade');
             $table->string('domain')->nullable();
             $table->string('logo')->nullable();

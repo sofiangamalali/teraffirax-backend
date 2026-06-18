@@ -32,6 +32,7 @@ class VendorSeeder extends Seeder
             ['domain' => 'https://www.amazon.eg'],
             [
                 'name' => 'Amazon',
+                'slug' => 'amazon',
                 'country_id' => $egypt->id,
                 'logo' => 'amazon.png',
                 'commission' => 7.00,
@@ -43,6 +44,7 @@ class VendorSeeder extends Seeder
             ['domain' => 'https://www.noon.com'],
             [
                 'name' => 'Noon',
+                'slug' => 'noon',
                 'country_id' => $egypt->id,
                 'logo' => 'noon.png',
                 'is_active' => false,
@@ -53,6 +55,7 @@ class VendorSeeder extends Seeder
             ['domain' => 'https://www.jumia.com.eg'],
             [
                 'name' => 'Jumia',
+                'slug' => 'jumia',
                 'country_id' => $egypt->id,
                 'logo' => 'jumia.png',
                 'is_active' => false,

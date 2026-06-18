@@ -1,0 +1,17 @@
+[Unit]
+Description=Laravel Horizon Queue Manager
+After=network.target mysql.service redis-server.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/teraffirax
+ExecStart=/usr/bin/php artisan horizon
+Restart=always
+RestartSec=5
+ExecStop=/usr/bin/php artisan horizon:terminate
+TimeoutStopSec=300
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

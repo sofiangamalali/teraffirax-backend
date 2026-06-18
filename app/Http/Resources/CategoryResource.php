@@ -12,6 +12,9 @@ class CategoryResource extends JsonResource
         return [
             'id'         => $this->id,
             'name'       => $this->name,
+            'last_posted_at' => $this->whenPivotLoaded('category_creator', function () {
+                return $this->pivot->last_posted_at;
+            }),
         ];
     }
 }

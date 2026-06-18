@@ -18,7 +18,14 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'vendor_id' => \App\Models\Vendor::factory(),
+            'category_id' => \App\Models\Category::factory(),
+            'external_id' => $this->faker->unique()->uuid,
+            'name' => $this->faker->sentence,
+            'url' => $this->faker->url,
+            'price_after' => $this->faker->randomFloat(2, 5, 1000),
+            'status' => 'active',
+            'score' => $this->faker->numberBetween(0, 100),
         ];
     }
 }

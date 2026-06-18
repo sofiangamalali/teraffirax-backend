@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'flask' => [
+        'url' => env('PYTHON_PRODUCT_SCRAP_URL', 'http://127.0.0.1:5000'),
+        'base_url' => env('FLASK_BASE_URL', 'http://127.0.0.1:5000'),
+    ],
+
+    'telegram' => [
+        'posting_bot_token' => env('TELEGRAM_POSTING_BOT_TOKEN'),
+    ],
+
 ];

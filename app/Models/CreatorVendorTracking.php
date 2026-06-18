@@ -6,14 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class CreatorVendorTrackingId extends Model
+class CreatorVendorTracking extends Model
 {
     use HasFactory;
+
+    protected $table = 'creator_vendor_tracking';
 
     protected $fillable = [
         'creator_id',
         'vendor_id',
-        'tracking_id',
+        'track_id',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     /**
