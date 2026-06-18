@@ -85,7 +85,7 @@ class SendMessageToTelegramJob implements ShouldQueue
             ->first();
 
         if (!$template) {
-            Log::error("No default content template found for creator {$this->creatorId} on channel {$this->socialIntegrationId}.");
+            Log::channel('posting')->error("No default content template found for creator {$this->creatorId} on channel {$this->socialIntegrationId}.");
             Redis::del($this->lockKey);
             $this->fail();
             return;
@@ -102,7 +102,7 @@ class SendMessageToTelegramJob implements ShouldQueue
         $botToken = config('services.telegram.posting_bot_token');
 
         if (!$botToken) {
-            Log::error("TELEGRAM_POSTING_BOT_TOKEN is missing.");
+            Log::channel('posting')->error("TELEGRAM_POSTING_BOT_TOKEN is missing.");
             Redis::del($this->lockKey);
             $this->fail();
             return;
@@ -146,6 +146,12 @@ class SendMessageToTelegramJob implements ShouldQueue
             'updated_at'            => now(),
         ]);
 
+        Log::channel('posting')->info("Successfully posted product to Telegram channel.", [
+            'social_integration_id' => $this->socialIntegrationId,
+            'product_id'            => $this->product['id'],
+            'external_id'           => $this->externalId,
+        ]);
+
         DB::table('category_creator')
             ->where('creator_id', $this->creatorId)
             ->where('category_id', $this->categoryId)
@@ -155,7 +161,7 @@ class SendMessageToTelegramJob implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Redis::del($this->lockKey);
-        Log::error('SendMessageToTelegramJob permanently failed', [
+        Log::channel('posting')->error('SendMessageToTelegramJob permanently failed', [
             'social_integration_id' => $this->socialIntegrationId,
             'product_id'            => $this->product['id'],
             'error'                 => $exception->getMessage(),

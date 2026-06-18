@@ -77,6 +77,7 @@ class ValidateProductDataJob implements ShouldQueue
 
     protected function handleSame(array $response): void
     {
+        Log::channel('posting')->info("Product price validated: SAME", ['product_id' => $this->product->id]);
         DB::table('products')->where('id', $this->product->id)->update([
             'last_validated_at' => now(),
         ]);
@@ -86,6 +87,7 @@ class ValidateProductDataJob implements ShouldQueue
 
     protected function handleHigher(array $response): void
     {
+        Log::channel('posting')->info("Product price validated: HIGHER", ['product_id' => $this->product->id, 'new_price' => $response['current_price']]);
         $newScore = $this->recalculateScore(
             $response['current_discount'] ?? 0,
             $this->product->commission,
@@ -108,6 +110,7 @@ class ValidateProductDataJob implements ShouldQueue
 
     protected function handleLower(array $response): void
     {
+        Log::channel('posting')->info("Product price validated: LOWER", ['product_id' => $this->product->id, 'new_price' => $response['current_price']]);
         $newScore = $this->recalculateScore(
             $response['current_discount'] ?? 0,
             $this->product->commission,
@@ -130,6 +133,7 @@ class ValidateProductDataJob implements ShouldQueue
 
     protected function handleOutOfStock(): void
     {
+        Log::channel('posting')->warning("Product price validated: OUT OF STOCK", ['product_id' => $this->product->id]);
         DB::table('products')->where('id', $this->product->id)->update([
             'status' => 'out_of_stock',
             'score' => 0,
@@ -142,6 +146,7 @@ class ValidateProductDataJob implements ShouldQueue
 
     protected function handleUnavailable(): void
     {
+        Log::channel('posting')->warning("Product price validated: UNAVAILABLE", ['product_id' => $this->product->id]);
         DB::table('products')->where('id', $this->product->id)->update([
             'status' => 'unavailable',
             'score' => 0,
@@ -156,7 +161,7 @@ class ValidateProductDataJob implements ShouldQueue
     {
         if ($this->retryCount >= 3) {
             Redis::del($this->lockKey);
-            Log::info("Max re-selection attempts reached for channel {$this->socialIntegrationId}");
+            Log::channel('posting')->info("Max re-selection attempts reached for channel {$this->socialIntegrationId}");
             return;
         }
 
@@ -180,7 +185,7 @@ class ValidateProductDataJob implements ShouldQueue
         } else {
             Redis::del($this->lockKey);
             $this->fail();
-            Log::error("Flask /validate unreachable for channel {$this->socialIntegrationId}");
+            Log::channel('posting')->error("Flask /validate unreachable for channel {$this->socialIntegrationId}");
         }
     }
 

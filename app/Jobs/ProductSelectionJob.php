@@ -59,7 +59,7 @@ class ProductSelectionJob implements ShouldQueue
                     if (!$this->lockAlreadyAcquired) {
                         Redis::del($lockKey);
                     }
-                    Log::info("No categories for creator " . $this->creatorId);
+                    Log::channel('posting')->info("No categories for creator " . $this->creatorId);
                     return;
                 }
 
@@ -97,7 +97,7 @@ class ProductSelectionJob implements ShouldQueue
 
                 if (!$product) {
                     Redis::del($lockKey);
-                    Log::info('No eligible products across all categories', [
+                    Log::channel('posting')->info('No eligible products across all categories', [
                         'social_integration_id' => $this->socialIntegrationId,
                     ]);
                     return;
@@ -115,7 +115,7 @@ class ProductSelectionJob implements ShouldQueue
 
             if (!$vendorAccount) {
                 Redis::del($lockKey);
-                Log::info("No active vendor account for creator {$this->creatorId} vendor {$product->vendor_id}");
+                Log::channel('posting')->info("No active vendor account for creator {$this->creatorId} vendor {$product->vendor_id}");
                 return;
             }
 
@@ -132,7 +132,7 @@ class ProductSelectionJob implements ShouldQueue
             // Flask health check before dispatching ValidateProductDataJob
             if (!\App\Services\FlaskHealthCheck::isAlive()) {
                 Redis::del($lockKey);
-                Log::warning('Flask service is down, skipping cycle', [
+                Log::channel('posting')->warning('Flask service is down, skipping cycle', [
                     'social_integration_id' => $this->socialIntegrationId,
                 ]);
                 return;
