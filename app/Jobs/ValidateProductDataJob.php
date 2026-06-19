@@ -15,8 +15,6 @@ class ValidateProductDataJob implements ShouldQueue
 {
     use Queueable;
 
-    public $queue = 'telegram-validation';
-
     public function __construct(
         public int $socialIntegrationId,
         public string $externalId,
@@ -30,7 +28,7 @@ class ValidateProductDataJob implements ShouldQueue
         public int $retryCount = 0,
         public array $excludedProductIds = []
     ) {
-
+        $this->onQueue('telegram-validation');
     }
 
     public function handle(): void

@@ -13,8 +13,6 @@ class ProductSelectionJob implements ShouldQueue
 {
     use Queueable;
 
-    public $queue = 'telegram-selection';
-
     /**
      * Create a new job instance.
      */
@@ -27,7 +25,7 @@ class ProductSelectionJob implements ShouldQueue
         public bool $lockAlreadyAcquired = false,
         public array $excludedProductIds = []
     ) {
-        //
+        $this->onQueue('telegram-selection');
     }
 
     /**

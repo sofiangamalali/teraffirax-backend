@@ -17,8 +17,6 @@ class SendMessageToTelegramJob implements ShouldQueue
 {
     use Queueable;
 
-    public $queue = 'telegram-publishing';
-
     public int $tries = 3;
     public int $timeout = 30;
 
@@ -39,7 +37,7 @@ class SendMessageToTelegramJob implements ShouldQueue
         string $idempotencyKey,
         public ?string $screenshotUrl = null
     ) {
-        //
+        $this->onQueue('telegram-publishing');
     }
 
     public function handle(
