@@ -15,7 +15,7 @@ class ValidateProductDataJob implements ShouldQueue
 {
     use Queueable;
 
-    public string $queue = 'telegram-validation';
+    public $queue = 'telegram-validation';
 
     public function __construct(
         public int $socialIntegrationId,

@@ -13,7 +13,7 @@ class ProductSelectionJob implements ShouldQueue
 {
     use Queueable;
 
-    public string $queue = 'telegram-selection';
+    public $queue = 'telegram-selection';
 
     /**
      * Create a new job instance.
