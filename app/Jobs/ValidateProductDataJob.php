@@ -45,7 +45,7 @@ class ValidateProductDataJob implements ShouldQueue
             ]);
 
             if ($response->failed()) {
-                $this->handleFlaskError();
+                $this->handleFlaskError(new \RuntimeException("Flask validation failed with status " . $response->status()));
                 return;
             }
 
@@ -63,13 +63,13 @@ class ValidateProductDataJob implements ShouldQueue
             } elseif ($status === 'unavailable') {
                 $this->handleUnavailable();
             } else {
-                $this->handleFlaskError();
+                $this->handleFlaskError(new \RuntimeException("Unknown status returned from Flask: " . $status));
             }
 
         } catch (ConnectionException $e) {
-            $this->handleFlaskError();
+            $this->handleFlaskError($e);
         } catch (\Exception $e) {
-            $this->handleFlaskError();
+            $this->handleFlaskError($e);
         }
     }
 
@@ -174,7 +174,7 @@ class ValidateProductDataJob implements ShouldQueue
         );
     }
 
-    protected function handleFlaskError(): void
+    protected function handleFlaskError(?\Throwable $exception = null): void
     {
         $currentAttempts = $this->attempts();
 
@@ -182,8 +182,14 @@ class ValidateProductDataJob implements ShouldQueue
             $this->release(pow(2, $currentAttempts) * 10);
         } else {
             Redis::del($this->lockKey);
-            $this->fail();
-            Log::channel('posting')->error("Flask /validate unreachable for channel {$this->socialIntegrationId}");
+            
+            $message = "Flask /validate unreachable for channel {$this->socialIntegrationId}";
+            if ($exception) {
+                $message .= ": " . $exception->getMessage();
+            }
+            
+            Log::channel('posting')->error($message);
+            $this->fail($exception ?: new \RuntimeException($message));
         }
     }
 

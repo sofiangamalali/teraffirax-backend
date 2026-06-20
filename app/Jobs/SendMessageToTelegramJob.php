@@ -83,9 +83,10 @@ class SendMessageToTelegramJob implements ShouldQueue
             ->first();
 
         if (!$template) {
-            Log::channel('posting')->error("No default content template found for creator {$this->creatorId} on channel {$this->socialIntegrationId}.");
+            $message = "No default content template found for creator {$this->creatorId} on channel {$this->socialIntegrationId}.";
+            Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
-            $this->fail();
+            $this->fail(new \RuntimeException($message));
             return;
         }
 
@@ -100,9 +101,10 @@ class SendMessageToTelegramJob implements ShouldQueue
         $botToken = config('services.telegram.posting_bot_token');
 
         if (!$botToken) {
-            Log::channel('posting')->error("TELEGRAM_POSTING_BOT_TOKEN is missing.");
+            $message = "TELEGRAM_POSTING_BOT_TOKEN is missing.";
+            Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
-            $this->fail();
+            $this->fail(new \RuntimeException($message));
             return;
         }
 
