@@ -72,6 +72,7 @@ class SendMessageToTelegramJob implements ShouldQueue
         );
         $trackingLink = $trackingLinkService->createTrackingLink($this->creatorId, $trackingDto);
         $affiliateLink = route('redirect', ['slug' => $trackingLink->slug]);
+        $affiliateLink = preg_replace('/^https?:\/\//i', '', $affiliateLink);
 
         $template = DB::table('content_templates')
             ->where('creator_id', $this->creatorId)
