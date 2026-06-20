@@ -45,7 +45,9 @@ class ValidateProductDataJob implements ShouldQueue
             ]);
 
             if ($response->failed()) {
-                $this->handleFlaskError(new \RuntimeException("Flask validation failed with status " . $response->status()));
+                $responseBody = $response->body();
+                $errorDetails = json_decode($responseBody, true)['error'] ?? json_decode($responseBody, true)['message'] ?? substr($responseBody, 0, 200);
+                $this->handleFlaskError(new \RuntimeException("Flask validation failed with status " . $response->status() . " (Details: " . $errorDetails . ")"));
                 return;
             }
 
