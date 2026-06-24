@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->decimal('price_after', 12, 2);
             $table->decimal('discount_percentage', 5, 2)->nullable();
             $table->integer('rank_in_vendor_category')->nullable();
-            $table->decimal('commission', 5, 2)->nullable();
+            $table->decimal('commission', 12, 2)->nullable();
             $table->integer('score')->default(0);
             $table->enum('status', ['active', 'out_of_stock', 'unavailable'])->default('active');
             $table->timestamp('flagged_at')->nullable();

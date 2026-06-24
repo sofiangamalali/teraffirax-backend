@@ -88,21 +88,28 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleHigher(array $response): void
     {
         Log::channel('posting')->info("Product price validated: HIGHER", ['product_id' => $this->product->id, 'new_price' => $response['current_price']]);
-        $newScore = $this->recalculateScore(
-            $response['current_discount'] ?? 0,
-            $this->product->commission,
-            $this->product->rank_in_vendor_category
-        );
+        
+        $commissionPercent = (float) ($this->product->vendorCategory?->commission ?? 0);
+        $commissionValue = ((float) $response['current_price']) * ($commissionPercent / 100);
+
+        $newScore = (int) round(\App\Services\ScoreCalculator::calculate(
+            price: (float) $response['current_price'],
+            discountPercentage: (float) ($response['current_discount'] ?? 0),
+            commissionPercent: $commissionPercent,
+            rank: (int) ($this->product->rank_in_vendor_category ?? 1)
+        ) * 1000);
 
         DB::table('products')->where('id', $this->product->id)->update([
             'discount_percentage' => $response['current_discount'],
             'price_after' => $response['current_price'],
+            'commission' => $commissionValue,
             'score' => $newScore,
             'last_validated_at' => now(),
         ]);
 
         $this->product->discount_percentage = $response['current_discount'];
         $this->product->price_after = $response['current_price'];
+        $this->product->commission = $commissionValue;
         $this->product->score = $newScore;
 
         $this->dispatchSendMessage($response['screenshot_url'] ?? null);
@@ -111,21 +118,28 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleLower(array $response): void
     {
         Log::channel('posting')->info("Product price validated: LOWER", ['product_id' => $this->product->id, 'new_price' => $response['current_price']]);
-        $newScore = $this->recalculateScore(
-            $response['current_discount'] ?? 0,
-            $this->product->commission,
-            $this->product->rank_in_vendor_category
-        );
+        
+        $commissionPercent = (float) ($this->product->vendorCategory?->commission ?? 0);
+        $commissionValue = ((float) $response['current_price']) * ($commissionPercent / 100);
+
+        $newScore = (int) round(\App\Services\ScoreCalculator::calculate(
+            price: (float) $response['current_price'],
+            discountPercentage: (float) ($response['current_discount'] ?? 0),
+            commissionPercent: $commissionPercent,
+            rank: (int) ($this->product->rank_in_vendor_category ?? 1)
+        ) * 1000);
 
         DB::table('products')->where('id', $this->product->id)->update([
             'discount_percentage' => $response['current_discount'],
             'price_after' => $response['current_price'],
+            'commission' => $commissionValue,
             'score' => $newScore,
             'last_validated_at' => now(),
         ]);
 
         $this->product->discount_percentage = $response['current_discount'];
         $this->product->price_after = $response['current_price'];
+        $this->product->commission = $commissionValue;
         $this->product->score = $newScore;
 
         $this->dispatchSendMessage($response['screenshot_url'] ?? null);
@@ -193,40 +207,6 @@ class ValidateProductDataJob implements ShouldQueue
             Log::channel('posting')->error($message);
             $this->fail($exception ?: new \RuntimeException($message));
         }
-    }
-
-    protected function recalculateScore($discount, $commission, $rank): int
-    {
-        $maxCommissionQuery = DB::table('products')
-            ->where('category_id', $this->categoryId)
-            ->where('status', 'active')
-            ->max(DB::raw('price_after * (commission / 100)'));
-
-        $maxDiscountQuery = DB::table('products')
-            ->where('category_id', $this->categoryId)
-            ->where('status', 'active')
-            ->max('discount_percentage');
-
-        $maxRankQuery = DB::table('products')
-            ->where('category_id', $this->categoryId)
-            ->where('status', 'active')
-            ->max('rank_in_vendor_category');
-
-        $maxCommission = $maxCommissionQuery > 0 ? (float) $maxCommissionQuery : 1;
-        $maxDiscount = $maxDiscountQuery > 0 ? (float) $maxDiscountQuery : 1;
-        $maxRank = $maxRankQuery > 0 ? (float) $maxRankQuery : 1;
-
-        $rank = $rank ?: $maxRank;
-
-        $currentCommissionValue = $this->product->price_after * ($commission / 100);
-
-        $scoreFloat = (
-            (($currentCommissionValue) / $maxCommission) * 0.33 +
-            ($discount / $maxDiscount) * 0.33 +
-            (1 - ($rank - 1) / $maxRank) * 0.34
-        );
-
-        return (int) round($scoreFloat * 1000);
     }
 
     protected function dispatchSendMessage(?string $screenshotUrl): void

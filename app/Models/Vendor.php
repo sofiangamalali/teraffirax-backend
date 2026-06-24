@@ -20,12 +20,14 @@ class Vendor extends Model
         'domain',
         'logo',
         'commission',
+        'commission_payout_days',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'commission' => 'float',
+        'commission_payout_days' => 'integer',
     ];
 
     public function country()

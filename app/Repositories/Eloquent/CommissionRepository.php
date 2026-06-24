@@ -41,10 +41,13 @@ class CommissionRepository implements CommissionRepositoryInterface
 
     public function getUnmaturedCommissionsByCreator(int $days = 90)
     {
-        return $this->model->whereNull('matured_at')
-                           ->whereNotNull('calculated_at')
-                           ->where('earned_at', '<=', now()->subDays($days))
-                           ->get()
-                           ->groupBy('creator_id');
+        return $this->model->newQuery()
+            ->leftJoin('vendors', 'commissions.vendor_id', '=', 'vendors.id')
+            ->whereNull('commissions.matured_at')
+            ->whereNotNull('commissions.calculated_at')
+            ->whereRaw("DATEDIFF(NOW(), commissions.earned_at) >= COALESCE(vendors.commission_payout_days, ?)", [$days])
+            ->select('commissions.*')
+            ->get()
+            ->groupBy('creator_id');
     }
 }

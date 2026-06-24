@@ -36,6 +36,7 @@ class VendorSeeder extends Seeder
                 'country_id' => $egypt->id,
                 'logo' => 'amazon.png',
                 'commission' => 7.00,
+                'commission_payout_days' => 90,
                 'is_active' => true,
             ]
         );
