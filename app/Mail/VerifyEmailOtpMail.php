@@ -13,6 +13,8 @@ class VerifyEmailOtpMail extends Mailable
 
     public function build()
     {
+        app()->setLocale($this->language);
+
         return $this->subject(__('Verify your email'))
             ->locale($this->language)
             ->view('emails.verify-otp');

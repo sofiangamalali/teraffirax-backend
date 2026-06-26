@@ -13,6 +13,8 @@ class PasswordResetOtpMail extends Mailable
 
     public function build()
     {
+        app()->setLocale($this->language);
+
         return $this->subject(__('Reset your password'))
             ->locale($this->language)
             ->view('emails.password-reset-otp');

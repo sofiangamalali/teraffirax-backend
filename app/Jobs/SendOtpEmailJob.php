@@ -22,7 +22,7 @@ class SendOtpEmailJob implements ShouldQueue
         public string $otp,
         public string $type = 'email_verification'
     ) {
-        $this->onQueue('otp');
+        $this->onQueue('default');
     }
     /**
      * Execute the job.
