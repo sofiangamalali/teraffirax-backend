@@ -6,6 +6,8 @@ use App\Events\CreatorRegistered;
 use App\Models\SocialIntegration;
 use App\Models\ContentTemplate;
 use Illuminate\Support\Facades\Log;
+use App\Enums\SocialIntegrationStatusEnum;
+
 
 class CreateDefaultTelegramIntegration
 {
@@ -32,7 +34,7 @@ class CreateDefaultTelegramIntegration
                     'type' => 'channel',
                 ],
                 [
-                    'status' => 'active',
+                    'status' => SocialIntegrationStatusEnum::PENDING,
                     'name' => 'Test Channel',
                     'username' => $creator->name . '_telegraam',
                     'external_id' => $creator->id . '_telegraam',
