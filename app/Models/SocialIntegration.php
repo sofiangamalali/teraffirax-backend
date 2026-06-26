@@ -49,6 +49,6 @@ class SocialIntegration extends Model
      */
     public function getPlatformLogoUrlAttribute(): ?string
     {
-        return $this->resolveLogoUrl($this->platform, 'platforms');
+        return $this->resolveLogoUrl($this->platform?->value, 'platforms');
     }
 }
