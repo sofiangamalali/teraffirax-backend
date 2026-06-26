@@ -23,5 +23,6 @@ class CronRunLog extends Model
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
         'records_processed' => 'integer',
+        'status' => \App\Enums\CronRunLogStatusEnum::class,
     ];
 }

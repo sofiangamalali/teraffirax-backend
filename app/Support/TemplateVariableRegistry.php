@@ -7,12 +7,6 @@ class TemplateVariableRegistry
     protected array $variables = [
         'telegram' => [
             [
-                'key' => 'discount',
-                'label' => 'Discount Percentage',
-                'example' => '40',
-                'required' => false,
-            ],
-            [
                 'key' => 'product_name',
                 'label' => 'Product Name',
                 'example' => 'iPhone 15',

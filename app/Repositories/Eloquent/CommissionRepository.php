@@ -50,4 +50,17 @@ class CommissionRepository implements CommissionRepositoryInterface
             ->get()
             ->groupBy('creator_id');
     }
+
+    public function create(array $data): Commission
+    {
+        return $this->model->create($data);
+    }
+
+    public function existsForDate(int $creatorId, int $vendorId, string $date): bool
+    {
+        return $this->model->where('creator_id', $creatorId)
+            ->where('vendor_id', $vendorId)
+            ->whereDate('earned_at', $date)
+            ->exists();
+    }
 }

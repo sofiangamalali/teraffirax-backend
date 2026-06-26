@@ -17,7 +17,9 @@ class ProductSelectionJobTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Setup initial default requirements if any
+        \Illuminate\Support\Facades\Http::fake([
+            '*health' => \Illuminate\Support\Facades\Http::response(['status' => 'ok'], 200),
+        ]);
     }
 
     public function test_can_select_product_and_dispatch_validation()
@@ -65,7 +67,7 @@ class ProductSelectionJobTest extends TestCase
             externalId: $integration->external_id,
             creatorId: $creator->id
         );
-        $job->handle();
+        app()->call([$job, 'handle']);
 
         // 7. Assert ValidateProductDataJob was pushed with correct parameters
         Queue::assertPushed(ValidateProductDataJob::class, function ($job) use ($product) {
@@ -128,7 +130,7 @@ class ProductSelectionJobTest extends TestCase
             externalId: $integration->external_id,
             creatorId: $creator->id
         );
-        $job->handle();
+        app()->call([$job, 'handle']);
 
         // Product 2 should be selected because Product 1 was excluded
         Queue::assertPushed(ValidateProductDataJob::class, function ($job) use ($product2) {
@@ -181,7 +183,7 @@ class ProductSelectionJobTest extends TestCase
             externalId: $integration->external_id,
             creatorId: $creator->id
         );
-        $job->handle();
+        app()->call([$job, 'handle']);
 
         // Product should be successfully selected from Category 2 even though Category 1 was rotated first
         Queue::assertPushed(ValidateProductDataJob::class, function ($job) use ($product) {

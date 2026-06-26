@@ -2,10 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
-use App\Models\Country;
-use App\Models\Creator;
-use App\Models\Otp;
+use App\Models\{Category, Country, Creator, Otp, Vendor, CreatorVendorTracking};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -42,6 +39,7 @@ class AuthApiTest extends TestCase
     public function test_can_register_creator_with_categories()
     {
         $categories = Category::factory()->count(2)->create();
+        $vendor = Vendor::factory()->create(['country_id' => 1, 'is_active' => true]);
 
         $response = $this->postJson('/api/auth/register', [
             'name' => 'John Doe',
@@ -67,8 +65,8 @@ class AuthApiTest extends TestCase
             'type' => 'channel',
             'status' => 'active',
             'name' => 'Test Channel',
-            'username' => 'test_channel',
-            'external_id' => '123456789',
+            'username' => $creator->id . '_telegraam',
+            'external_id' => $creator->id . '_telegraam',
         ]);
 
         $integration = $creator->socialIntegrations()->first();
@@ -80,6 +78,22 @@ class AuthApiTest extends TestCase
             'is_default' => true,
             'name' => 'Default Template',
             'content' => "{{discount}}% خصم على {{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
+        ]);
+
+        $this->assertDatabaseHas('creator_vendor_tracking', [
+            'creator_id' => $creator->id,
+            'vendor_id' => $vendor->id,
+            'track_id' => '',
+            'is_active' => false,
+        ]);
+
+        // Create a vendor in a different country and assert it is NOT linked to the creator
+        $otherCountry = Country::factory()->create(['id' => 2]);
+        $otherVendor = Vendor::factory()->create(['country_id' => $otherCountry->id, 'is_active' => true]);
+
+        $this->assertDatabaseMissing('creator_vendor_tracking', [
+            'creator_id' => $creator->id,
+            'vendor_id' => $otherVendor->id,
         ]);
     }
 

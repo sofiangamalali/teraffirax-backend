@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\SocialIntegration;
+use App\Models\Creator;
 use App\Jobs\ProductSelectionJob;
+use App\Enums\PlatformEnum;
+use App\Enums\SocialIntegrationStatusEnum;
 
 class SendTelegramProducts extends Command
 {
@@ -27,20 +29,29 @@ class SendTelegramProducts extends Command
      */
     public function handle()
     {
-        $integrations = SocialIntegration::where('status', 'active')
-            ->where('platform', 'telegram')
+        $creators = Creator::where('is_active', true)
+            ->with([
+                'socialIntegrations' => function ($query) {
+                    $query->where('status', SocialIntegrationStatusEnum::ACTIVE)
+                        ->where('platform', PlatformEnum::TELEGRAM);
+                }
+            ])
             ->get();
 
-        $this->info("Found {$integrations->count()} active Telegram integrations. Dispatching jobs...");
+        $dispatchedCount = 0;
 
-        foreach ($integrations as $integration) {
-            ProductSelectionJob::dispatch(
-                socialIntegrationId: $integration->id,
-                externalId: $integration->external_id,
-                creatorId: $integration->creator_id
-            );
+        foreach ($creators as $creator) {
+            foreach ($creator->socialIntegrations as $integration) {
+                ProductSelectionJob::dispatch(
+                    socialIntegrationId: $integration->id,
+                    externalId: $integration->external_id,
+                    creatorId: $integration->creator_id
+                );
+                $dispatchedCount++;
+            }
         }
 
+        $this->info("Found {$dispatchedCount} active Telegram integrations for active creators. Dispatching jobs...");
         $this->info("All jobs dispatched successfully.");
     }
 }

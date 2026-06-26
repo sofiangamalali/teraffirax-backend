@@ -6,6 +6,8 @@ use App\Models\Admin;
 use App\Models\Creator;
 use App\Models\Country;
 use App\Models\SocialIntegration;
+use App\Models\CreatorVendorTracking;
+use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -68,6 +70,16 @@ class AdminCreatorTest extends TestCase
         // Test update creator social integration block
         $response = $this->withCreatorAuth()->putJson("/api/admin/creators/{$this->creator->id}/social-integrations/1", [
             'name' => 'Should fail',
+        ]);
+        $response->assertStatus(403);
+        // Test list creator vendor trackings block
+        $response = $this->withCreatorAuth()->getJson("/api/admin/creators/{$this->creator->id}/vendor-trackings");
+        $response->assertStatus(403);
+
+        // Test update creator vendor tracking block
+        $response = $this->withCreatorAuth()->putJson("/api/admin/creators/{$this->creator->id}/vendor-trackings/1", [
+            'track_id' => 'Should fail',
+            'is_active' => true,
         ]);
         $response->assertStatus(403);
     }
@@ -168,5 +180,109 @@ class AdminCreatorTest extends TestCase
             'name' => 'Updated Tiktok Profile',
             'status' => 'inactive',
         ]);
+    }
+
+    /**
+     * Test admin can manage vendor tracking for a creator.
+     */
+    public function test_admin_can_manage_creator_vendor_trackings(): void
+    {
+        $vendor = Vendor::factory()->create(['country_id' => 1, 'is_active' => true]);
+
+        $tracking = CreatorVendorTracking::create([
+            'creator_id' => $this->creator->id,
+            'vendor_id' => $vendor->id,
+            'track_id' => '',
+            'is_active' => false,
+        ]);
+
+        // 1. Admin fetches trackings for this creator
+        $response = $this->withAdminAuth()->getJson("/api/admin/creators/{$this->creator->id}/vendor-trackings");
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json('data'));
+        $this->assertEquals($tracking->id, $response->json('data.0.id'));
+
+        // 2. Admin updates the vendor tracking
+        $response = $this->withAdminAuth()->putJson("/api/admin/creators/{$this->creator->id}/vendor-trackings/{$tracking->id}", [
+            'track_id' => 'my-custom-tag-22',
+            'is_active' => true,
+        ]);
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('creator_vendor_tracking', [
+            'id' => $tracking->id,
+            'track_id' => 'my-custom-tag-22',
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Test admin can assign an account manager to a creator.
+     */
+    public function test_admin_can_assign_account_manager_to_creator(): void
+    {
+        $manager = \App\Models\AccountManager::create([
+            'name' => 'John Manager',
+            'email' => 'john.mgr@test.com',
+            'phone' => '12345678',
+        ]);
+
+        $response = $this->withAdminAuth()->patchJson("/api/admin/creators/{$this->creator->id}/assign-account-manager", [
+            'account_manager_id' => $manager->id,
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('creators', [
+            'id' => $this->creator->id,
+            'account_manager_id' => $manager->id,
+        ]);
+    }
+
+    /**
+     * Test admin can unassign an account manager from a creator.
+     */
+    public function test_admin_can_unassign_account_manager_from_creator(): void
+    {
+        $manager = \App\Models\AccountManager::create([
+            'name' => 'John Manager',
+            'email' => 'john.mgr@test.com',
+            'phone' => '12345678',
+        ]);
+
+        $this->creator->update(['account_manager_id' => $manager->id]);
+
+        $response = $this->withAdminAuth()->patchJson("/api/admin/creators/{$this->creator->id}/assign-account-manager", [
+            'account_manager_id' => null,
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('creators', [
+            'id' => $this->creator->id,
+            'account_manager_id' => null,
+        ]);
+    }
+
+    /**
+     * Test validation fails when assigning an invalid account manager ID.
+     */
+    public function test_assign_account_manager_fails_for_invalid_manager_id(): void
+    {
+        $response = $this->withAdminAuth()->patchJson("/api/admin/creators/{$this->creator->id}/assign-account-manager", [
+            'account_manager_id' => 9999, // Non-existent
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('account_manager_id');
+    }
+
+    /**
+     * Test non-admin cannot access assign-account-manager endpoint.
+     */
+    public function test_non_admin_cannot_assign_account_manager(): void
+    {
+        $response = $this->withCreatorAuth()->patchJson("/api/admin/creators/{$this->creator->id}/assign-account-manager", [
+            'account_manager_id' => 1,
+        ]);
+
+        $response->assertStatus(403);
     }
 }

@@ -12,4 +12,9 @@ interface SocialIntegrationRepositoryInterface
     public function find(int $id): ?SocialIntegration;
     public function update(SocialIntegration $socialIntegration, array $data): bool;
     public function delete(SocialIntegration $socialIntegration): bool;
+
+    /**
+     * Update social integration status or fields by ID.
+     */
+    public function updateById(int $id, array $data): bool;
 }

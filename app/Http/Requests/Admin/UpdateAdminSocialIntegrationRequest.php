@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\SocialIntegrationStatusEnum;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateAdminSocialIntegrationRequest extends FormRequest
 {
@@ -22,7 +24,7 @@ class UpdateAdminSocialIntegrationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['sometimes', 'required', 'string', 'in:active,inactive,pending'],
+            'status' => ['sometimes', 'required', new Enum(SocialIntegrationStatusEnum::class)],
             'external_id' => ['nullable', 'string'],
             'name' => ['nullable', 'string'],
             'username' => ['nullable', 'string'],

@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasLogo;
+use App\Enums\PlatformEnum;
+use App\Enums\IntegrationTypeEnum;
+use App\Enums\SocialIntegrationStatusEnum;
 
 class SocialIntegration extends Model
 {
@@ -23,6 +26,9 @@ class SocialIntegration extends Model
     ];
 
     protected $casts = [
+        'platform' => PlatformEnum::class,
+        'type' => IntegrationTypeEnum::class,
+        'status' => SocialIntegrationStatusEnum::class,
         'metadata' => 'array',
     ];
 

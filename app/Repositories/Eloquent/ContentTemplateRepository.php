@@ -68,4 +68,19 @@ class ContentTemplateRepository implements ContentTemplateRepositoryInterface
             ->orderBy('id', 'asc')
             ->first();
     }
+
+    /**
+     * Find default content template for creator and social integration channel.
+     */
+    public function findDefaultTemplate(int $creatorId, int $socialIntegrationId): ?ContentTemplate
+    {
+        return $this->model->newQuery()
+            ->where('creator_id', $creatorId)
+            ->where(function ($q) use ($socialIntegrationId) {
+                $q->where('social_integration_id', $socialIntegrationId)
+                    ->orWhereNull('social_integration_id');
+            })
+            ->where('is_default', true)
+            ->first();
+    }
 }

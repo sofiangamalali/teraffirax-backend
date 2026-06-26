@@ -38,25 +38,19 @@
 
 ## 3. دورة مراجعة الإدارة والتحكم (Admin Review & Operations)
 
-يمر طلب السحب عبر الإدارة بثلاثة مسارات أساسية:
+يمر طلب السحب عبر الإدارة بمسارين أساسيين فقط:
 
-### أ. الموافقة المبدئية (Approve Request)
-يقوم مدير الحسابات بمراجعة الطلب والموافقة عليه مبدئياً:
-*   تتغير حالة الطلب من `pending` إلى `approved`.
-*   يتم توثيق المسؤول الذي قام بالموافقة في حقل `reviewed_by` وتاريخ المراجعة في حقل `reviewed_at`.
-*   **تأثير الأرصدة**: لا يحدث أي تغيير في الأرصدة هنا، حيث تم خصم المبلغ مسبقاً عند تقديم الطلب وتصفير الرصيد المتاح لمنع المنشئ من طلب سحب آخر أثناء المراجعة.
-
-### ب. إكمال عملية التحويل والتحقق (Complete Request)
-بعد موافقة الإدارة، يقوم القسم المالي بالتحويل الفعلي للمال للمنشئ (مثلاً عبر الحوالة البنكية):
-*   يقوم المسؤول بإدخال مرجع التحويل المالي (`transfer_reference`) وإرفاق رابط إيصال التحويل البنكي (`receipt_url`).
-*   تتغير حالة الطلب من `approved` إلى `completed`.
+### أ. إكمال الطلب (Complete Request)
+بعد التحقق، يقوم القسم المالي بالتحويل الفعلي للمال للمنشئ (مثلاً عبر الحوالة البنكية):
+*   تتغير حالة الطلب مباشرة من `pending` إلى `completed`.
+*   يتم توثيق تاريخ المراجعة والتحويل في حقل `completed_at` و `reviewed_at`.
 *   يتم زيادة الرصيد التاريخي المسحوب للمنشئ **`withdrawn_balance`** بقيمة المبلغ المسحوب لتوثيق إجمالي المسحوبات التاريخية للمنشئ في المنصة.
 *   **توثيق الحركة المالية (Ledger)**: يتم تسجيل حركة جديدة في جدول `balance_ledgers` بنوع `withdrawal_completed` لتوثيق اكتمال العملية بنجاح.
 
-### ج. رفض الطلب وإرجاع المبالغ (Reject Request)
+### ب. رفض الطلب وإرجاع المبالغ (Reject Request)
 إذا تبين للإدارة أن هناك مشكلة في بيانات الحساب أو لأي سبب تنظيمي آخر:
-*   يقوم المسؤول برفض الطلب مع كتابة سبب الرفض (`rejection_reason`).
-*   تتحول حالة الطلب إلى `rejected`.
+*   تتحول حالة الطلب مباشرة من `pending` إلى `rejected`.
+*   يتم توثيق تاريخ المراجعة في حقل `reviewed_at`.
 *   **إرجاع المبلغ (Restoring Balance)**: يبدأ النظام Transaction ويقفل سجل المنشئ، ثم يعيد قيمة طلب السحب إلى رصيد المنشئ المتاح **`available_balance`** مجدداً لتمكينه من تعديل بياناته وإعادة الطلب.
 *   **توثيق الحركة المالية (Ledger)**: يتم تسجيل حركة جديدة في جدول `balance_ledgers` بنوع `withdrawal_rejected` لتوثيق استرداد وإرجاع المبلغ للرصيد المتاح.
 
@@ -67,10 +61,8 @@
 ```mermaid
 stateDiagram-v2
     [*] --> Pending : Creator submits request (Deducts available_balance to 0)
-    Pending --> Approved : Admin Approves (Audited via reviewed_by/at)
-    Pending --> Rejected : Admin Rejects (Restores balance + records reason)
-    Approved --> Completed : Admin Completes (Inputs transfer_reference & receipt, increments withdrawn_balance)
-    Approved --> Rejected : Admin Rejects (Restores balance + records reason)
+    Pending --> Completed : Admin Completes (Increments withdrawn_balance)
+    Pending --> Rejected : Admin Rejects (Restores balance)
     Completed --> [*]
     Rejected --> [*]
 ```

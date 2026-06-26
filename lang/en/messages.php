@@ -25,4 +25,5 @@ return [
     'female' => 'Female',
     'pending' => 'Pending',
     'failed' => 'Failed',
+    'account_manager_assigned_to_creators' => 'Cannot delete account manager because they are assigned to one or more creators.',
 ];

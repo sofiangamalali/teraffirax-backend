@@ -21,12 +21,8 @@ class WithdrawRequest extends Model
         'amount',
         'status',
         'requested_at',
-        'reviewed_by',
         'reviewed_at',
-        'transfer_reference',
-        'receipt_url',
         'completed_at',
-        'rejection_reason',
     ];
 
     protected $casts = [
@@ -45,10 +41,5 @@ class WithdrawRequest extends Model
     public function withdrawMethod()
     {
         return $this->belongsTo(CreatorWithdrawMethod::class, 'creator_withdraw_method_id')->withTrashed();
-    }
-
-    public function reviewedBy()
-    {
-        return $this->belongsTo(AccountManager::class, 'reviewed_by');
     }
 }

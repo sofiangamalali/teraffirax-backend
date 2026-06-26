@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\{ContentTemplate, SocialIntegration, Commission, Admin};
 use App\Policies\{ContentTemplatePolicy, SocialIntegrationPolicy, CommissionPolicy, AdminPolicy};
-use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository, BalanceLedgerRepository, CronRunLogRepository, ReconciliationAlertRepository, AdminRepository};
-use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface, BalanceLedgerRepositoryInterface, CronRunLogRepositoryInterface, ReconciliationAlertRepositoryInterface, AdminRepositoryInterface};
+use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository, BalanceLedgerRepository, CronRunLogRepository, ReconciliationAlertRepository, AdminRepository, TelegramProductPostRepository, AccountManagerRepository};
+use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface, BalanceLedgerRepositoryInterface, CronRunLogRepositoryInterface, ReconciliationAlertRepositoryInterface, AdminRepositoryInterface, TelegramProductPostRepositoryInterface, AccountManagerRepositoryInterface};
 use Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -87,6 +87,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CronRunLogRepositoryInterface::class, CronRunLogRepository::class);
         $this->app->bind(ReconciliationAlertRepositoryInterface::class, ReconciliationAlertRepository::class);
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
+        $this->app->bind(TelegramProductPostRepositoryInterface::class, TelegramProductPostRepository::class);
+        $this->app->bind(AccountManagerRepositoryInterface::class, AccountManagerRepository::class);
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);

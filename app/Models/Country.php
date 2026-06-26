@@ -23,6 +23,7 @@ class Country extends Model
         'is_active',
         'currency',
         'timezone',
+        'language',
     ];
 
     protected $casts = [

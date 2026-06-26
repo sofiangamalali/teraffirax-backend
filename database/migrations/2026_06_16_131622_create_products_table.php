@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\ProductStatusEnum;
 
 return new class extends Migration {
     public function up(): void
@@ -29,7 +30,7 @@ return new class extends Migration {
             $table->integer('rank_in_vendor_category')->nullable();
             $table->decimal('commission', 12, 2)->nullable();
             $table->integer('score')->default(0);
-            $table->enum('status', ['active', 'out_of_stock', 'unavailable'])->default('active');
+            $table->enum('status', array_column(ProductStatusEnum::cases(), 'value'))->default(ProductStatusEnum::ACTIVE->value);
             $table->timestamp('flagged_at')->nullable();
             $table->timestamp('last_validated_at')->nullable();
             $table->timestamps();

@@ -25,12 +25,17 @@ class CommissionMaturationService
         $unmaturedByCreator = $this->commissionRepository->getUnmaturedCommissionsByCreator(90);
         $processedCount = 0;
 
+        Log::channel('commission')->info("Processing commission maturation. Found " . count($unmaturedByCreator) . " creators with unmatured commissions.");
+
         foreach ($unmaturedByCreator as $creatorId => $commissions) {
             try {
-                DB::transaction(function () use ($creatorId, $commissions, &$processedCount) {
-                    $totalAmount = $commissions->sum('commission_amount');
-                    
+                $totalAmount = $commissions->sum('commission_amount');
+                
+                Log::channel('commission')->info("Maturing commissions for Creator ID: {$creatorId}. Commission Count: " . count($commissions) . ", Total Amount: {$totalAmount}");
+
+                DB::transaction(function () use ($creatorId, $commissions, $totalAmount, &$processedCount) {
                     if ($totalAmount <= 0) {
+                        Log::channel('commission')->info("Skipping Creator ID: {$creatorId} because total amount is zero or negative.");
                         return;
                     }
 
@@ -38,12 +43,13 @@ class CommissionMaturationService
                     $creator = $this->creatorRepository->findWithLock($creatorId);
                     
                     if (!$creator) {
+                        Log::channel('commission')->warning("Creator ID: {$creatorId} not found during commission maturation lock.");
                         return;
                     }
 
                     // Sanity check
                     if ($creator->pending_balance < $totalAmount) {
-                        Log::error("Sanity check failed for creator {$creatorId}. Pending balance: {$creator->pending_balance}, Target Maturation: {$totalAmount}");
+                        Log::channel('commission')->error("Sanity check failed for creator {$creatorId}. Pending balance: {$creator->pending_balance}, Target Maturation: {$totalAmount}");
                         // We still proceed? The methodology says "sanity check — should always pass".
                         // If it fails, something is seriously wrong with the ledger, maybe we throw an exception to rollback?
                         throw new \Exception("Sanity check failed for creator {$creatorId}");
@@ -78,9 +84,11 @@ class CommissionMaturationService
                         $availableBalanceBefore += $commission->commission_amount;
                         $processedCount++;
                     }
+
+                    Log::channel('commission')->info("Successfully matured commissions for Creator ID: {$creatorId}. Balances adjusted: Pending (" . $pendingBalanceBefore . " -> " . max(0, $pendingBalanceBefore - $totalAmount) . "), Available (" . ($availableBalanceBefore - $totalAmount) . " -> " . $availableBalanceBefore . ")");
                 });
             } catch (\Exception $e) {
-                Log::error("Failed to mature commissions for creator {$creatorId}: " . $e->getMessage());
+                Log::channel('commission')->error("Failed to mature commissions for Creator ID: {$creatorId}. Error: " . $e->getMessage(), ['exception' => $e]);
             }
         }
 

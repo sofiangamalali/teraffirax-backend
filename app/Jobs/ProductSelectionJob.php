@@ -31,7 +31,7 @@ class ProductSelectionJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(\App\Services\TelegramPublishingService $publishingService): void
     {
         $lockKey = "channel_lock:" . $this->socialIntegrationId;
         $postingInterval = env('POSTING_INTERVAL_SECONDS', 300);
@@ -44,83 +44,26 @@ class ProductSelectionJob implements ShouldQueue
         }
 
         try {
-            if ($this->forcedCategoryId) {
-                $categoryId = $this->forcedCategoryId;
-            } else {
-                $category = DB::table('category_creator')
-                    ->where('creator_id', $this->creatorId)
-                    ->orderBy('last_posted_at', 'asc')
-                    ->select('category_id', 'last_posted_at')
-                    ->first();
+            $selection = $publishingService->selectProductForCreator(
+                $this->creatorId,
+                $this->socialIntegrationId,
+                $this->excludedProductIds,
+                $this->forcedCategoryId
+            );
 
-                if (!$category) {
-                    if (!$this->lockAlreadyAcquired) {
-                        Redis::del($lockKey);
-                    }
-                    Log::channel('posting')->info("No categories for creator " . $this->creatorId);
-                    return;
-                }
-
-                $categoryId = $category->category_id;
-            }
-
-            $product = $this->selectProductFromCategory($categoryId);
-
-            if (!$product) {
-                // Update last_posted_at for the initial category
-                DB::table('category_creator')
-                    ->where('creator_id', $this->creatorId)
-                    ->where('category_id', $categoryId)
-                    ->update(['last_posted_at' => now()]);
-
-                $allCategories = DB::table('category_creator')
-                    ->where('creator_id', $this->creatorId)
-                    ->where('category_id', '!=', $categoryId)
-                    ->orderBy('last_posted_at', 'asc')
-                    ->select('category_id')
-                    ->get();
-
-                foreach ($allCategories as $cat) {
-                    $product = $this->selectProductFromCategory($cat->category_id);
-                    if ($product) {
-                        break;
-                    }
-
-                    // Update last_posted_at for checked category even if empty
-                    DB::table('category_creator')
-                        ->where('creator_id', $this->creatorId)
-                        ->where('category_id', $cat->category_id)
-                        ->update(['last_posted_at' => now()]);
-                }
-
-                if (!$product) {
-                    Redis::del($lockKey);
-                    Log::channel('posting')->info('No eligible products across all categories', [
-                        'social_integration_id' => $this->socialIntegrationId,
-                    ]);
-                    return;
-                }
-            }
-
-            $vendorAccount = DB::table('creator_vendor_tracking as cvt')
-                ->join('vendors as v', 'v.id', '=', 'cvt.vendor_id')
-                ->where('cvt.creator_id', $this->creatorId)
-                ->where('cvt.vendor_id', $product->vendor_id)
-                ->where('cvt.is_active', true)
-                ->where('v.is_active', true)
-                ->select('cvt.track_id', 'v.slug')
-                ->first();
-
-            if (!$vendorAccount) {
+            if (!$selection) {
                 Redis::del($lockKey);
-                Log::channel('posting')->info("No active vendor account for creator {$this->creatorId} vendor {$product->vendor_id}");
+                Log::channel('posting')->info("No eligible products across all categories for creator " . $this->creatorId, [
+                    'social_integration_id' => $this->socialIntegrationId,
+                ]);
                 return;
             }
 
+            $product = $selection['product'];
+            $categoryId = $selection['category_id'];
+            $vendorAccount = $selection['vendor_account'];
+
             // Generate a stable idempotency key for this dispatch attempt.
-            // Scoped to: channel + product + hour-window.
-            // If the job retries within the same hour, the key is identical →
-            // the guard in SendMessageToTelegramJob will catch it and skip the send.
             $idempotencyKey = hash('sha256', implode('_', [
                 $this->socialIntegrationId,
                 $product->id,
@@ -140,10 +83,10 @@ class ProductSelectionJob implements ShouldQueue
                 socialIntegrationId: $this->socialIntegrationId,
                 externalId: $this->externalId,
                 creatorId: $this->creatorId,
-                product: Product::findOrFail($product->id),
-                categoryId: $product->category_id,
+                product: $product,
+                categoryId: $categoryId,
                 trackId: $vendorAccount->track_id,
-                vendorSlug: $vendorAccount->slug,
+                vendorSlug: $vendorAccount->vendor->slug,
                 lockKey: $lockKey,
                 idempotencyKey: $idempotencyKey,
                 retryCount: $this->retryCount,
@@ -153,45 +96,5 @@ class ProductSelectionJob implements ShouldQueue
             Redis::del($lockKey);
             throw $e;
         }
-    }
-
-    /**
-     * Select a product from a specific category with deduplication constraints.
-     */
-    private function selectProductFromCategory(int $categoryId): ?object
-    {
-        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
-        $interval24 = $isSqlite ? "datetime('now', '-24 hours')" : "NOW() - INTERVAL 24 HOUR";
-        $interval3 = $isSqlite ? "datetime('now', '-3 hours')" : "NOW() - INTERVAL 3 HOUR";
-
-        return DB::table('products as p')
-            ->join('creator_vendor_tracking as cva', function ($join) {
-                $join->on('cva.vendor_id', '=', 'p.vendor_id')
-                    ->where('cva.creator_id', '=', $this->creatorId)
-                    ->where('cva.is_active', '=', true);
-            })
-            ->join('vendors as v', function ($join) {
-                $join->on('v.id', '=', 'p.vendor_id')
-                    ->where('v.is_active', '=', true);
-            })
-            ->where('p.category_id', $categoryId)
-            ->where('p.status', 'active')
-            ->whereNotIn('p.id', $this->excludedProductIds)
-            ->whereNotIn('p.id', function ($query) use ($interval24) {
-                $query->select('product_id')
-                    ->from('telegram_product_posts')
-                    ->where('social_integration_id', $this->socialIntegrationId)
-                    ->where('post_status', 'posted')
-                    ->whereRaw("posted_at > {$interval24}");
-            })
-            ->whereNotIn('p.id', function ($query) use ($interval3) {
-                $query->select('product_id')
-                    ->from('telegram_product_posts')
-                    ->where('post_status', 'posted')
-                    ->whereRaw("posted_at > {$interval3}");
-            })
-            ->orderBy('p.score', 'desc')
-            ->select('p.*')
-            ->first();
     }
 }

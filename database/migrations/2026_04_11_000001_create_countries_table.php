@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('phone_max_length');
 
             $table->string('icon')->nullable();
+            $table->string('language', 5)->default('en');
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();

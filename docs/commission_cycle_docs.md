@@ -1,71 +1,70 @@
-# دورة حياة العمولة كاملة (The Commission Cycle)
+# The Commission Cycle
 
-هذا المستند يشرح دورة حياة العمولة من لحظة دخولها النظام وحتى تحولها إلى أموال نقدية في حساب المنشئ (Creator)، بناءً على المعمارية المعتمدة في النظام.
-
----
-
-## 1. مرحلة تسجيل العمولة (الإنشاء)
-عندما يقوم مستخدم بالشراء عبر رابط المنشئ، يقوم النظام (أو عملية الاستيراد) بإضافة صف جديد في جدول `commissions`.
-- **البيانات:** يتم تحديد قيمة العمولة، ويكون حقل `earned_at` هو تاريخ الشراء.
-- **الحالة:** حقل `calculated_at` يكون `null`، وحقل `matured_at` يكون `null`.
-- **تأثير الرصيد:** **لا شيء.** في هذه اللحظة، رصيد المنشئ لا يتأثر إطلاقاً لتجنب البطء في النظام ولضمان الدقة.
+This document outlines the lifecycle of a commission from its creation to its payout, explaining the states, balances, and scheduled tasks that govern the process.
 
 ---
 
-## 2. مرحلة الحساب المبدئي (الـ Cron 1)
-في الساعة **01:00 صباحاً** كل يوم، تبدأ مهمة `CalculateCommissionsCommand`:
-- يبحث النظام عن جميع العمولات التي لم تُحسب بعد (`calculated_at IS NULL`).
-- يقوم بفتح (Transaction) وقفل سجل المنشئ في قاعدة البيانات (`lockForUpdate`) لمنع التداخل.
-- يجمع قيمة العمولات ويضيفها إلى رصيد **`pending_balance`** (الرصيد المعلق) الخاص بالمنشئ.
-- يُحدّث العمولات بوضع تاريخ ووقت الحساب في حقل `calculated_at`.
-- **السجل المالي (Ledger):** يضيف صفاً في جدول `balance_ledgers` بنوع `commission_calculated` ليوثق من أين جاءت الزيادة في الرصيد.
+## Architecture & Balances
+
+A Creator's balance is split into three fields to maintain accuracy and prevent transaction lock contention:
+* **Pending Balance (`pending_balance`)**: Calculated commissions that are currently in their holding period.
+* **Available Balance (`available_balance`)**: Matured commissions ready for withdrawal.
+* **Withdrawn Balance (`withdrawn_balance`)**: Cumulative historical total of successfully completed withdrawals.
+
+Every change in balance is backed by a corresponding record in the `balance_ledgers` table for auditable bookkeeping.
 
 ---
 
-## 3. مرحلة النضوج والإتاحة (الـ Cron 2)
-فور انتهاء الـ Cron 1 بنجاح، تبدأ مهمة `MatureCommissionsCommand`:
-- يبحث النظام عن العمولات المحسوبة ولكن لم تنضج بعد (`matured_at IS NULL AND calculated_at IS NOT NULL`) والتي مر على تاريخ كسبها **90 يوماً** (`earned_at <= now() - 90 days`).
-- يفتح (Transaction) ويقفل سجل المنشئ مجدداً.
-- يقوم بخصم قيمة هذه العمولات من **`pending_balance`** وينقلها إلى **`available_balance`** (الرصيد المتاح للسحب).
-- يُحدّث العمولات بوضع تاريخ في حقل `matured_at`.
-- **السجل المالي (Ledger):** يضيف صفاً في `balance_ledgers` بنوع `commission_matured`.
+## The Lifecycle Stages
+
+### 1. Commission Recording (Creation)
+When a purchase occurs through a Creator's referral, a record is added to the `commissions` table.
+* **Key Fields**: `earned_at` is set to the purchase date. `calculated_at` and `matured_at` are `null`.
+* **Balance Impact**: **None.** Balances are not updated synchronously to keep order processing fast.
 
 ---
 
-## 4. مرحلة طلب السحب (Withdrawal Request)
-الآن المنشئ لديه أموال في الرصيد المتاح (`available_balance`)، ويقرر سحبها:
-- يضغط على "سحب". النظام يتأكد أنه ليس لديه طلب سابق (قيد الانتظار أو موافق عليه).
-- يتم تصفير الـ **`available_balance`** بالكامل فوراً.
-- يُنشئ النظام طلباً في جدول `withdraw_requests` وتكون حالته `pending`.
-- **السجل المالي (Ledger):** يضيف صفاً في `balance_ledgers` بنوع `withdrawal_requested` بقيمة السحب (بالسالب من الرصيد المتاح).
+### 2. Initial Calculation (`commissions:calculate`)
+* **Schedule**: Scheduled to run **every 3 hours**.
+* **Process**:
+  1. Finds all commissions where `calculated_at IS NULL`.
+  2. Locks the creator's record (`lockForUpdate`) to prevent race conditions.
+  3. Sums the uncalculated commissions and adds the total to the creator's `pending_balance`.
+  4. Sets the `calculated_at` timestamp.
+  5. Records a `commission_calculated` entry in the `balance_ledgers` table.
 
 ---
 
-## 5. دورة مراجعة الإدارة (Admin Review)
-تتم هذه الدورة عبر الـ APIs المخصصة للإدارة، وتمر بثلاث مراحل محتملة:
-
-* **أ. الموافقة المبدئية (Approve):**
-يقوم الإداري بمراجعة الطلب والموافقة عليه. تتحول حالة الطلب إلى `approved` ويسجل النظام اسم الإداري وتاريخ المراجعة. (لا يحدث تغيير في الأرصدة لأنها خُصمت بالفعل).
-
-* **ب. الإكمال والتحويل (Complete):**
-يقوم الإداري بتحويل الأموال للمنشئ (عبر البنك مثلاً)، ثم يرفق رقم الحوالة (`transfer_reference`) ورابط إيصال التحويل (`receipt_url`). 
-تتحول الحالة إلى `completed`، ويقوم النظام بزيادة رصيد **`withdrawn_balance`** للمنشئ (ليعرف المنشئ إجمالي ما سحبه من المنصة تاريخياً). 
-**السجل المالي:** يسجل حركة `withdrawal_completed`.
-
-* **ج. الرفض (Reject):**
-إذا تبين أن هناك مشكلة، يرفض الإداري الطلب ويكتب سبب الرفض (`rejection_reason`).
-يتم إعادة المبلغ إلى **`available_balance`** للمنشئ ليتصرف فيه، وتتغير حالة الطلب إلى `rejected`.
-**السجل المالي:** يسجل حركة `withdrawal_rejected` توثق استرجاع المبلغ.
+### 3. Maturation & Payout Availability (`commissions:mature`)
+* **Schedule**: Triggers automatically **immediately after** `commissions:calculate` succeeds.
+* **Process**:
+  1. Identifies commissions that are calculated but not matured (`matured_at IS NULL` and `calculated_at IS NOT NULL`).
+  2. Filters them based on the vendor's holding period:
+     `earned_at <= now() - COALESCE(vendors.commission_payout_days, 90) days`
+  3. Locks the creator's record.
+  4. Subtracts the matured amount from `pending_balance` and adds it to `available_balance`.
+  5. Sets the `matured_at` timestamp.
+  6. Records a `commission_matured` entry in `balance_ledgers`.
 
 ---
 
-## 6. صمام الأمان - المراجعة الآلية (الـ Cron 3)
-بعد انتهاء عمليات الـ Crons اليومية، تعمل مهمة `ReconcileBalancesCommand`:
-- هي عملية "قراءة فقط" (Read-only) لا تُعدل أي رصيد.
-- تقوم بحساب أرصدة كل منشئ من نقطة الصفر (تجمع كل العمولات الناضجة وتطرح منها السحوبات).
-- تقارن الناتج بالرصيد المخزن حالياً في جدول الـ `creators` وتقارنه أيضاً بملخص الحركات في الـ `balance_ledgers`.
-- إذا اكتشف النظام اختلافاً بقرش واحد، فإنه يسجل تنبيهاً في جدول `reconciliation_alerts` لكي يقوم فريق التطوير بالتدخل اليدوي وحل المشكلة.
+### 4. Withdrawal Request
+When a Creator initiates a payout request:
+1. The system verifies there are no pending requests.
+2. The entire `available_balance` is deducted and set to `0`.
+3. A record is created in `withdraw_requests` with a `pending` status.
+4. Records a `withdrawal_requested` entry (negative amount) in `balance_ledgers`.
 
 ---
-**خلاصة التصميم:**
-هذه الدورة صُممت بـ "عقلية بنكية" بحيث لا يمكن للمال أن يختفي أو يتكرر أو يُسحب مرتين، وكل قرش يتحرك يترك وراءه إثباتاً ثابتاً في سجل الـ Ledger.
+
+### 5. Administrative Review
+An Admin processes the withdrawal through one of three routes:
+* **Approval (`approved`)**: Marks the request as approved. No balance changes occur yet.
+* **Completion (`completed`)**: The admin transfers the money and records the transfer reference. The system updates the request to `completed` and increases the creator's `withdrawn_balance` to track historical payouts. Records `withdrawal_completed` in `balance_ledgers`.
+* **Rejection (`rejected`)**: If rejected, the requested amount is returned to the creator's `available_balance`. Records `withdrawal_rejected` in `balance_ledgers`.
+
+---
+
+### 6. Automated Reconciliation (`balances:reconcile`)
+* **Schedule**: Runs automatically **after** `commissions:mature` completes.
+* **Process**: A read-only safety mechanism that recalculates each creator's balance from the ledger transaction history and compares it to the stored `creators` table values. If a mismatch is detected, a record is added to `reconciliation_alerts` for manual investigation.

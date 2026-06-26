@@ -25,12 +25,17 @@ class CommissionCalculationService
         $uncalculatedByCreator = $this->commissionRepository->getUncalculatedCommissionsByCreator();
         $processedCount = 0;
 
+        Log::channel('commission')->info("Processing uncalculated commissions. Found " . count($uncalculatedByCreator) . " creators with pending commissions.");
+
         foreach ($uncalculatedByCreator as $creatorId => $commissions) {
             try {
-                DB::transaction(function () use ($creatorId, $commissions, &$processedCount) {
-                    $totalAmount = $commissions->sum('commission_amount');
-                    
+                $totalAmount = $commissions->sum('commission_amount');
+                
+                Log::channel('commission')->info("Calculating commissions for Creator ID: {$creatorId}. Commission Count: " . count($commissions) . ", Total Amount: {$totalAmount}");
+
+                DB::transaction(function () use ($creatorId, $commissions, $totalAmount, &$processedCount) {
                     if ($totalAmount <= 0) {
+                        Log::channel('commission')->info("Skipping Creator ID: {$creatorId} because total amount is zero or negative.");
                         return;
                     }
 
@@ -38,6 +43,7 @@ class CommissionCalculationService
                     $creator = $this->creatorRepository->findWithLock($creatorId);
                     
                     if (!$creator) {
+                        Log::channel('commission')->warning("Creator ID: {$creatorId} not found during commission calculation lock.");
                         return;
                     }
 
@@ -69,9 +75,11 @@ class CommissionCalculationService
                         $balanceBefore += $commission->commission_amount;
                         $processedCount++;
                     }
+
+                    Log::channel('commission')->info("Successfully calculated commissions for Creator ID: {$creatorId}. Balance changed: {$balanceBefore} -> {$balanceAfter}");
                 });
             } catch (\Exception $e) {
-                Log::error("Failed to calculate commissions for creator {$creatorId}: " . $e->getMessage());
+                Log::channel('commission')->error("Failed to calculate commissions for Creator ID: {$creatorId}. Error: " . $e->getMessage(), ['exception' => $e]);
             }
         }
 

@@ -12,4 +12,5 @@ interface WithdrawRequestRepositoryInterface
     public function findById(string $id): ?WithdrawRequest;
     public function hasPendingOrApprovedForCreator(int $creatorId): bool;
     public function getPaginatedForCreator(int $creatorId, array $filters, int $perPage = 15);
+    public function getPaginated(array $filters, int $perPage = 15);
 }

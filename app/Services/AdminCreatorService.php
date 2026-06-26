@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Models\Creator;
 use App\Models\SocialIntegration;
+use App\Models\CreatorVendorTracking;
 use App\DTOs\AdminSocialIntegrationDTO;
+use App\DTOs\AdminCreatorVendorTrackingDTO;
 use App\Repositories\Interfaces\CreatorRepositoryInterface;
 use App\Repositories\Interfaces\SocialIntegrationRepositoryInterface;
+use App\Repositories\Interfaces\CreatorVendorTrackingRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +18,9 @@ class AdminCreatorService
     public function __construct(
         protected CreatorRepositoryInterface $creatorRepository,
         protected SocialIntegrationRepositoryInterface $socialIntegrationRepository,
-    ) {}
+        protected CreatorVendorTrackingRepositoryInterface $creatorVendorTrackingRepository,
+    ) {
+    }
 
     /**
      * Get paginated creators.
@@ -96,5 +101,52 @@ class AdminCreatorService
         return DB::transaction(function () use ($integration) {
             return $this->socialIntegrationRepository->delete($integration);
         });
+    }
+
+    /**
+     * Get vendor trackings of a creator.
+     */
+    public function getCreatorVendorTrackings(int $creatorId, int $perPage = 15): LengthAwarePaginator
+    {
+        // Ensure creator exists
+        $this->creatorRepository->findOrFail($creatorId);
+
+        return $this->creatorVendorTrackingRepository->paginateForCreator($creatorId, $perPage);
+    }
+
+    /**
+     * Update vendor tracking of a creator.
+     */
+    public function updateCreatorVendorTracking(int $creatorId, int $trackingId, AdminCreatorVendorTrackingDTO $dto): CreatorVendorTracking
+    {
+        // Ensure creator exists
+        $this->creatorRepository->findOrFail($creatorId);
+
+        $tracking = $this->creatorVendorTrackingRepository->find($trackingId);
+        if (!$tracking || $tracking->creator_id !== $creatorId) {
+            throw new \Illuminate\Database\Eloquent\ModelNotFoundException("Vendor tracking record not found for this creator.");
+        }
+
+        DB::transaction(function () use ($trackingId, $dto) {
+            $this->creatorVendorTrackingRepository->update($trackingId, $dto->toArray());
+        });
+
+        return $tracking->refresh();
+    }
+
+    /**
+     * Assign an account manager to a creator.
+     */
+    public function assignAccountManager(int $creatorId, ?int $accountManagerId): Creator
+    {
+        $creator = $this->creatorRepository->findOrFail($creatorId);
+
+        DB::transaction(function () use ($creatorId, $accountManagerId) {
+            $this->creatorRepository->update($creatorId, [
+                'account_manager_id' => $accountManagerId
+            ]);
+        });
+
+        return $creator->refresh();
     }
 }

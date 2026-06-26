@@ -47,7 +47,7 @@ class CreatorSeeder extends Seeder
             }
 
 
-            $vendor = Vendor::where('domain', 'https://www.amazon.eg')->first();
+            $vendor = Vendor::where('slug', 'amazon')->first();
             if ($vendor) {
                 CreatorVendorTracking::updateOrCreate(
                     [
@@ -55,23 +55,9 @@ class CreatorSeeder extends Seeder
                         'vendor_id' => $vendor->id,
                     ],
                     [
-                        'track_id' => 'dealsegypt21-21',
+                        'track_id' => 'traffirax-21',
                     ]
                 );
-
-                // Add 5 old commissions
-                for ($i = 1; $i <= 5; $i++) {
-                    Commission::create([
-                        'creator_id' => $creator->id,
-                        'vendor_id' => $vendor->id,
-                        'earned_at' => now()->subDays(90 + $i)->format('Y-m-d'),
-                        'clicks_count' => rand(100, 500),
-                        'items_count' => rand(5, 20),
-                        'returned_count' => rand(0, 2),
-                        'revenue_amount' => 1000.00,
-                        'commission_amount' => 100.00,
-                    ]);
-                }
             }
 
             $integration = SocialIntegration::updateOrCreate(
@@ -81,7 +67,7 @@ class CreatorSeeder extends Seeder
                     'type' => 'channel',
                 ],
                 [
-                    'status' => 'active',
+                    'status' => 'pending',
                     'name' => 'Test Channel',
                     'username' => 'test_channel',
                     'external_id' => '123456789',
@@ -96,7 +82,7 @@ class CreatorSeeder extends Seeder
                 ],
                 [
                     'name' => 'Default Template',
-                    'content' => "{{discount}}% خصم على {{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
+                    'content' => "{{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
                 ]
             );
         });

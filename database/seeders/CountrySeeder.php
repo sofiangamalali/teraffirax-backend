@@ -23,6 +23,7 @@ class CountrySeeder extends Seeder
                 'phone_max_length' => 11,
                 'icon' => 'https://flagcdn.com/eg.svg',
                 'is_active' => true,
+                'language' => 'ar',
             ]
         );
     }

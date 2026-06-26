@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\CommissionCalculationService;
 use App\Models\CronRunLog;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class CalculateCommissionsCommand extends Command
 {
@@ -30,6 +31,7 @@ class CalculateCommissionsCommand extends Command
     {
         $runId = Str::uuid();
         $this->info("Starting commission calculation... Run ID: {$runId}");
+        Log::channel('commission')->info("Starting commissions:calculate command. Run ID: {$runId}");
 
         $log = CronRunLog::create([
             'cron_name' => 'commissions:calculate',
@@ -48,6 +50,7 @@ class CalculateCommissionsCommand extends Command
             ]);
 
             $this->info("Successfully processed {$processedCount} commissions.");
+            Log::channel('commission')->info("commissions:calculate command finished successfully. Run ID: {$runId}. Processed {$processedCount} commissions.");
         } catch (\Exception $e) {
             $log->update([
                 'finished_at' => now(),
@@ -56,6 +59,7 @@ class CalculateCommissionsCommand extends Command
             ]);
 
             $this->error("Failed: " . $e->getMessage());
+            Log::channel('commission')->error("commissions:calculate command failed. Run ID: {$runId}. Error: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 }

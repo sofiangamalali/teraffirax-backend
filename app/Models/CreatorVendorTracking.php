@@ -17,10 +17,12 @@ class CreatorVendorTracking extends Model
         'vendor_id',
         'track_id',
         'is_active',
+        'platform_commission_percentage',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'platform_commission_percentage' => 'float',
     ];
 
     /**

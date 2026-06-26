@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "d2e3f4a5-1234-490b-bcde-f234567890ab",
 		"name": "Admin API",
-		"description": "Postman collection for Admin endpoints based on routes/admin.php",
+		"description": "Postman collection for Admin endpoints based on routes/api/admin.php",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -99,7 +99,33 @@
 					"response": []
 				},
 				{
-					"name": "Toggle Creator Status",
+					"name": "Toggle Creator Active",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/creators/1/toggle-active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"creators",
+								"1",
+								"toggle-active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Account Manager",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -114,10 +140,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"is_active\": true\n}"
+							"raw": "{\n    \"account_manager_id\": 1\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/admin/creators/1/toggle-status",
+							"raw": "{{base_url}}/api/admin/creators/1/assign-account-manager",
 							"host": [
 								"{{base_url}}"
 							],
@@ -126,7 +152,7 @@
 								"admin",
 								"creators",
 								"1",
-								"toggle-status"
+								"assign-account-manager"
 							]
 						}
 					},
@@ -180,7 +206,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Updated Admin Channel\",\n    \"username\": \"updated_admin_channel\"\n}"
+							"raw": "{\n    \"status\": \"active\",\n    \"name\": \"Updated Admin Channel\",\n    \"username\": \"updated_admin_channel\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/admin/creators/1/social-integrations/1",
@@ -194,6 +220,417 @@
 								"1",
 								"social-integrations",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Vendor Trackings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/creators/1/vendor-trackings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"creators",
+								"1",
+								"vendor-trackings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vendor Tracking",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"track_id\": \"AMZ123\",\n    \"platform_commission_percentage\": 40.00,\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/creators/1/vendor-trackings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"creators",
+								"1",
+								"vendor-trackings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Withdraw Requests",
+			"item": [
+				{
+					"name": "List Withdraw Requests",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/withdraw-requests?status=pending&per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"withdraw-requests"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending"
+								},
+								{
+									"key": "per_page",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Withdraw Request Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/withdraw-requests/1/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"withdraw-requests",
+								"1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reconciliation Alerts",
+			"item": [
+				{
+					"name": "List Reconciliation Alerts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/reconciliation-alerts?per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"reconciliation-alerts"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Managers",
+			"item": [
+				{
+					"name": "List Account Managers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-managers?per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-managers"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Store Account Manager",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"+201234567890\",\n    \"email\": \"john@teraffirax.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-managers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-managers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Account Managers (Dropdown)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-managers/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-managers",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Account Manager",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-managers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-managers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account Manager",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Updated\",\n    \"phone\": \"+201234567891\",\n    \"email\": \"john.updated@teraffirax.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-managers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-managers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account Manager",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-managers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-managers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vendors",
+			"item": [
+				{
+					"name": "List All Vendors (Dropdown)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/vendors/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"vendors",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Commissions",
+			"item": [
+				{
+					"name": "Store Manual Commission",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"creator_id\": 1,\n    \"vendor_id\": 1,\n    \"earned_at\": \"2026-06-26\",\n    \"track_id\": \"AMZ123\",\n    \"clicks_count\": 10,\n    \"items_count\": 2,\n    \"revenue_amount\": 150.00,\n    \"commission_amount\": 15.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/commissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"commissions"
 							]
 						}
 					},

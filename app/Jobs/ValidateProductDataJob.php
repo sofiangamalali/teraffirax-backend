@@ -6,14 +6,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Product;
+use App\Services\TelegramPublishingService;
 
 class ValidateProductDataJob implements ShouldQueue
 {
     use Queueable;
+
+    protected TelegramPublishingService $publishingService;
 
     public function __construct(
         public int $socialIntegrationId,
@@ -31,8 +33,9 @@ class ValidateProductDataJob implements ShouldQueue
         $this->onQueue('telegram-validation');
     }
 
-    public function handle(): void
+    public function handle(TelegramPublishingService $publishingService): void
     {
+        $this->publishingService = $publishingService;
         $flaskUrl = env('PYTHON_PRODUCT_SCRAP_URL', 'http://127.0.0.1:5000') . '/validate';
 
         try {
@@ -78,7 +81,8 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleSame(array $response): void
     {
         Log::channel('posting')->info("Product price validated: SAME", ['product_id' => $this->product->id]);
-        DB::table('products')->where('id', $this->product->id)->update([
+        
+        $this->publishingService->updateProductData($this->product->id, [
             'last_validated_at' => now(),
         ]);
 
@@ -99,7 +103,7 @@ class ValidateProductDataJob implements ShouldQueue
             rank: (int) ($this->product->rank_in_vendor_category ?? 1)
         ) * 1000);
 
-        DB::table('products')->where('id', $this->product->id)->update([
+        $this->publishingService->updateProductData($this->product->id, [
             'discount_percentage' => $response['current_discount'],
             'price_after' => $response['current_price'],
             'commission' => $commissionValue,
@@ -129,7 +133,7 @@ class ValidateProductDataJob implements ShouldQueue
             rank: (int) ($this->product->rank_in_vendor_category ?? 1)
         ) * 1000);
 
-        DB::table('products')->where('id', $this->product->id)->update([
+        $this->publishingService->updateProductData($this->product->id, [
             'discount_percentage' => $response['current_discount'],
             'price_after' => $response['current_price'],
             'commission' => $commissionValue,
@@ -148,7 +152,8 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleOutOfStock(): void
     {
         Log::channel('posting')->warning("Product price validated: OUT OF STOCK", ['product_id' => $this->product->id]);
-        DB::table('products')->where('id', $this->product->id)->update([
+        
+        $this->publishingService->updateProductData($this->product->id, [
             'status' => 'out_of_stock',
             'score' => 0,
             'flagged_at' => now(),
@@ -161,7 +166,8 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleUnavailable(): void
     {
         Log::channel('posting')->warning("Product price validated: UNAVAILABLE", ['product_id' => $this->product->id]);
-        DB::table('products')->where('id', $this->product->id)->update([
+        
+        $this->publishingService->updateProductData($this->product->id, [
             'status' => 'unavailable',
             'score' => 0,
             'flagged_at' => now(),

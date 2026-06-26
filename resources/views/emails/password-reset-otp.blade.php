@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -65,7 +65,7 @@
                     letter-spacing: -0.5px;
                   "
                 >
-                  Reset Password
+                  {{ __('Reset Password') }}
                 </h1>
               </td>
             </tr>
@@ -82,8 +82,7 @@
                     text-align: center;
                   "
                 >
-                  Use the verification code below to securely access your
-                  account.
+                  {{ __('Use the verification code below to securely access your account.') }}
                 </p>
               </td>
             </tr>
@@ -132,7 +131,7 @@
                     text-transform: uppercase;
                   "
                 >
-                  &#9201;&nbsp; This code expires in 10 minutes
+                  &#9201;&nbsp; {{ __('This code expires in 10 minutes') }}
                 </p>
               </td>
             </tr>
@@ -183,7 +182,7 @@
                                 color: #1a3a6b;
                               "
                             >
-                              Security Note
+                              {{ __('Security Note') }}
                             </p>
                             <p
                               style="
@@ -193,8 +192,7 @@
                                 line-height: 1.6;
                               "
                             >
-                              If you didn't request this code, you can safely
-                              ignore this email.
+                              {{ __("If you didn't request this code, you can safely ignore this email.") }}
                             </p>
                           </td>
                         </tr>

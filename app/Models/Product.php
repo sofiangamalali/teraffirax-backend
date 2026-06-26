@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Enums\ProductStatusEnum;
+
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
@@ -67,6 +69,7 @@ class Product extends Model
             'rank_in_vendor_category' => 'integer',
             'commission' => 'float',
             'score' => 'integer',
+            'status' => ProductStatusEnum::class,
             'flagged_at' => 'datetime',
             'last_validated_at' => 'datetime',
         ];

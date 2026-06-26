@@ -30,10 +30,7 @@ class WithdrawRequestRepository implements WithdrawRequestRepositoryInterface
     public function hasPendingOrApprovedForCreator(int $creatorId): bool
     {
         return WithdrawRequest::where('creator_id', $creatorId)
-            ->whereIn('status', [
-                \App\Enums\WithdrawRequestStatusEnum::PENDING,
-                \App\Enums\WithdrawRequestStatusEnum::APPROVED,
-            ])
+            ->where('status', \App\Enums\WithdrawRequestStatusEnum::PENDING)
             ->exists();
     }
 
@@ -47,6 +44,29 @@ class WithdrawRequestRepository implements WithdrawRequestRepositoryInterface
 
         if (!empty($filters['creator_withdraw_method_id'])) {
             $query->where('creator_withdraw_method_id', $filters['creator_withdraw_method_id']);
+        }
+
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('created_at', '>=', $filters['start_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('created_at', '<=', $filters['end_date']);
+        }
+
+        return $query->latest()->paginate($perPage);
+    }
+
+    public function getPaginated(array $filters, int $perPage = 15)
+    {
+        $query = WithdrawRequest::with(['creator', 'withdrawMethod.withdrawMethod', 'withdrawMethod.values']);
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['creator_id'])) {
+            $query->where('creator_id', $filters['creator_id']);
         }
 
         if (!empty($filters['start_date'])) {

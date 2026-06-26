@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->foreignId('creator_id')->constrained()->onDelete('cascade');
+            $table->timestamp('last_posted_at')->nullable();
             $table->timestamps();
         });
     }

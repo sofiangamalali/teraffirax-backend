@@ -23,4 +23,9 @@ interface ProductRepositoryInterface
     public function update(int $id, array $data): Product;
 
     public function delete(int $id): bool;
+
+    /**
+     * Find the best product in a category for a creator based on scoring and publishing restrictions.
+     */
+    public function findBestProductForCreator(int $creatorId, int $categoryId, array $excludedProductIds, int $socialIntegrationId): ?Product;
 }

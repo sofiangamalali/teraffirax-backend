@@ -16,16 +16,20 @@ class VendorSeeder extends Seeder
         $egypt = Country::where('iso2', 'eg')->first();
 
         if (!$egypt) {
-            // Fallback if country seeder hasn't run yet
-            $egypt = Country::create([
-                'iso2' => 'eg',
-                'name' => ['en' => 'Egypt', 'ar' => 'مصر'],
-                'phone_code' => '+20',
-                'phone_min_length' => 11,
-                'phone_max_length' => 11,
-                'icon' => 'https://flagcdn.com/eg.svg',
-                'is_active' => true,
-            ]);
+            $egypt = Country::updateOrCreate(
+                ['iso2' => 'eg'],
+                [
+                    'name' => ['en' => 'Egypt', 'ar' => 'مصر'],
+                    'currency' => ['en' => 'EGP', 'ar' => 'ج.م'],
+                    'timezone' => 'Africa/Cairo',
+                    'phone_code' => '+20',
+                    'phone_min_length' => 11,
+                    'phone_max_length' => 11,
+                    'icon' => 'https://flagcdn.com/eg.svg',
+                    'is_active' => true,
+                    'language' => 'ar',
+                ]
+            );
         }
 
         Vendor::updateOrCreate(

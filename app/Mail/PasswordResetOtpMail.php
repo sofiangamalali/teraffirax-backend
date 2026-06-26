@@ -7,12 +7,14 @@ use Illuminate\Mail\Mailable;
 class PasswordResetOtpMail extends Mailable
 {
     public function __construct(
-        public string $otp
+        public string $otp,
+        public string $language = 'en'
     ) {}
 
     public function build()
     {
-        return $this->subject('Reset your password')
+        return $this->subject(__('Reset your password'))
+            ->locale($this->language)
             ->view('emails.password-reset-otp');
     }
 }

@@ -75,9 +75,17 @@ return [
 
         'posting' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/posting.log'),
+            'path' => storage_path('logs/posting/posting.log'),
             'level' => 'debug',
             'days' => 7,
+            'replace_placeholders' => true,
+        ],
+
+        'commission' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/commission/commission.log'),
+            'level' => 'debug',
+            'days' => 14,
             'replace_placeholders' => true,
         ],
 

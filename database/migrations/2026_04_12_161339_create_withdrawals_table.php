@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\WithdrawalStatusEnum;
 
 return new class extends Migration
 {
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('creator_id')->constrained('creators')->onDelete('cascade');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'done'])->default('pending');
+            $table->enum('status', array_column(WithdrawalStatusEnum::cases(), 'value'))->default(WithdrawalStatusEnum::PENDING->value);
             $table->foreignId('creator_withdraw_method_id')->constrained('creator_withdraw_methods')->onDelete('cascade');
             $table->timestamps();
         });

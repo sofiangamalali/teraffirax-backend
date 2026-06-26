@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\CommissionMaturationService;
 use App\Models\CronRunLog;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class MatureCommissionsCommand extends Command
 {
@@ -30,6 +31,7 @@ class MatureCommissionsCommand extends Command
     {
         $runId = Str::uuid();
         $this->info("Starting commission maturation... Run ID: {$runId}");
+        Log::channel('commission')->info("Starting commissions:mature command. Run ID: {$runId}");
 
         $log = CronRunLog::create([
             'cron_name' => 'commissions:mature',
@@ -48,6 +50,7 @@ class MatureCommissionsCommand extends Command
             ]);
 
             $this->info("Successfully matured {$processedCount} commissions.");
+            Log::channel('commission')->info("commissions:mature command finished successfully. Run ID: {$runId}. Matured {$processedCount} commissions.");
         } catch (\Exception $e) {
             $log->update([
                 'finished_at' => now(),
@@ -56,6 +59,7 @@ class MatureCommissionsCommand extends Command
             ]);
 
             $this->error("Failed: " . $e->getMessage());
+            Log::channel('commission')->error("commissions:mature command failed. Run ID: {$runId}. Error: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 }

@@ -16,20 +16,12 @@ return new class extends Migration
             $table->foreignId('creator_id')->constrained()->onDelete('cascade');
             $table->foreignId('creator_withdraw_method_id')->constrained('creator_withdraw_methods')->onDelete('cascade');
             $table->decimal('amount', 10, 2);
-            $table->string('status')->default('pending'); // pending, approved, completed, rejected
+            $table->enum('status', ['pending', 'completed', 'rejected'])->default('pending');
             
             // Audit fields
             $table->timestamp('requested_at')->useCurrent();
-            $table->foreignId('reviewed_by')->nullable()->constrained('account_managers')->onDelete('set null');
             $table->timestamp('reviewed_at')->nullable();
-            
-            // Transfer details
-            $table->string('transfer_reference')->nullable();
-            $table->string('receipt_url')->nullable();
             $table->timestamp('completed_at')->nullable();
-            
-            // Rejection
-            $table->text('rejection_reason')->nullable();
             
             $table->timestamps();
 

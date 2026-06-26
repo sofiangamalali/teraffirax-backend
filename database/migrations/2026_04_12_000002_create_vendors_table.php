@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('domain')->nullable();
             $table->string('logo')->nullable();
             $table->decimal('commission', 5, 2)->nullable();
+            $table->integer('commission_payout_days')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

@@ -29,10 +29,12 @@ class SendOtpEmailJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $language = $this->creator->country?->language ?? 'en';
+
         $mailable = match ($this->type) {
-            'password_reset' => new PasswordResetOtpMail($this->otp),
-            'email_verification' => new VerifyEmailOtpMail($this->otp),
-            default => new VerifyEmailOtpMail($this->otp),
+            'password_reset' => new PasswordResetOtpMail($this->otp, $language),
+            'email_verification' => new VerifyEmailOtpMail($this->otp, $language),
+            default => new VerifyEmailOtpMail($this->otp, $language),
         };
 
         Mail::to($this->creator->email)

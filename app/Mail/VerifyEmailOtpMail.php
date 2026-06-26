@@ -7,12 +7,14 @@ use Illuminate\Mail\Mailable;
 class VerifyEmailOtpMail extends Mailable
 {
     public function __construct(
-        public string $otp
+        public string $otp,
+        public string $language = 'en'
     ) {}
 
     public function build()
     {
-        return $this->subject('Verify your email')
+        return $this->subject(__('Verify your email'))
+            ->locale($this->language)
             ->view('emails.verify-otp');
     }
 }

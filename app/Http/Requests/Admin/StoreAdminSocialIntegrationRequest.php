@@ -3,6 +3,10 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\PlatformEnum;
+use App\Enums\IntegrationTypeEnum;
+use App\Enums\SocialIntegrationStatusEnum;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreAdminSocialIntegrationRequest extends FormRequest
 {
@@ -22,9 +26,9 @@ class StoreAdminSocialIntegrationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'platform' => ['required', 'string', 'in:telegram,tiktok,instagram,youtube,facebook'],
-            'type' => ['required', 'string', 'in:channel,group,profile,page'],
-            'status' => ['required', 'string', 'in:active,inactive,pending'],
+            'platform' => ['required', new Enum(PlatformEnum::class)],
+            'type' => ['required', new Enum(IntegrationTypeEnum::class)],
+            'status' => ['required', new Enum(SocialIntegrationStatusEnum::class)],
             'external_id' => ['nullable', 'string'],
             'name' => ['nullable', 'string'],
             'username' => ['nullable', 'string'],

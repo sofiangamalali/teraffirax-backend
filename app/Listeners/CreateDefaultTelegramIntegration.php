@@ -34,7 +34,7 @@ class CreateDefaultTelegramIntegration
                 [
                     'status' => 'active',
                     'name' => 'Test Channel',
-                    'username' => $creator->id . '_telegraam',
+                    'username' => $creator->name . '_telegraam',
                     'external_id' => $creator->id . '_telegraam',
                 ]
             );
@@ -47,7 +47,7 @@ class CreateDefaultTelegramIntegration
                 ],
                 [
                     'name' => 'Default Template',
-                    'content' => "{{discount}}% خصم على {{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
+                    'content' => "{{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
                 ]
             );
         } catch (\Exception $e) {

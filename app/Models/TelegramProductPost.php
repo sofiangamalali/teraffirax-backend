@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\TelegramPostStatusEnum;
 
 class TelegramProductPost extends Model
 {
@@ -19,6 +20,7 @@ class TelegramProductPost extends Model
 
     protected $casts = [
         'posted_at' => 'datetime',
+        'post_status' => TelegramPostStatusEnum::class,
     ];
 
     /**

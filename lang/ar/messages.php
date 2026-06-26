@@ -25,4 +25,5 @@ return [
     'female' => 'أنثى',
     'pending' => 'قيد الانتظار',
     'failed' => 'فشلت',
+    'account_manager_assigned_to_creators' => 'لا يمكن حذف مدير الحساب لأنه مرتبط بصانع محتوى واحد أو أكثر.',
 ];

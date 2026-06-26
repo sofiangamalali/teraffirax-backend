@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\VendorCategoryStatusEnum;
 
 return new class extends Migration {
     /**
@@ -20,7 +21,7 @@ return new class extends Migration {
                 ->cascadeOnDelete();
             $table->string('external_id');
             $table->string('external_name')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', array_column(VendorCategoryStatusEnum::cases(), 'value'))->default(VendorCategoryStatusEnum::ACTIVE->value);
             $table->decimal('commission', 5, 2)->nullable();
             $table->foreignId('parent_vendor_category_id')
                 ->nullable()
@@ -28,7 +29,7 @@ return new class extends Migration {
                 ->nullOnDelete();
             $table->timestamps();
 
-            $table->unique(['vendor_id', 'category_id']);
+            $table->index(['vendor_id', 'category_id']);
 
             $table->unique(['vendor_id', 'external_id']);
         });

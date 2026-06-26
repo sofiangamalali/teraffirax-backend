@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\TelegramPostStatusEnum;
 
 return new class extends Migration
 {
@@ -25,7 +26,7 @@ return new class extends Migration
 
             // 'pending' = reserved slot before calling Flask.
             // 'posted'  = confirmed delivery after Flask responded 2xx.
-            $table->string('post_status')->default('pending');
+            $table->enum('post_status', array_column(TelegramPostStatusEnum::cases(), 'value'))->default(TelegramPostStatusEnum::PENDING->value);
 
             $table->timestamp('posted_at')->nullable();
             $table->timestamps();

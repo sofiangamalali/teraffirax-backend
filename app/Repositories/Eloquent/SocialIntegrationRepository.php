@@ -39,4 +39,12 @@ class SocialIntegrationRepository implements SocialIntegrationRepositoryInterfac
     {
         return $socialIntegration->delete();
     }
+
+    /**
+     * Update social integration status or fields by ID.
+     */
+    public function updateById(int $id, array $data): bool
+    {
+        return $this->model->newQuery()->where('id', $id)->update($data) > 0;
+    }
 }

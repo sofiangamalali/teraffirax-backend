@@ -11,6 +11,11 @@ class CreatorVendorTrackingRepository implements CreatorVendorTrackingRepository
     {
     }
 
+    public function find(int $id): ?CreatorVendorTracking
+    {
+        return $this->model->find($id);
+    }
+
     public function findByCreatorAndVendor(int $creatorId, int $vendorId): ?CreatorVendorTracking
     {
         return $this->model->where('creator_id', $creatorId)
@@ -33,5 +38,28 @@ class CreatorVendorTrackingRepository implements CreatorVendorTrackingRepository
     public function delete(int $id): bool
     {
         return $this->model->destroy($id) > 0;
+    }
+
+    /**
+     * Get active tracking for creator and vendor.
+     */
+    public function getActiveTrackingForCreatorAndVendor(int $creatorId, int $vendorId): ?CreatorVendorTracking
+    {
+        return $this->model->newQuery()
+            ->where('creator_id', $creatorId)
+            ->where('vendor_id', $vendorId)
+            ->where('is_active', true)
+            ->whereHas('vendor', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->with('vendor')
+            ->first();
+    }
+
+    public function paginateForCreator(int $creatorId, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->model->where('creator_id', $creatorId)
+            ->with('vendor')
+            ->paginate($perPage);
     }
 }

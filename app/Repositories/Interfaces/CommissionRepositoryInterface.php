@@ -21,4 +21,8 @@ interface CommissionRepositoryInterface
      * Get all unmatured commissions (but calculated) older than $days grouped by creator_id.
      */
     public function getUnmaturedCommissionsByCreator(int $days = 90);
+
+    public function create(array $data): \App\Models\Commission;
+
+    public function existsForDate(int $creatorId, int $vendorId, string $date): bool;
 }

@@ -139,4 +139,18 @@ class CommissionRepositoryTest extends TestCase
         $this->assertNotContains(20.00, $amounts);
         $this->assertNotContains(30.00, $amounts);
     }
+
+    public function test_commands_log_correctly(): void
+    {
+        \Illuminate\Support\Facades\Log::shouldReceive('channel')
+            ->with('commission')
+            ->andReturnSelf();
+        
+        \Illuminate\Support\Facades\Log::shouldReceive('info')
+            ->atLeast()->once();
+
+        $this->artisan('commissions:calculate');
+        $this->artisan('commissions:mature');
+        $this->artisan('balances:reconcile');
+    }
 }

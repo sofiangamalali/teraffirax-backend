@@ -20,6 +20,11 @@ class VendorService
         return $this->vendorRepository->all();
     }
 
+    public function getActiveVendors(): Collection
+    {
+        return $this->vendorRepository->getActive();
+    }
+
     public function getPaginatedVendors(int $perPage = 15): LengthAwarePaginator
     {
         return $this->vendorRepository->paginate($perPage);

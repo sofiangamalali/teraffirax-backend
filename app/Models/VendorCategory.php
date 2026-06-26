@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\VendorCategoryStatusEnum;
 
 class VendorCategory extends Model
 {
@@ -22,6 +23,7 @@ class VendorCategory extends Model
 
     protected $casts = [
         'commission' => 'float',
+        'status' => VendorCategoryStatusEnum::class,
     ];
 
     /**

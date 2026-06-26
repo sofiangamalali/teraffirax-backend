@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\ReconciliationService;
 use App\Models\CronRunLog;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class ReconcileBalancesCommand extends Command
 {
@@ -30,6 +31,7 @@ class ReconcileBalancesCommand extends Command
     {
         $runId = Str::uuid();
         $this->info("Starting balance reconciliation... Run ID: {$runId}");
+        Log::channel('commission')->info("Starting balances:reconcile command. Run ID: {$runId}");
 
         $log = CronRunLog::create([
             'cron_name' => 'balances:reconcile',
@@ -48,6 +50,7 @@ class ReconcileBalancesCommand extends Command
             ]);
 
             $this->info("Reconciliation complete. Generated {$alertsGenerated} alerts.");
+            Log::channel('commission')->info("balances:reconcile command finished successfully. Run ID: {$runId}. Alerts generated: {$alertsGenerated}");
         } catch (\Exception $e) {
             $log->update([
                 'finished_at' => now(),
@@ -56,6 +59,7 @@ class ReconcileBalancesCommand extends Command
             ]);
 
             $this->error("Failed: " . $e->getMessage());
+            Log::channel('commission')->error("balances:reconcile command failed. Run ID: {$runId}. Error: " . $e->getMessage(), ['exception' => $e]);
         }
     }
 }

@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('creator_id')->constrained()->onDelete('cascade');
             $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
             $table->string('track_id');
+            $table->decimal('platform_commission_percentage', 5, 2)->default(50.00);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
 

@@ -8,6 +8,7 @@ use App\Models\WithdrawRequest;
 use App\Models\BalanceLedger;
 use App\Repositories\Interfaces\ReconciliationAlertRepositoryInterface;
 use App\Enums\WithdrawRequestStatusEnum;
+use Illuminate\Support\Facades\Log;
 
 class ReconciliationService
 {
@@ -22,6 +23,8 @@ class ReconciliationService
     {
         $creators = Creator::all();
         $alertsGenerated = 0;
+
+        Log::channel('commission')->info("Starting balance reconciliation check for " . count($creators) . " creators.");
 
         foreach ($creators as $creator) {
             // 1. Recompute pending_balance
@@ -38,7 +41,6 @@ class ReconciliationService
             $totalWithdrawnOrPending = WithdrawRequest::where('creator_id', $creator->id)
                 ->whereIn('status', [
                     WithdrawRequestStatusEnum::PENDING,
-                    WithdrawRequestStatusEnum::APPROVED,
                     WithdrawRequestStatusEnum::COMPLETED,
                 ])
                 ->sum('amount');
@@ -71,6 +73,7 @@ class ReconciliationService
                     'message' => implode(' | ', $mismatches),
                 ]);
                 $alertsGenerated++;
+                Log::channel('commission')->warning("Reconciliation mismatch found for Creator ID: {$creator->id}. Details: " . implode(' | ', $mismatches));
             }
         }
 

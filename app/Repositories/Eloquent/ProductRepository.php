@@ -58,4 +58,44 @@ class ProductRepository implements ProductRepositoryInterface
 
         return $product->delete();
     }
+
+    /**
+     * Find the best product in a category for a creator based on scoring and publishing restrictions.
+     */
+    public function findBestProductForCreator(int $creatorId, int $categoryId, array $excludedProductIds, int $socialIntegrationId): ?Product
+    {
+        $isSqlite = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'sqlite';
+        $interval24 = $isSqlite ? "datetime('now', '-24 hours')" : "NOW() - INTERVAL 24 HOUR";
+        $interval3 = $isSqlite ? "datetime('now', '-3 hours')" : "NOW() - INTERVAL 3 HOUR";
+
+        return $this->model->newQuery()
+            ->join('creator_vendor_tracking as cva', function ($join) use ($creatorId) {
+                $join->on('cva.vendor_id', '=', 'products.vendor_id')
+                    ->where('cva.creator_id', '=', $creatorId)
+                    ->where('cva.is_active', '=', true);
+            })
+            ->join('vendors as v', function ($join) {
+                $join->on('v.id', '=', 'products.vendor_id')
+                    ->where('v.is_active', '=', true);
+            })
+            ->where('products.category_id', $categoryId)
+            ->where('products.status', 'active')
+            ->whereNotIn('products.id', $excludedProductIds)
+            ->whereNotIn('products.id', function ($query) use ($socialIntegrationId, $interval24) {
+                $query->select('product_id')
+                    ->from('telegram_product_posts')
+                    ->where('social_integration_id', $socialIntegrationId)
+                    ->where('post_status', 'posted')
+                    ->whereRaw("posted_at > {$interval24}");
+            })
+            ->whereNotIn('products.id', function ($query) use ($interval3) {
+                $query->select('product_id')
+                    ->from('telegram_product_posts')
+                    ->where('post_status', 'posted')
+                    ->whereRaw("posted_at > {$interval3}");
+            })
+            ->orderBy('products.score', 'desc')
+            ->select('products.*')
+            ->first();
+    }
 }

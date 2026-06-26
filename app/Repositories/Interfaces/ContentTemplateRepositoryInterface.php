@@ -15,4 +15,9 @@ interface ContentTemplateRepositoryInterface
     public function delete(ContentTemplate $contentTemplate): bool;
     public function unsetDefaultsForIntegration(int $creatorId, int $integrationId, ?int $excludeId = null): void;
     public function getOldestForIntegration(int $creatorId, int $integrationId, int $excludeId): ?ContentTemplate;
+
+    /**
+     * Find default content template for creator and social integration channel.
+     */
+    public function findDefaultTemplate(int $creatorId, int $socialIntegrationId): ?ContentTemplate;
 }
