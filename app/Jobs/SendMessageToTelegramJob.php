@@ -63,25 +63,25 @@ class SendMessageToTelegramJob implements ShouldQueue
             'product_id' => $this->product->id
         ]);
 
-        $shouldSkip = false;
-        DB::transaction(function () use (&$shouldSkip, $idempotencyLockKey, $publishingService) {
-            $exists = $publishingService->existsRecentPostForProduct(
-                $this->product->id,
-                $this->socialIntegrationId,
-                3
-            );
+        // $shouldSkip = false;
+        // DB::transaction(function () use (&$shouldSkip, $idempotencyLockKey, $publishingService) {
+        //     $exists = $publishingService->existsRecentPostForProduct(
+        //         $this->product->id,
+        //         $this->socialIntegrationId,
+        //         3
+        //     );
 
-            if ($exists) {
-                Redis::del($this->lockKey);
-                Redis::del($idempotencyLockKey);
-                $shouldSkip = true;
-                return;
-            }
-        });
+        //     if ($exists) {
+        //         Redis::del($this->lockKey);
+        //         Redis::del($idempotencyLockKey);
+        //         $shouldSkip = true;
+        //         return;
+        //     }
+        // });
 
-        if ($shouldSkip) {
-            return;
-        }
+        // if ($shouldSkip) {
+        //     return;
+        // }
 
         Log::channel('posting')->info("DIAG STEP 2: passed DB duplicate check", [
             'product_id' => $this->product->id
