@@ -16,3 +16,7 @@ Route::group([], __DIR__ . '/api/creator.php');
 
 // Admin Routes
 Route::prefix('admin')->group(__DIR__ . '/api/admin.php');
+
+// Scraper Routes
+Route::prefix('scraper')->group(__DIR__ . '/api/scraper.php');
+

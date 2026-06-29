@@ -1,9 +1,15 @@
 <?php
 
+use App\Exceptions\GlobalExceptionHandler;
+use App\Http\Middleware\AuthenticateScraper;
+use App\Http\Middleware\AuthenticateToken;
+use App\Http\Middleware\CheckCreatorActive;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsCreator;
+use App\Http\Middleware\SetLocaleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,14 +19,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(\App\Http\Middleware\SetLocaleMiddleware::class);
+        $middleware->append(SetLocaleMiddleware::class);
         $middleware->alias([
-            'auth' => \App\Http\Middleware\AuthenticateToken::class,
-            'creator.active' => \App\Http\Middleware\CheckCreatorActive::class,
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-            'creator' => \App\Http\Middleware\EnsureUserIsCreator::class,
+            'auth' => AuthenticateToken::class,
+            'creator.active' => CheckCreatorActive::class,
+            'admin' => EnsureUserIsAdmin::class,
+            'creator' => EnsureUserIsCreator::class,
+            'auth.scraper' => AuthenticateScraper::class,
         ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        \App\Exceptions\GlobalExceptionHandler::handle($exceptions);
+        GlobalExceptionHandler::handle($exceptions);
     })->create();

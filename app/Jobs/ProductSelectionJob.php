@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\TelegramPublishingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Redis;
@@ -31,7 +32,7 @@ class ProductSelectionJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(\App\Services\TelegramPublishingService $publishingService): void
+    public function handle(TelegramPublishingService $publishingService): void
     {
         $lockKey = "channel_lock:" . $this->socialIntegrationId;
         $postingInterval = env('POSTING_INTERVAL_SECONDS', 300);

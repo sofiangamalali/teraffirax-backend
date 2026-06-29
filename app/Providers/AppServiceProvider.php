@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\{ContentTemplate, SocialIntegration, Commission, Admin};
 use App\Policies\{ContentTemplatePolicy, SocialIntegrationPolicy, CommissionPolicy, AdminPolicy};
-use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository, BalanceLedgerRepository, CronRunLogRepository, ReconciliationAlertRepository, AdminRepository, TelegramProductPostRepository, AccountManagerRepository};
-use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface, BalanceLedgerRepositoryInterface, CronRunLogRepositoryInterface, ReconciliationAlertRepositoryInterface, AdminRepositoryInterface, TelegramProductPostRepositoryInterface, AccountManagerRepositoryInterface};
+use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepository, CommissionRepository, CreatorDashboardRepository, BalanceLedgerRepository, CronRunLogRepository, ReconciliationAlertRepository, AdminRepository, TelegramProductPostRepository, AccountManagerRepository, ScraperRepository};
+use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface, BalanceLedgerRepositoryInterface, CronRunLogRepositoryInterface, ReconciliationAlertRepositoryInterface, AdminRepositoryInterface, TelegramProductPostRepositoryInterface, AccountManagerRepositoryInterface, ScraperRepositoryInterface};
 use Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,6 +43,8 @@ use App\Services\SettingService;
 use App\Repositories\Interfaces\WithdrawRequestRepositoryInterface;
 use App\Repositories\Eloquent\WithdrawRequestRepository;
 use App\Services\WithdrawRequestService;
+use App\Services\ScraperService;
+
 
 use App\Services\SlugService;
 use App\Services\TrackingLinkService;
@@ -89,10 +91,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
         $this->app->bind(TelegramProductPostRepositoryInterface::class, TelegramProductPostRepository::class);
         $this->app->bind(AccountManagerRepositoryInterface::class, AccountManagerRepository::class);
+        $this->app->bind(ScraperRepositoryInterface::class, ScraperRepository::class);
+
 
         $this->app->singleton(SlugService::class);
         $this->app->singleton(TrackingLinkService::class);
         $this->app->singleton(DailyClickService::class);
+        $this->app->singleton(ScraperService::class);
+
 
         $this->app->singleton(TrackingUrlGeneratorRegistry::class, function ($app) {
             return new TrackingUrlGeneratorRegistry([

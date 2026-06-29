@@ -44,4 +44,9 @@ return [
         'posting_bot_token' => env('TELEGRAM_POSTING_BOT_TOKEN'),
     ],
 
+    'scraper' => [
+        'token' => env('SCRAPER_SERVICE_TOKEN'),
+    ],
+
 ];
+
