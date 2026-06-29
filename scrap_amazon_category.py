@@ -46,7 +46,7 @@ def get_headers():
     }
 
 
-def send_batch_to_laravel(products: list, vendor_id: int, category_id: int) -> dict:
+def send_batch_to_laravel(products: list, vendor_id: int, category_id: int, vendor_category_id: int) -> dict:
     """
     بعت batch من المنتجات للـ Laravel ingest endpoint.
     بترجع {"created": x, "updated": y, "skipped": z}
@@ -59,9 +59,10 @@ def send_batch_to_laravel(products: list, vendor_id: int, category_id: int) -> d
             f"{LARAVEL_BASE_URL}/api/scraper/products/upsert",
             headers=get_headers(),
             json={
-                "vendor_id":   vendor_id,
-                "category_id": category_id,
-                "products":    products,
+                "vendor_id":          vendor_id,
+                "category_id":        category_id,
+                "vendor_category_id": vendor_category_id,
+                "products":           products,
             },
             timeout=REQUEST_TIMEOUT
         )
@@ -257,13 +258,13 @@ def extract_card(card) -> dict | None:
 
     return {
         "external_id":         asin,
-        "title":               title,
+        "name":                title,
         "url":                 url,
         "image_url":           image_url,
-        "price":               new_price,
-        "original_price":      old_price,
+        "price_after":         new_price,
+        "price_before":        old_price,
         "discount_percentage": compute_discount_percent(old_price, new_price),
-        # rank بيتحدد بعدين لما بنضيفه في الـ loop
+        # rank_in_vendor_category بيتحدد بعدين لما بنضيفه في الـ loop
     }
 
 
@@ -282,10 +283,10 @@ def main():
         sys.exit(1)
 
     # البيانات اللي محتاجينها من الـ category object
-    vendor_category_id = category["id"]           # ID في vendor_categories
-    platform_category_id = category["category_id"] # ID في categories (platform)
-    external_id        = category["external_id"]   # Amazon browse node
-    cat_name           = category.get("external_name", external_id)
+    vendor_category_id = category["vendor_category_id"] # ID في vendor_categories
+    platform_category_id = category["category_id"]       # ID في categories (platform)
+    external_id        = category["external_id"]         # Amazon browse node
+    cat_name           = f"category_{vendor_category_id}"
 
     # vendor_id — محتاجينه للـ ingest API
     # مش جاي في الـ response الحالي، محتاج تضيفه
@@ -308,7 +309,7 @@ def main():
         nonlocal total_created, total_updated, total_skipped
         if not batch_buffer:
             return
-        result = send_batch_to_laravel(batch_buffer, vendor_id, platform_category_id)
+        result = send_batch_to_laravel(batch_buffer, vendor_id, platform_category_id, vendor_category_id)
         total_created += result.get("created", 0)
         total_updated += result.get("updated", 0)
         total_skipped += result.get("skipped", 0)
@@ -363,7 +364,7 @@ def main():
                             continue
 
                         rank_counter += 1
-                        product["rank"] = rank_counter
+                        product["rank_in_vendor_category"] = rank_counter
                         seen_asins.add(product["external_id"])
                         batch_buffer.append(product)
                         page_saved += 1

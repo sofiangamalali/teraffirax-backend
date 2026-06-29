@@ -12,26 +12,27 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
+
         $categories = [
+            ['en' => "Men's Fashion", 'ar' => 'أزياء رجالي'],
+            ['en' => "Women's Fashion", 'ar' => 'أزياء حريمي'],
+            ['en' => "Men's Shoes", 'ar' => 'أحذية رجالي'],
+            ['en' => "Men's Clothing", 'ar' => 'ملابس رجالي'],
+            ['en' => "Men's Bags", 'ar' => 'حقائب رجالي'],
+            ['en' => 'Watches', 'ar' => 'ساعات'],
             ['en' => 'Electronics', 'ar' => 'إلكترونيات'],
-            ['en' => 'Fashion & Apparel', 'ar' => 'أزياء وملابس'],
-            ['en' => 'Beauty & Personal Care', 'ar' => 'جمال وعناية شخصية'],
+            ['en' => 'Headphones & Audio', 'ar' => 'سماعات وصوتيات'],
+            ['en' => 'Mobile Accessories', 'ar' => 'إكسسوارات الموبايل'],
+            ['en' => 'Mobiles & Tablets', 'ar' => 'موبايلات وتابلت'],
+            ['en' => 'Computers & Laptops', 'ar' => 'كمبيوتر ولاب توب'],
             ['en' => 'Home & Kitchen', 'ar' => 'المنزل والمطبخ'],
-            ['en' => 'Health & Wellness', 'ar' => 'صحة وعافية'],
-            ['en' => 'Sports & Outdoors', 'ar' => 'رياضة وأنشطة خارجية'],
-            ['en' => 'Books & Stationery', 'ar' => 'كتب وأدوات مكتبية'],
-            ['en' => 'Toys & Games', 'ar' => 'ألعاب'],
-            ['en' => 'Automotive', 'ar' => 'سيارات'],
-            ['en' => 'Pet Supplies', 'ar' => 'مستلزمات الحيوانات الأليفة'],
-            ['en' => 'Digital Services', 'ar' => 'خدمات رقمية'],
-            ['en' => 'Software & Apps', 'ar' => 'برمجيات وتطبيقات'],
-            ['en' => 'Education & Courses', 'ar' => 'تعليم ودورات'],
-            ['en' => 'Real Estate', 'ar' => 'عقارات'],
-            ['en' => 'Food & Beverages', 'ar' => 'أغذية ومشروبات'],
+            ['en' => 'Health & Personal Care', 'ar' => 'صحة وعناية شخصية'],
+            ['en' => 'Beauty & Cosmetics', 'ar' => 'جمال ومستحضرات تجميل'],
+            ['en' => 'Automotive', 'ar' => 'مستلزمات سيارات'],
+            ['en' => 'Supermarket & Grocery', 'ar' => 'سوبرماركت وبقالة'],
         ];
 
         foreach ($categories as $category) {
-            // Find existing by English name if already JSON or old string
             $existing = Category::all()->filter(function($c) use ($category) {
                 return $c->getTranslation('name', 'en') === $category['en'];
             })->first();

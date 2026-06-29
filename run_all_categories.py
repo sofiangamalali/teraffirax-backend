@@ -74,8 +74,8 @@ def main():
     fail_count    = 0
 
     for cat in categories:
-        cat_id   = cat["id"]
-        cat_name = cat.get("external_name", f"category_{cat_id}")
+        cat_id   = cat["vendor_category_id"]
+        cat_name = f"category_{cat_id}"
 
         print(f"{'─' * 60}")
         print(f"📂 [{cat_id}] {cat_name} | node: {cat['external_id']}")

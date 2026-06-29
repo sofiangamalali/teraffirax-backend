@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             WithdrawMethodSeeder::class,
             VendorSeeder::class,
+            VendorCategorySeeder::class,
             CreatorSeeder::class, //for test
             CreatorDashboardVideoSeeder::class,
             AdminSeeder::class,
