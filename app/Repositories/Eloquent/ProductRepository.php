@@ -64,9 +64,8 @@ class ProductRepository implements ProductRepositoryInterface
      */
     public function findBestProductForCreator(int $creatorId, int $categoryId, array $excludedProductIds, int $socialIntegrationId): ?Product
     {
-        $isSqlite = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'sqlite';
-        $interval24 = $isSqlite ? "datetime('now', '-24 hours')" : "NOW() - INTERVAL 24 HOUR";
-        $interval3 = $isSqlite ? "datetime('now', '-3 hours')" : "NOW() - INTERVAL 3 HOUR";
+        $sub24 = now()->subHours(24);
+        $sub3 = now()->subHours(3);
 
         return $this->model->newQuery()
             ->join('creator_vendor_tracking as cva', function ($join) use ($creatorId) {
@@ -81,18 +80,18 @@ class ProductRepository implements ProductRepositoryInterface
             ->where('products.category_id', $categoryId)
             ->where('products.status', 'active')
             ->whereNotIn('products.id', $excludedProductIds)
-            ->whereNotIn('products.id', function ($query) use ($socialIntegrationId, $interval24) {
+            ->whereNotIn('products.id', function ($query) use ($socialIntegrationId, $sub24) {
                 $query->select('product_id')
                     ->from('telegram_product_posts')
                     ->where('social_integration_id', $socialIntegrationId)
                     ->where('post_status', 'posted')
-                    ->whereRaw("posted_at > {$interval24}");
+                    ->where('posted_at', '>', $sub24);
             })
-            ->whereNotIn('products.id', function ($query) use ($interval3) {
+            ->whereNotIn('products.id', function ($query) use ($sub3) {
                 $query->select('product_id')
                     ->from('telegram_product_posts')
                     ->where('post_status', 'posted')
-                    ->whereRaw("posted_at > {$interval3}");
+                    ->where('posted_at', '>', $sub3);
             })
             ->orderBy('products.score', 'desc')
             ->select('products.*')
