@@ -59,6 +59,10 @@ class SendMessageToTelegramJob implements ShouldQueue
             return;
         }
 
+        Log::channel('posting')->info("DIAG STEP 1: passed idempotency check", [
+            'product_id' => $this->product->id
+        ]);
+
         $shouldSkip = false;
         DB::transaction(function () use (&$shouldSkip, $idempotencyLockKey, $publishingService) {
             $exists = $publishingService->existsRecentPostForProduct(
@@ -79,24 +83,41 @@ class SendMessageToTelegramJob implements ShouldQueue
             return;
         }
 
+        Log::channel('posting')->info("DIAG STEP 2: passed DB duplicate check", [
+            'product_id' => $this->product->id
+        ]);
+
         $trackingDto = new TrackingLinkDTO(
             creator_id: $this->creatorId,
             product_id: $this->product->id,
             redirect_url: $this->product->url
         );
         $trackingLink = $trackingLinkService->createTrackingLink($this->creatorId, $trackingDto);
+
+        Log::channel('posting')->info("DIAG STEP 3: tracking link created", [
+            'product_id' => $this->product->id
+        ]);
+
         $affiliateLink = route('redirect', ['slug' => $trackingLink->slug]);
         $affiliateLink = preg_replace('/^https?:\/\//i', '', $affiliateLink);
 
         $template = $publishingService->findDefaultTemplate($this->creatorId, $this->socialIntegrationId);
 
         if (!$template) {
+            Log::channel('posting')->warning("DIAG STEP 4: template is null", [
+                'product_id' => $this->product->id
+            ]);
             $message = "No default content template found for creator {$this->creatorId} on channel {$this->socialIntegrationId}.";
             Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
             $this->fail(new \RuntimeException($message));
             return;
         }
+
+        Log::channel('posting')->info("DIAG STEP 4: template found", [
+            'template_id' => $template->id,
+            'product_id'  => $this->product->id
+        ]);
 
         $caption = $templateRenderer->render($template->content, [
             'product_name'  => $this->product->name,
@@ -138,18 +159,30 @@ class SendMessageToTelegramJob implements ShouldQueue
             throw $e;
         }
 
+        Log::channel('posting')->info("DIAG STEP 5: Flask responded", [
+            'product_id'  => $this->product->id,
+            'http_status' => $response->status(),
+            'body'        => substr($response->body(), 0, 500)
+        ]);
+
         if ($response->failed()) {
             Redis::del($idempotencyLockKey);
             throw new \RuntimeException("Flask API returned error status: " . $response->status());
         }
 
         if (($response['status'] ?? '') === 'rate_limited') {
+            Log::channel('posting')->info("DIAG STEP: rate_limited branch taken", [
+                'product_id' => $this->product->id
+            ]);
             Redis::del($idempotencyLockKey);
             $this->release($response['retry_after'] ?? 60);
             return;
         }
 
         if (($response['status'] ?? '') === 'rejected') {
+            Log::channel('posting')->info("DIAG STEP: rejected branch taken", [
+                'product_id' => $this->product->id
+            ]);
             $publishingService->deactivateIntegration($this->socialIntegrationId);
             Redis::del($this->lockKey);
             Redis::del($idempotencyLockKey);
@@ -158,9 +191,16 @@ class SendMessageToTelegramJob implements ShouldQueue
         }
 
         if (($response['status'] ?? '') === 'error') {
+            Log::channel('posting')->info("DIAG STEP: error branch taken", [
+                'product_id' => $this->product->id
+            ]);
             Redis::del($idempotencyLockKey);
             throw new \RuntimeException($response['reason'] ?? 'Unknown Flask scraper error');
         }
+
+        Log::channel('posting')->info("DIAG STEP: success branch taken", [
+            'product_id' => $this->product->id
+        ]);
 
         $publishingService->recordProductPost($this->socialIntegrationId, $this->product->id);
 
