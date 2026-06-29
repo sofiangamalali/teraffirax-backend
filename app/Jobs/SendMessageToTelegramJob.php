@@ -211,6 +211,7 @@ class SendMessageToTelegramJob implements ShouldQueue
         ]);
 
         $publishingService->updateCategoryLastPostedAt($this->creatorId, $this->categoryId);
+        Redis::del($this->lockKey);
     }
 
     public function failed(\Throwable $exception): void
