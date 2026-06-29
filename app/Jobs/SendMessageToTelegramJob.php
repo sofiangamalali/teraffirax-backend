@@ -19,7 +19,7 @@ class SendMessageToTelegramJob implements ShouldQueue
     use Queueable;
 
     public int $tries = 3;
-    public int $timeout = 30;
+    public int $timeout = 90;
 
     public function backoff(): array
     {
@@ -116,14 +116,14 @@ class SendMessageToTelegramJob implements ShouldQueue
 
         Log::channel('posting')->info("DIAG STEP 4: template found", [
             'template_id' => $template->id,
-            'product_id'  => $this->product->id
+            'product_id' => $this->product->id
         ]);
 
         $caption = $templateRenderer->render($template->content, [
-            'product_name'  => $this->product->name,
+            'product_name' => $this->product->name,
             'product_price' => floor($this->product->price_after),
-            'discount'      => $this->product->discount_percentage ?? 0,
-            'link'          => $affiliateLink,
+            'discount' => $this->product->discount_percentage ?? 0,
+            'link' => $affiliateLink,
         ]);
 
         $flaskUrl = config('services.flask.url') . '/send-telegram';
@@ -138,9 +138,9 @@ class SendMessageToTelegramJob implements ShouldQueue
         }
 
         try {
-            $response = Http::timeout(30)->post($flaskUrl, [
-                'chat_id'   => $this->externalId,
-                'caption'   => $caption,
+            $response = Http::timeout(80)->post($flaskUrl, [
+                'chat_id' => $this->externalId,
+                'caption' => $caption,
                 'image_url' => $this->screenshotUrl,
                 'bot_token' => $botToken,
             ]);
@@ -160,9 +160,9 @@ class SendMessageToTelegramJob implements ShouldQueue
         }
 
         Log::channel('posting')->info("DIAG STEP 5: Flask responded", [
-            'product_id'  => $this->product->id,
+            'product_id' => $this->product->id,
             'http_status' => $response->status(),
-            'body'        => substr($response->body(), 0, 500)
+            'body' => substr($response->body(), 0, 500)
         ]);
 
         if ($response->failed()) {
@@ -206,8 +206,8 @@ class SendMessageToTelegramJob implements ShouldQueue
 
         Log::channel('posting')->info("Successfully posted product to Telegram channel.", [
             'social_integration_id' => $this->socialIntegrationId,
-            'product_id'            => $this->product->id,
-            'external_id'           => $this->externalId,
+            'product_id' => $this->product->id,
+            'external_id' => $this->externalId,
         ]);
 
         $publishingService->updateCategoryLastPostedAt($this->creatorId, $this->categoryId);
@@ -219,8 +219,8 @@ class SendMessageToTelegramJob implements ShouldQueue
         Redis::del("telegram_post_idempotency:" . $this->idempotencyKey);
         Log::channel('posting')->error('SendMessageToTelegramJob permanently failed', [
             'social_integration_id' => $this->socialIntegrationId,
-            'product_id'            => $this->product->id,
-            'error'                 => $exception->getMessage(),
+            'product_id' => $this->product->id,
+            'error' => $exception->getMessage(),
         ]);
     }
 }
