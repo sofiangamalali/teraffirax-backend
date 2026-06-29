@@ -36,7 +36,7 @@ class UpdateContentTemplateRequest extends FormRequest
                         if ($integrationId) {
                             $integration = SocialIntegration::find($integrationId);
                             if ($integration) {
-                                app(TemplateValidationService::class)->validate($integration->platform, $value);
+                                app(TemplateValidationService::class)->validate($integration->platform->value, $value);
                             }
                         }
                     } catch (\InvalidArgumentException $e) {

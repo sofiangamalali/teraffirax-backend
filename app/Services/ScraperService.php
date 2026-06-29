@@ -12,7 +12,8 @@ class ScraperService
 {
     public function __construct(
         protected ScraperRepositoryInterface $scraperRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Get active vendor categories by vendor slug.

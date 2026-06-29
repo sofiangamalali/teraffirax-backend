@@ -8,11 +8,11 @@ use App\Models\Category;
 use App\Models\Vendor;
 use App\Models\SocialIntegration;
 use App\Models\CreatorVendorTracking;
-use App\Models\Commission;
 use App\Models\ContentTemplate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Enums\SocialIntegrationStatusEnum;
 
 class CreatorSeeder extends Seeder
 {
@@ -55,6 +55,7 @@ class CreatorSeeder extends Seeder
                         'vendor_id' => $vendor->id,
                     ],
                     [
+                        'is_active' => true,
                         'track_id' => 'traffirax-21',
                     ]
                 );
@@ -67,10 +68,10 @@ class CreatorSeeder extends Seeder
                     'type' => 'channel',
                 ],
                 [
-                    'status' => 'pending',
+                    'status' => SocialIntegrationStatusEnum::ACTIVE,
                     'name' => 'Test Channel',
                     'username' => 'test_channel',
-                    'external_id' => '123456789',
+                    'external_id' => '-1003505627597',
                 ]
             );
 

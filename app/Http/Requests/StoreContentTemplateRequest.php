@@ -33,7 +33,7 @@ class StoreContentTemplateRequest extends FormRequest
                         if ($this->social_integration_id) {
                             $integration = SocialIntegration::find($this->social_integration_id);
                             if ($integration) {
-                                app(TemplateValidationService::class)->validate($integration->platform, $value);
+                                app(TemplateValidationService::class)->validate($integration->platform->value, $value);
                             }
                         }
                     } catch (\InvalidArgumentException $e) {
