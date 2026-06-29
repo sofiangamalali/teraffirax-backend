@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\FlaskHealthCheck;
 use App\Services\TelegramPublishingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -72,13 +73,13 @@ class ProductSelectionJob implements ShouldQueue
             ]));
 
             // Flask health check before dispatching ValidateProductDataJob
-            if (!\App\Services\FlaskHealthCheck::isAlive()) {
-                Redis::del($lockKey);
-                Log::channel('posting')->warning('Flask service is down, skipping cycle', [
-                    'social_integration_id' => $this->socialIntegrationId,
-                ]);
-                return;
-            }
+            // if (!FlaskHealthCheck::isAlive()) {
+            //     Redis::del($lockKey);
+            //     Log::channel('posting')->warning('Flask service is down, skipping cycle', [
+            //         'social_integration_id' => $this->socialIntegrationId,
+            //     ]);
+            //     return;
+            // }
 
             ValidateProductDataJob::dispatch(
                 socialIntegrationId: $this->socialIntegrationId,
