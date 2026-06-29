@@ -49,15 +49,15 @@ class SendMessageToTelegramJob implements ShouldQueue
 
         $idempotencyLockKey = "telegram_post_idempotency:" . $this->idempotencyKey;
         // Try to acquire a lock/flag for this idempotency key for 1 hour (3600 seconds)
-        $isUnique = Redis::set($idempotencyLockKey, '1', 'EX', 3600, 'NX');
-        if (!$isUnique) {
-            Log::channel('posting')->warning("Duplicate post blocked by idempotency check", [
-                'idempotency_key' => $this->idempotencyKey,
-                'product_id' => $this->product->id
-            ]);
-            Redis::del($this->lockKey);
-            return;
-        }
+        // $isUnique = Redis::set($idempotencyLockKey, '1', 'EX', 3600, 'NX');
+        // if (!$isUnique) {
+        //     Log::channel('posting')->warning("Duplicate post blocked by idempotency check", [
+        //         'idempotency_key' => $this->idempotencyKey,
+        //         'product_id' => $this->product->id
+        //     ]);
+        //     Redis::del($this->lockKey);
+        //     return;
+        // }
 
         Log::channel('posting')->info("DIAG STEP 1: passed idempotency check", [
             'product_id' => $this->product->id
