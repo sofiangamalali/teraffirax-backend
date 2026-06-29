@@ -37,12 +37,12 @@ class ProductSelectionJob implements ShouldQueue
         $lockKey = "channel_lock:" . $this->socialIntegrationId;
         $postingInterval = env('POSTING_INTERVAL_SECONDS', 300);
 
-        if (!$this->lockAlreadyAcquired) {
-            $acquired = Redis::set($lockKey, '1', 'EX', $postingInterval, 'NX');
-            if (!$acquired) {
-                return;
-            }
-        }
+        // if (!$this->lockAlreadyAcquired) {
+        //     $acquired = Redis::set($lockKey, '1', 'EX', $postingInterval, 'NX');
+        //     if (!$acquired) {
+        //         return;
+        //     }
+        // }
 
         try {
             $selection = $publishingService->selectProductForCreator(
