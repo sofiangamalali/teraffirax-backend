@@ -67,6 +67,9 @@ class ValidateProductDataJob implements ShouldQueue
                 $this->handleOutOfStock();
             } elseif ($status === 'unavailable') {
                 $this->handleUnavailable();
+            } elseif ($status === 'error') {
+                $reason = $data['reason'] ?? 'unknown_reason';
+                $this->handleFlaskError(new \RuntimeException("Flask validation failed: " . $reason));
             } else {
                 $this->handleFlaskError(new \RuntimeException("Unknown status returned from Flask: " . $status));
             }
