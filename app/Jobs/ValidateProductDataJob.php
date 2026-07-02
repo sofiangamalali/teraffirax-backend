@@ -35,6 +35,7 @@ class ValidateProductDataJob implements ShouldQueue
 
     public function handle(TelegramPublishingService $publishingService): void
     {
+        $start = microtime(true);
         $this->publishingService = $publishingService;
         $flaskUrl = env('PYTHON_PRODUCT_SCRAP_URL', 'http://127.0.0.1:5000') . '/validate';
 
@@ -51,6 +52,10 @@ class ValidateProductDataJob implements ShouldQueue
                 $responseBody = $response->body();
                 $errorDetails = json_decode($responseBody, true)['error'] ?? json_decode($responseBody, true)['message'] ?? substr($responseBody, 0, 200);
                 $this->handleFlaskError(new \RuntimeException("Flask validation failed with status " . $response->status() . " (Details: " . $errorDetails . ")"));
+                Log::channel('posting')->info('ValidateProductDataJob finished', [
+                    'duration_ms' => round((microtime(true) - $start) * 1000),
+                    'product_id' => $this->product->id,
+                ]);
                 return;
             }
 
@@ -74,10 +79,23 @@ class ValidateProductDataJob implements ShouldQueue
                 $this->handleFlaskError(new \RuntimeException("Unknown status returned from Flask: " . $status));
             }
 
+            Log::channel('posting')->info('ValidateProductDataJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
+
         } catch (ConnectionException $e) {
             $this->handleFlaskError($e);
+            Log::channel('posting')->info('ValidateProductDataJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
         } catch (\Exception $e) {
             $this->handleFlaskError($e);
+            Log::channel('posting')->info('ValidateProductDataJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
         }
     }
 

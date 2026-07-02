@@ -46,6 +46,7 @@ class SendMessageToTelegramJob implements ShouldQueue
         TemplateRendererService $templateRenderer,
         TelegramPublishingService $publishingService
     ): void {
+        $start = microtime(true);
 
         $idempotencyLockKey = "telegram_post_idempotency:" . $this->idempotencyKey;
         // Try to acquire a lock/flag for this idempotency key for 1 hour (3600 seconds)
@@ -111,6 +112,10 @@ class SendMessageToTelegramJob implements ShouldQueue
             Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
             $this->fail(new \RuntimeException($message));
+            Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
             return;
         }
 
@@ -134,6 +139,10 @@ class SendMessageToTelegramJob implements ShouldQueue
             Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
             $this->fail(new \RuntimeException($message));
+            Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
             return;
         }
 
@@ -176,6 +185,10 @@ class SendMessageToTelegramJob implements ShouldQueue
             ]);
             Redis::del($idempotencyLockKey);
             $this->release($response['retry_after'] ?? 60);
+            Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
             return;
         }
 
@@ -187,6 +200,10 @@ class SendMessageToTelegramJob implements ShouldQueue
             Redis::del($this->lockKey);
             Redis::del($idempotencyLockKey);
             $this->fail(new \RuntimeException($response['reason'] ?? 'Rejected by Telegram'));
+            Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
             return;
         }
 
@@ -212,6 +229,11 @@ class SendMessageToTelegramJob implements ShouldQueue
 
         $publishingService->updateCategoryLastPostedAt($this->creatorId, $this->categoryId);
         Redis::del($this->lockKey);
+
+        Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+            'duration_ms' => round((microtime(true) - $start) * 1000),
+            'product_id' => $this->product->id,
+        ]);
     }
 
     public function failed(\Throwable $exception): void

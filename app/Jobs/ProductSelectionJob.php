@@ -35,6 +35,7 @@ class ProductSelectionJob implements ShouldQueue
      */
     public function handle(TelegramPublishingService $publishingService): void
     {
+        $start = microtime(true);
         $lockKey = "channel_lock:" . $this->socialIntegrationId;
         $postingInterval = env('POSTING_INTERVAL_SECONDS', 300);
 
@@ -57,6 +58,9 @@ class ProductSelectionJob implements ShouldQueue
                 Redis::del($lockKey);
                 Log::channel('posting')->info("No eligible products across all categories for creator " . $this->creatorId, [
                     'social_integration_id' => $this->socialIntegrationId,
+                ]);
+                Log::channel('posting')->info('ProductSelectionJob finished', [
+                    'duration_ms' => round((microtime(true) - $start) * 1000),
                 ]);
                 return;
             }
@@ -94,6 +98,10 @@ class ProductSelectionJob implements ShouldQueue
                 retryCount: $this->retryCount,
                 excludedProductIds: $this->excludedProductIds
             );
+
+            Log::channel('posting')->info('ProductSelectionJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+            ]);
         } catch (\Exception $e) {
             Redis::del($lockKey);
             throw $e;
