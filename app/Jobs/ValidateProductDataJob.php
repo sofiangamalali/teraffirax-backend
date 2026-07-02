@@ -15,6 +15,8 @@ class ValidateProductDataJob implements ShouldQueue
 {
     use Queueable;
 
+    public int $timeout = 120;
+
     protected TelegramPublishingService $publishingService;
 
     public function __construct(
@@ -40,7 +42,7 @@ class ValidateProductDataJob implements ShouldQueue
         $flaskUrl = env('PYTHON_PRODUCT_SCRAP_URL', 'http://127.0.0.1:5000') . '/validate';
 
         try {
-            $response = Http::timeout(60)->post($flaskUrl, [
+            $response = Http::timeout(90)->post($flaskUrl, [
                 'url' => $this->product->url,
                 'vendor_slug' => $this->vendorSlug,
                 'stored_price' => (float) $this->product->price_after,
@@ -102,7 +104,7 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleSame(array $response): void
     {
         Log::channel('posting')->info("Product price validated: SAME", ['product_id' => $this->product->id]);
-        
+
         $this->publishingService->updateProductData($this->product->id, [
             'last_validated_at' => now(),
         ]);
@@ -113,7 +115,7 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleHigher(array $response): void
     {
         Log::channel('posting')->info("Product price validated: HIGHER", ['product_id' => $this->product->id, 'new_price' => $response['current_price']]);
-        
+
         $commissionPercent = (float) ($this->product->vendorCategory?->commission ?? 0);
         $commissionValue = ((float) $response['current_price']) * ($commissionPercent / 100);
 
@@ -143,7 +145,7 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleLower(array $response): void
     {
         Log::channel('posting')->info("Product price validated: LOWER", ['product_id' => $this->product->id, 'new_price' => $response['current_price']]);
-        
+
         $commissionPercent = (float) ($this->product->vendorCategory?->commission ?? 0);
         $commissionValue = ((float) $response['current_price']) * ($commissionPercent / 100);
 
@@ -173,7 +175,7 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleOutOfStock(): void
     {
         Log::channel('posting')->warning("Product price validated: OUT OF STOCK", ['product_id' => $this->product->id]);
-        
+
         $this->publishingService->updateProductData($this->product->id, [
             'status' => 'out_of_stock',
             'score' => 0,
@@ -187,7 +189,7 @@ class ValidateProductDataJob implements ShouldQueue
     protected function handleUnavailable(): void
     {
         Log::channel('posting')->warning("Product price validated: UNAVAILABLE", ['product_id' => $this->product->id]);
-        
+
         $this->publishingService->updateProductData($this->product->id, [
             'status' => 'unavailable',
             'score' => 0,
@@ -225,12 +227,12 @@ class ValidateProductDataJob implements ShouldQueue
             $this->release(pow(2, $currentAttempts) * 10);
         } else {
             Redis::del($this->lockKey);
-            
+
             $message = "Flask /validate unreachable for channel {$this->socialIntegrationId}";
             if ($exception) {
                 $message .= ": " . $exception->getMessage();
             }
-            
+
             Log::channel('posting')->error($message);
             $this->fail($exception ?: new \RuntimeException($message));
         }
