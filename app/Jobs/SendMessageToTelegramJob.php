@@ -147,7 +147,13 @@ class SendMessageToTelegramJob implements ShouldQueue
         }
 
         try {
-            $response = Http::timeout(80)->post($flaskUrl, [
+            $response = Http::withHeaders([
+                'Connection' => 'keep-alive',
+            ])->withOptions([
+                'curl' => [
+                    CURLOPT_TCP_KEEPALIVE => 1,
+                ]
+            ])->timeout(80)->post($flaskUrl, [
                 'chat_id' => $this->externalId,
                 'caption' => $caption,
                 'image_url' => $this->screenshotUrl,

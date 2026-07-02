@@ -42,7 +42,13 @@ class ValidateProductDataJob implements ShouldQueue
         $flaskUrl = env('PYTHON_PRODUCT_SCRAP_URL', 'http://127.0.0.1:5000') . '/validate';
 
         try {
-            $response = Http::timeout(90)->post($flaskUrl, [
+            $response = Http::withHeaders([
+                'Connection' => 'keep-alive',
+            ])->withOptions([
+                'curl' => [
+                    CURLOPT_TCP_KEEPALIVE => 1,
+                ]
+            ])->timeout(90)->post($flaskUrl, [
                 'url' => $this->product->url,
                 'vendor_slug' => $this->vendorSlug,
                 'stored_price' => (float) $this->product->price_after,
