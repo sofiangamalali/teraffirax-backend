@@ -7,7 +7,10 @@ use App\Models\Creator;
 use App\Models\SocialIntegration;
 use App\Repositories\Interfaces\CreatorRepositoryInterface;
 use App\Repositories\Interfaces\SocialIntegrationRepositoryInterface;
+use App\Repositories\Interfaces\CreatorVendorTrackingRepositoryInterface;
 use App\Services\AdminCreatorService;
+use App\Services\TelegramService;
+use App\Enums\PlatformEnum;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Mockery;
 use Tests\TestCase;
@@ -16,6 +19,8 @@ class AdminCreatorServiceTest extends TestCase
 {
     protected $creatorRepository;
     protected $socialRepository;
+    protected $trackingRepository;
+    protected $telegramService;
     protected $service;
 
     protected function setUp(): void
@@ -23,7 +28,14 @@ class AdminCreatorServiceTest extends TestCase
         parent::setUp();
         $this->creatorRepository = Mockery::mock(CreatorRepositoryInterface::class);
         $this->socialRepository = Mockery::mock(SocialIntegrationRepositoryInterface::class);
-        $this->service = new AdminCreatorService($this->creatorRepository, $this->socialRepository);
+        $this->trackingRepository = Mockery::mock(CreatorVendorTrackingRepositoryInterface::class);
+        $this->telegramService = Mockery::mock(TelegramService::class);
+        $this->service = new AdminCreatorService(
+            $this->creatorRepository,
+            $this->socialRepository,
+            $this->trackingRepository,
+            $this->telegramService
+        );
     }
 
     /**
@@ -102,10 +114,18 @@ class AdminCreatorServiceTest extends TestCase
             ->with(2)
             ->andReturn($integration);
         $integration->creator_id = 1;
+        $integration->platform = PlatformEnum::TELEGRAM;
+
+        $this->telegramService->shouldReceive('resolveExternalIdFromUsername')
+            ->once()
+            ->with('channel_user')
+            ->andReturn('-123456');
+
+        $expectedData = array_merge($dto->toArray(), ['external_id' => '-123456']);
 
         $this->socialRepository->shouldReceive('update')
             ->once()
-            ->with($integration, $dto->toArray())
+            ->with($integration, $expectedData)
             ->andReturn(true);
 
         $resultUpdate = $this->service->updateSocialIntegration(1, 2, $dto);

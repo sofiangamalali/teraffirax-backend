@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\CreatorRepositoryInterface;
 use App\Repositories\Interfaces\SocialIntegrationRepositoryInterface;
 use App\Repositories\Interfaces\CreatorVendorTrackingRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class AdminCreatorService
@@ -19,6 +20,7 @@ class AdminCreatorService
         protected CreatorRepositoryInterface $creatorRepository,
         protected SocialIntegrationRepositoryInterface $socialIntegrationRepository,
         protected CreatorVendorTrackingRepositoryInterface $creatorVendorTrackingRepository,
+        protected TelegramService $telegramService,
     ) {
     }
 
@@ -75,11 +77,23 @@ class AdminCreatorService
 
         $integration = $this->socialIntegrationRepository->find($integrationId);
         if (!$integration || $integration->creator_id !== $creatorId) {
-            throw new \Illuminate\Database\Eloquent\ModelNotFoundException("Social integration not found for this creator.");
+            throw new ModelNotFoundException("Social integration not found for this creator.");
         }
 
-        DB::transaction(function () use ($integration, $dto) {
-            $this->socialIntegrationRepository->update($integration, $dto->toArray());
+        $data = $dto->toArray();
+        $platform = $dto->platform ?? ($integration->platform ? $integration->platform->value : null);
+
+        if ($platform === 'telegram') {
+            $username = $dto->username ?? $integration->username;
+            if ($username) {
+                $data['external_id'] = $this->telegramService->resolveExternalIdFromUsername($username);
+            } else {
+                $data['external_id'] = null;
+            }
+        }
+
+        DB::transaction(function () use ($integration, $data) {
+            $this->socialIntegrationRepository->update($integration, $data);
         });
 
         return $integration;
@@ -95,7 +109,7 @@ class AdminCreatorService
 
         $integration = $this->socialIntegrationRepository->find($integrationId);
         if (!$integration || $integration->creator_id !== $creatorId) {
-            throw new \Illuminate\Database\Eloquent\ModelNotFoundException("Social integration not found for this creator.");
+            throw new ModelNotFoundException("Social integration not found for this creator.");
         }
 
         return DB::transaction(function () use ($integration) {
@@ -124,7 +138,7 @@ class AdminCreatorService
 
         $tracking = $this->creatorVendorTrackingRepository->find($trackingId);
         if (!$tracking || $tracking->creator_id !== $creatorId) {
-            throw new \Illuminate\Database\Eloquent\ModelNotFoundException("Vendor tracking record not found for this creator.");
+            throw new ModelNotFoundException("Vendor tracking record not found for this creator.");
         }
 
         DB::transaction(function () use ($trackingId, $dto) {

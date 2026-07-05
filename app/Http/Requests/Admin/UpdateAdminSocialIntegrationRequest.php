@@ -25,7 +25,6 @@ class UpdateAdminSocialIntegrationRequest extends FormRequest
     {
         return [
             'status' => ['sometimes', 'required', new Enum(SocialIntegrationStatusEnum::class)],
-            'external_id' => ['nullable', 'string'],
             'name' => ['nullable', 'string'],
             'username' => ['nullable', 'string'],
         ];
