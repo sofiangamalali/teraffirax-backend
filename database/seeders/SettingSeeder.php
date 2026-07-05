@@ -20,5 +20,14 @@ class SettingSeeder extends Seeder
                 'group' => 'financial',
             ]
         );
+
+        Setting::updateOrCreate(
+            ['key' => 'minimum_product_commission'],
+            [
+                'value' => '50',
+                'type' => 'float',
+                'group' => 'financial',
+            ]
+        );
     }
 }

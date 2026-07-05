@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             CreatorSeeder::class, //for test
             CreatorDashboardVideoSeeder::class,
             AdminSeeder::class,
+            ProductBlockedKeywordSeeder::class,
         ]);
     }
 }

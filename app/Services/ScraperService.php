@@ -31,6 +31,10 @@ class ScraperService
         return DB::transaction(function () use ($dto) {
             $vendorCategory = $this->scraperRepository->findVendorCategory($dto->vendor_category_id);
             $commissionPercent = $vendorCategory ? (float) ($vendorCategory->commission ?? 0) : 0;
+            $minimumCommission = (float) setting('minimum_product_commission', 50);
+
+            $blockedKeywords = $this->scraperRepository->getActiveBlockedKeywords();
+            $blockedKeywords = array_map('mb_strtolower', $blockedKeywords);
 
             $upsertedProducts = new Collection();
 
@@ -49,6 +53,29 @@ class ScraperService
                 );
                 $score = (int) round($scoreFloat * 1000);
 
+                // Determine if product should be blocked
+                $isBlocked = false;
+                $existingProduct = $this->scraperRepository->findProduct($dto->vendor_id, $productDto->external_id);
+                if ($existingProduct && $existingProduct->is_blocked) {
+                    $isBlocked = true;
+                }
+
+                if (!$isBlocked) {
+                    if ($commissionValue < $minimumCommission) {
+                        $isBlocked = true;
+                    }
+                }
+
+                if (!$isBlocked) {
+                    $productNameLower = mb_strtolower($productDto->name);
+                    foreach ($blockedKeywords as $keyword) {
+                        if (str_contains($productNameLower, $keyword)) {
+                            $isBlocked = true;
+                            break;
+                        }
+                    }
+                }
+
                 $attributes = [
                     'vendor_id' => $dto->vendor_id,
                     'external_id' => $productDto->external_id,
@@ -65,6 +92,7 @@ class ScraperService
                     'rank_in_vendor_category' => $productDto->rank_in_vendor_category,
                     'commission' => $commissionValue,
                     'score' => $score,
+                    'is_blocked' => $isBlocked,
                     'last_validated_at' => now(),
                 ];
 

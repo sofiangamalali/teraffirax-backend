@@ -21,5 +21,15 @@ interface ScraperRepositoryInterface
      * Upsert a product based on vendor_id and external_id.
      */
     public function upsertProduct(array $attributes, array $values): Product;
+
+    /**
+     * Find a product by vendor_id and external_id.
+     */
+    public function findProduct(int $vendorId, string $externalId): ?Product;
+
+    /**
+     * Get all active blocked keywords.
+     */
+    public function getActiveBlockedKeywords(): array;
 }
 

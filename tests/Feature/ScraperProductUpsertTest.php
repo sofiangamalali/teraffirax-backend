@@ -2,10 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\Vendor;
-use App\Models\VendorCategory;
+use App\Models\{Category, Product, Vendor, VendorCategory, Setting, ProductBlockedKeyword};
 use App\Enums\VendorCategoryStatusEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -121,6 +118,81 @@ class ScraperProductUpsertTest extends TestCase
             'name' => 'Blocked Product New Name',
             'price_after' => 80.00,
             'is_blocked' => true, // Still true
+        ]);
+    }
+
+    public function test_upsert_blocks_product_with_low_commission()
+    {
+        // Set minimum commission to 5.0
+        Setting::create([
+            'key' => 'minimum_product_commission',
+            'value' => '5.0',
+            'type' => 'float',
+            'group' => 'financial'
+        ]);
+
+        // With vendor category commission = 10, price_after = 40, calculated commission = 4.0 (< 5.0)
+        $payload = [
+            'vendor_id' => $this->vendor->id,
+            'category_id' => $this->category->id,
+            'vendor_category_id' => $this->vendorCategory->id,
+            'products' => [
+                [
+                    'external_id' => 'prod-low-comm',
+                    'name' => 'Low Commission Product',
+                    'url' => 'https://example.com/low-comm',
+                    'price_before' => 50,
+                    'price_after' => 40,
+                    'discount_percentage' => 20,
+                    'rank_in_vendor_category' => 1,
+                ]
+            ]
+        ];
+
+        $response = $this->withScraperAuth()
+            ->postJson('/api/scraper/products/upsert', $payload);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('products', [
+            'external_id' => 'prod-low-comm',
+            'is_blocked' => true,
+        ]);
+    }
+
+    public function test_upsert_blocks_product_containing_blocked_keyword()
+    {
+        // Add a blocked keyword
+        ProductBlockedKeyword::create([
+            'keyword' => 'replica',
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'vendor_id' => $this->vendor->id,
+            'category_id' => $this->category->id,
+            'vendor_category_id' => $this->vendorCategory->id,
+            'products' => [
+                [
+                    'external_id' => 'prod-replica',
+                    'name' => 'High Quality Replica Shoes',
+                    'url' => 'https://example.com/replica',
+                    'price_before' => 150,
+                    'price_after' => 100,
+                    'discount_percentage' => 33.3,
+                    'rank_in_vendor_category' => 1,
+                ]
+            ]
+        ];
+
+        $response = $this->withScraperAuth()
+            ->postJson('/api/scraper/products/upsert', $payload);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('products', [
+            'external_id' => 'prod-replica',
+            'is_blocked' => true,
         ]);
     }
 }

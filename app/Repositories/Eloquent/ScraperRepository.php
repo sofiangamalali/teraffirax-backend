@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\{VendorCategory, Product};
+use App\Models\{VendorCategory, Product, ProductBlockedKeyword};
 use App\Repositories\Interfaces\ScraperRepositoryInterface;
 use App\Enums\VendorCategoryStatusEnum;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,5 +33,20 @@ class ScraperRepository implements ScraperRepositoryInterface
     public function upsertProduct(array $attributes, array $values): Product
     {
         return $this->productModel->updateOrCreate($attributes, $values);
+    }
+
+    public function findProduct(int $vendorId, string $externalId): ?Product
+    {
+        return $this->productModel->newQuery()
+            ->where('vendor_id', $vendorId)
+            ->where('external_id', $externalId)
+            ->first();
+    }
+
+    public function getActiveBlockedKeywords(): array
+    {
+        return ProductBlockedKeyword::where('is_active', true)
+            ->pluck('keyword')
+            ->toArray();
     }
 }
