@@ -27,6 +27,7 @@ class AdminCreatorResource extends JsonResource
             'is_email_verified' => $this->isEmailVerified(),
             'country' => new CountryResource($this->whenLoaded('country')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
+            'account_manager_id' => $this->account_manager_id,
             'created_at' => $this->created_at,
         ];
     }
