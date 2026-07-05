@@ -39,14 +39,20 @@ class SendTelegramProducts extends Command
             ->get();
 
         $dispatchedCount = 0;
+        $batchSize = 4; // matches number of Gunicorn workers for flask 
+        $delayPerBatch = 7; // seconds per batch (approximate validation time per request)
 
         foreach ($creators as $creator) {
             foreach ($creator->socialIntegrations as $integration) {
+                $batchIndex = (int) ($dispatchedCount / $batchSize);
+                $delaySeconds = $batchIndex * $delayPerBatch;
+
                 ProductSelectionJob::dispatch(
                     socialIntegrationId: $integration->id,
                     externalId: $integration->external_id,
                     creatorId: $integration->creator_id
-                );
+                )->delay(now()->addSeconds($delaySeconds));
+
                 $dispatchedCount++;
             }
         }

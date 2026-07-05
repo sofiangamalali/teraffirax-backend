@@ -14,5 +14,5 @@ Schedule::command('commissions:calculate')
     });
 
 Schedule::command('app:send-telegram-products')
-    ->everyFiveMinutes()
+    ->everyTenMinutes()
     ->withoutOverlapping();
