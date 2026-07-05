@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -50,39 +51,39 @@ class SendMessageToTelegramJob implements ShouldQueue
 
         $idempotencyLockKey = "telegram_post_idempotency:" . $this->idempotencyKey;
         // Try to acquire a lock/flag for this idempotency key for 1 hour (3600 seconds)
-        // $isUnique = Redis::set($idempotencyLockKey, '1', 'EX', 3600, 'NX');
-        // if (!$isUnique) {
-        //     Log::channel('posting')->warning("Duplicate post blocked by idempotency check", [
-        //         'idempotency_key' => $this->idempotencyKey,
-        //         'product_id' => $this->product->id
-        //     ]);
-        //     Redis::del($this->lockKey);
-        //     return;
-        // }
+        $isUnique = Redis::set($idempotencyLockKey, '1', 'EX', 3600, 'NX');
+        if (!$isUnique) {
+            Log::channel('posting')->warning("Duplicate post blocked by idempotency check", [
+                'idempotency_key' => $this->idempotencyKey,
+                'product_id' => $this->product->id
+            ]);
+            Redis::del($this->lockKey);
+            return;
+        }
 
         Log::channel('posting')->info("DIAG STEP 1: passed idempotency check", [
             'product_id' => $this->product->id
         ]);
 
-        // $shouldSkip = false;
-        // DB::transaction(function () use (&$shouldSkip, $idempotencyLockKey, $publishingService) {
-        //     $exists = $publishingService->existsRecentPostForProduct(
-        //         $this->product->id,
-        //         $this->socialIntegrationId,
-        //         3
-        //     );
+        $shouldSkip = false;
+        DB::transaction(function () use (&$shouldSkip, $idempotencyLockKey, $publishingService) {
+            $exists = $publishingService->existsRecentPostForProduct(
+                $this->product->id,
+                $this->socialIntegrationId,
+                3
+            );
 
-        //     if ($exists) {
-        //         Redis::del($this->lockKey);
-        //         Redis::del($idempotencyLockKey);
-        //         $shouldSkip = true;
-        //         return;
-        //     }
-        // });
+            if ($exists) {
+                Redis::del($this->lockKey);
+                Redis::del($idempotencyLockKey);
+                $shouldSkip = true;
+                return;
+            }
+        });
 
-        // if ($shouldSkip) {
-        //     return;
-        // }
+        if ($shouldSkip) {
+            return;
+        }
 
         Log::channel('posting')->info("DIAG STEP 2: passed DB duplicate check", [
             'product_id' => $this->product->id
@@ -150,16 +151,16 @@ class SendMessageToTelegramJob implements ShouldQueue
             $response = Http::withHeaders([
                 'Connection' => 'keep-alive',
             ])->withOptions([
-                'curl' => [
-                    CURLOPT_TCP_KEEPALIVE => 1,
-                ]
-            ])->timeout(80)->post($flaskUrl, [
-                'chat_id' => $this->externalId,
-                'caption' => $caption,
-                'image_url' => $this->screenshotUrl,
-                'bot_token' => $botToken,
-            ]);
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                        'curl' => [
+                            CURLOPT_TCP_KEEPALIVE => 1,
+                        ]
+                    ])->timeout(80)->post($flaskUrl, [
+                        'chat_id' => $this->externalId,
+                        'caption' => $caption,
+                        'image_url' => $this->screenshotUrl,
+                        'bot_token' => $botToken,
+                    ]);
+        } catch (ConnectionException $e) {
             if (str_contains($e->getMessage(), 'timed out') || str_contains($e->getMessage(), 'timeout')) {
                 Log::channel('posting')->error("Flask post request timed out. Keeping idempotency lock active to prevent duplicate posting.", [
                     'idempotency_key' => $this->idempotencyKey,

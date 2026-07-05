@@ -27,6 +27,7 @@ class Product extends Model
         'commission',
         'score',
         'status',
+        'is_blocked',
         'flagged_at',
         'last_validated_at',
     ];
@@ -70,6 +71,7 @@ class Product extends Model
             'commission' => 'float',
             'score' => 'integer',
             'status' => ProductStatusEnum::class,
+            'is_blocked' => 'boolean',
             'flagged_at' => 'datetime',
             'last_validated_at' => 'datetime',
         ];

@@ -16,3 +16,5 @@ Schedule::command('commissions:calculate')
 Schedule::command('app:send-telegram-products')
     ->everyTenMinutes()
     ->withoutOverlapping();
+
+Schedule::command('horizon:snapshot')->everyTenMinutes();

@@ -32,7 +32,7 @@ class ScraperService
             $vendorCategory = $this->scraperRepository->findVendorCategory($dto->vendor_category_id);
             $commissionPercent = $vendorCategory ? (float) ($vendorCategory->commission ?? 0) : 0;
 
-            $upsertedProducts = collect();
+            $upsertedProducts = new Collection();
 
             foreach ($dto->products as $productDto) {
                 $priceAfter = (float) $productDto->price_after;

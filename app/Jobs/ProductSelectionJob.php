@@ -37,14 +37,14 @@ class ProductSelectionJob implements ShouldQueue
     {
         $start = microtime(true);
         $lockKey = "channel_lock:" . $this->socialIntegrationId;
-        $postingInterval = env('POSTING_INTERVAL_SECONDS', 300);
+        $postingInterval = env('POSTING_INTERVAL_SECONDS', 600);
 
-        // if (!$this->lockAlreadyAcquired) {
-        //     $acquired = Redis::set($lockKey, '1', 'EX', $postingInterval, 'NX');
-        //     if (!$acquired) {
-        //         return;
-        //     }
-        // }
+        if (!$this->lockAlreadyAcquired) {
+            $acquired = Redis::set($lockKey, '1', 'EX', $postingInterval, 'NX');
+            if (!$acquired) {
+                return;
+            }
+        }
 
         try {
             $selection = $publishingService->selectProductForCreator(
@@ -77,13 +77,13 @@ class ProductSelectionJob implements ShouldQueue
             ]));
 
             // Flask health check before dispatching ValidateProductDataJob
-            // if (!FlaskHealthCheck::isAlive()) {
-            //     Redis::del($lockKey);
-            //     Log::channel('posting')->warning('Flask service is down, skipping cycle', [
-            //         'social_integration_id' => $this->socialIntegrationId,
-            //     ]);
-            //     return;
-            // }
+            if (!FlaskHealthCheck::isAlive()) {
+                Redis::del($lockKey);
+                Log::channel('posting')->warning('Flask service is down, skipping cycle', [
+                    'social_integration_id' => $this->socialIntegrationId,
+                ]);
+                return;
+            }
 
             ValidateProductDataJob::dispatch(
                 socialIntegrationId: $this->socialIntegrationId,

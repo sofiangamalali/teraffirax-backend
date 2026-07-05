@@ -79,6 +79,7 @@ class ProductRepository implements ProductRepositoryInterface
             })
             ->where('products.category_id', $categoryId)
             ->where('products.status', 'active')
+            ->where('products.is_blocked', false)
             ->whereNotIn('products.id', $excludedProductIds)
             ->whereNotIn('products.id', function ($query) use ($socialIntegrationId, $sub24) {
                 $query->select('product_id')

@@ -190,4 +190,61 @@ class ProductSelectionJobTest extends TestCase
             return $job->product->id === $product->id;
         });
     }
+
+    public function test_excludes_blocked_products()
+    {
+        Queue::fake();
+        Redis::shouldReceive('set')->once()->andReturn(true);
+
+        $creator = Creator::factory()->create();
+        $category = Category::factory()->create();
+        $creator->categories()->attach($category->id, ['last_posted_at' => now()->subHours(5)]);
+
+        $vendor = Vendor::factory()->create(['slug' => 'amazon', 'is_active' => true]);
+        CreatorVendorTracking::create([
+            'creator_id' => $creator->id,
+            'vendor_id' => $vendor->id,
+            'track_id' => 'amzn-tag-21',
+            'is_active' => true,
+        ]);
+
+        // Product 1 (higher score but is blocked)
+        $product1 = Product::factory()->create([
+            'category_id' => $category->id,
+            'vendor_id' => $vendor->id,
+            'status' => 'active',
+            'is_blocked' => true,
+            'score' => 200,
+        ]);
+
+        // Product 2 (lower score, not blocked)
+        $product2 = Product::factory()->create([
+            'category_id' => $category->id,
+            'vendor_id' => $vendor->id,
+            'status' => 'active',
+            'is_blocked' => false,
+            'score' => 100,
+        ]);
+
+        $integration = SocialIntegration::create([
+            'creator_id' => $creator->id,
+            'platform' => 'telegram',
+            'type' => 'channel',
+            'status' => 'active',
+            'external_id' => '-100123456789',
+            'name' => 'My Telegram Channel',
+        ]);
+
+        $job = new ProductSelectionJob(
+            socialIntegrationId: $integration->id,
+            externalId: $integration->external_id,
+            creatorId: $creator->id
+        );
+        app()->call([$job, 'handle']);
+
+        // Product 2 should be selected because Product 1 is blocked
+        Queue::assertPushed(ValidateProductDataJob::class, function ($job) use ($product2) {
+            return $job->product->id === $product2->id;
+        });
+    }
 }
