@@ -41,7 +41,7 @@
             <tr>
               <td align="center" style="padding: 20px 40px 0px 40px">
                                 <img
-                  src="{{ $message->embed(public_path('logo.png')) }}"
+                  src="{{ asset('logo.png') }}"
                   alt="Logo"
                   style="
                     max-height: 170px;
