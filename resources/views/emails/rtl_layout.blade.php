@@ -63,12 +63,6 @@
                 وصلك هذا البريد الإلكتروني كشريك في منصة Teraffirax.
               </p>
               <p style="margin: 0;">
-                إذا كنت لا ترغب في استقبال هذه الرسائل الإلكترونية، يمكنك
-                <a href="{{ config('notifications.unsubscribe_url', 'https://www.traffirax.com/unsubscribe') }}"
-                  style="color: #0b2f4e; text-decoration: underline; font-weight: 600;">
-                  إلغاء الاشتراك هنا
-                </a>.
-              </p>
             </td>
           </tr>
         </table>
