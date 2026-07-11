@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'short_url_base' => env('SHORT_URL_BASE', 'https://traffirax.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

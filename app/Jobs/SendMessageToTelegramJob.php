@@ -100,7 +100,7 @@ class SendMessageToTelegramJob implements ShouldQueue
             'product_id' => $this->product->id
         ]);
 
-        $affiliateLink = route('redirect', ['slug' => $trackingLink->slug]);
+        $affiliateLink = rtrim(config('app.short_url_base', 'https://traffirax.com'), '/') . '/r/' . $trackingLink->slug;
         $affiliateLink = preg_replace('/^https?:\/\//i', '', $affiliateLink);
 
         $template = $publishingService->findDefaultTemplate($this->creatorId, $this->socialIntegrationId);

@@ -17,6 +17,7 @@ class AdminWithdrawRequestResource extends JsonResource
             'creator_id' => $this->creator_id,
             'creator' => new AdminCreatorResource($this->whenLoaded('creator')),
             'creator_withdraw_method_id' => $this->creator_withdraw_method_id,
+            'withdraw_method' => new CreatorWithdrawMethodResource($this->whenLoaded('withdrawMethod')),
             'amount' => $this->amount,
             'currency' => $this->currency,
             'status' => $this->status->value,

@@ -38,6 +38,14 @@ class AuthApiTest extends TestCase
 
     public function test_can_register_creator_with_categories()
     {
+        \Illuminate\Support\Facades\Mail::fake([\App\Mail\AdminCreatorRegisteredNotificationMail::class]);
+
+        \App\Models\Admin::create([
+            'name' => 'System Admin',
+            'email' => 'admin@teraffirax.com',
+            'password' => bcrypt('password123'),
+        ]);
+
         $categories = Category::factory()->count(2)->create();
         $vendor = Vendor::factory()->create(['country_id' => 1, 'is_active' => true]);
 
@@ -59,13 +67,17 @@ class AuthApiTest extends TestCase
         $creator = Creator::where('email', 'john@example.com')->first();
         $this->assertNotNull($creator);
 
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\AdminCreatorRegisteredNotificationMail::class, function ($mail) use ($creator) {
+            return $mail->creator->id === $creator->id && $mail->hasTo('admin@teraffirax.com');
+        });
+
         $this->assertDatabaseHas('social_integrations', [
             'creator_id' => $creator->id,
             'platform' => 'telegram',
             'type' => 'channel',
-            'status' => 'active',
+            'status' => 'pending',
             'name' => 'Test Channel',
-            'username' => $creator->id . '_telegraam',
+            'username' => $creator->name . '_telegraam',
             'external_id' => $creator->id . '_telegraam',
         ]);
 
@@ -77,7 +89,7 @@ class AuthApiTest extends TestCase
             'social_integration_id' => $integration->id,
             'is_default' => true,
             'name' => 'Default Template',
-            'content' => "{{discount}}% خصم على {{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
+            'content' => "{{product_name}} بسعر {{product_price}} \n\nرابط العرض: {{link}}",
         ]);
 
         $this->assertDatabaseHas('creator_vendor_tracking', [

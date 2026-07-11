@@ -49,7 +49,7 @@ class AdminWithdrawRequestController extends Controller
             $withdrawRequest = $this->withdrawRequestService->reject($id);
         }
 
-        $withdrawRequest->load('creator');
+        $withdrawRequest->load(['creator', 'withdrawMethod.withdrawMethod', 'withdrawMethod.values']);
 
         return $this->successResponse(new AdminWithdrawRequestResource($withdrawRequest), 'messages.updated');
     }

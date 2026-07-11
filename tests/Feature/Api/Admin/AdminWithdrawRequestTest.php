@@ -99,6 +99,12 @@ class AdminWithdrawRequestTest extends TestCase
                         'amount',
                         'status',
                         'requested_at',
+                        'withdraw_method' => [
+                            'id',
+                            'is_default',
+                            'method',
+                            'values',
+                        ],
                     ]
                 ],
                 'meta' => [
@@ -111,6 +117,8 @@ class AdminWithdrawRequestTest extends TestCase
 
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals($request->id, $response->json('data.0.id'));
+        $this->assertEquals($creatorMethod->id, $response->json('data.0.withdraw_method.id'));
+        $this->assertEquals($method->name, $response->json('data.0.withdraw_method.method.name'));
     }
 
     public function test_admin_can_complete_and_reject_withdraw_request(): void
@@ -134,6 +142,8 @@ class AdminWithdrawRequestTest extends TestCase
             'status' => 'completed',
         ]);
         $response->assertStatus(200);
+        $response->assertJsonPath('data.withdraw_method.id', $creatorMethod->id);
+        $response->assertJsonPath('data.withdraw_method.method.name', 'Bank Transfer');
         $this->assertDatabaseHas('withdraw_requests', [
             'id' => $request->id,
             'status' => 'completed',
@@ -156,6 +166,7 @@ class AdminWithdrawRequestTest extends TestCase
             'status' => 'rejected',
         ]);
         $response->assertStatus(200);
+        $response->assertJsonPath('data.withdraw_method.id', $creatorMethod->id);
         $this->assertDatabaseHas('withdraw_requests', [
             'id' => $request2->id,
             'status' => 'rejected',

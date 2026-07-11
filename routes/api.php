@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RedirectController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TrackingLinkController;
 
@@ -9,7 +10,7 @@ use App\Http\Controllers\Api\TrackingLinkController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('r/{slug}', [TrackingLinkController::class, 'redirect'])->name('tracking.redirect');
+Route::get('r/{slug}', RedirectController::class);
 
 // Creator Routes
 Route::group([], __DIR__ . '/api/creator.php');
