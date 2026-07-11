@@ -8,6 +8,9 @@ use App\Repositories\Eloquent\{ContentTemplateRepository, SocialIntegrationRepos
 use App\Repositories\Interfaces\{ContentTemplateRepositoryInterface, SocialIntegrationRepositoryInterface, CommissionRepositoryInterface, CreatorDashboardRepositoryInterface, BalanceLedgerRepositoryInterface, CronRunLogRepositoryInterface, ReconciliationAlertRepositoryInterface, AdminRepositoryInterface, TelegramProductPostRepositoryInterface, AccountManagerRepositoryInterface, ScraperRepositoryInterface};
 use Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Mail\Events\MessageSending;
+use App\Listeners\LogSentMailNotification;
 
 use App\Repositories\Interfaces\CreatorRepositoryInterface;
 use App\Repositories\Eloquent\CreatorRepository;
@@ -40,6 +43,8 @@ use App\Repositories\Eloquent\CreatorVendorTrackingRepository;
 use App\Repositories\Interfaces\SettingRepositoryInterface;
 use App\Repositories\Eloquent\SettingRepository;
 use App\Services\SettingService;
+use App\Repositories\Interfaces\NotificationLogRepositoryInterface;
+use App\Repositories\Eloquent\NotificationLogRepository;
 use App\Repositories\Interfaces\WithdrawRequestRepositoryInterface;
 use App\Repositories\Eloquent\WithdrawRequestRepository;
 use App\Services\WithdrawRequestService;
@@ -92,6 +97,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TelegramProductPostRepositoryInterface::class, TelegramProductPostRepository::class);
         $this->app->bind(AccountManagerRepositoryInterface::class, AccountManagerRepository::class);
         $this->app->bind(ScraperRepositoryInterface::class, ScraperRepository::class);
+        $this->app->bind(NotificationLogRepositoryInterface::class, NotificationLogRepository::class);
 
 
         $this->app->singleton(SlugService::class);
@@ -118,5 +124,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ContentTemplate::class, ContentTemplatePolicy::class);
         Gate::policy(Commission::class, CommissionPolicy::class);
         Gate::policy(Admin::class, AdminPolicy::class);
+
+        Event::listen(
+            MessageSending::class,
+            LogSentMailNotification::class
+        );
     }
 }

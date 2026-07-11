@@ -27,6 +27,8 @@ class Creator extends Authenticatable
         'email_verified_at',
         'account_manager_id',
         'is_active',
+        'needs_manual_reengagement',
+        'milestone_threshold_reached_at',
     ];
 
     protected $hidden = [
@@ -46,7 +48,9 @@ class Creator extends Authenticatable
             'available_balance' => 'decimal:2',
             'withdrawn_balance' => 'decimal:2',
             'country_id' => 'integer',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'needs_manual_reengagement' => 'boolean',
+            'milestone_threshold_reached_at' => 'datetime',
         ];
     }
 

@@ -7,6 +7,8 @@ use App\Repositories\Interfaces\CreatorRepositoryInterface;
 use App\Repositories\Interfaces\BalanceLedgerRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MilestoneAlertMail;
 
 class CommissionMaturationService
 {
@@ -33,7 +35,11 @@ class CommissionMaturationService
                 
                 Log::channel('commission')->info("Maturing commissions for Creator ID: {$creatorId}. Commission Count: " . count($commissions) . ", Total Amount: {$totalAmount}");
 
-                DB::transaction(function () use ($creatorId, $commissions, $totalAmount, &$processedCount) {
+                $shouldNotifyCreator = false;
+                $minimumWithdrawAmount = 100.00;
+                $newAvailableBalance = 0.00;
+
+                DB::transaction(function () use ($creatorId, $commissions, $totalAmount, &$processedCount, &$shouldNotifyCreator, &$minimumWithdrawAmount, &$newAvailableBalance) {
                     if ($totalAmount <= 0) {
                         Log::channel('commission')->info("Skipping Creator ID: {$creatorId} because total amount is zero or negative.");
                         return;
@@ -50,19 +56,28 @@ class CommissionMaturationService
                     // Sanity check
                     if ($creator->pending_balance < $totalAmount) {
                         Log::channel('commission')->error("Sanity check failed for creator {$creatorId}. Pending balance: {$creator->pending_balance}, Target Maturation: {$totalAmount}");
-                        // We still proceed? The methodology says "sanity check — should always pass".
-                        // If it fails, something is seriously wrong with the ledger, maybe we throw an exception to rollback?
                         throw new \Exception("Sanity check failed for creator {$creatorId}");
                     }
 
                     $pendingBalanceBefore = $creator->pending_balance;
                     $availableBalanceBefore = $creator->available_balance;
 
-                    // 2. Adjust balances
-                    $this->creatorRepository->update($creatorId, [
+                    $minimumWithdrawAmount = (float) setting('withdrawal.min_amount', 100.00);
+                    $newAvailableBalance = $availableBalanceBefore + $totalAmount;
+
+                    $updateData = [
                         'pending_balance' => max(0, $pendingBalanceBefore - $totalAmount),
-                        'available_balance' => $availableBalanceBefore + $totalAmount
-                    ]);
+                        'available_balance' => $newAvailableBalance
+                    ];
+
+                    // Check if available balance crossed the minimum withdraw threshold
+                    if (is_null($creator->milestone_threshold_reached_at) && $availableBalanceBefore < $minimumWithdrawAmount && $newAvailableBalance >= $minimumWithdrawAmount) {
+                        $updateData['milestone_threshold_reached_at'] = now();
+                        $shouldNotifyCreator = true;
+                    }
+
+                    // 2. Adjust balances and update milestone timestamp
+                    $this->creatorRepository->update($creatorId, $updateData);
 
                     $now = now();
 
@@ -75,18 +90,30 @@ class CommissionMaturationService
                             'creator_id' => $creatorId,
                             'type' => 'commission_matured',
                             'amount' => $commission->commission_amount,
-                            'balance_before' => $availableBalanceBefore, // Ledger usually tracks available balance for these
+                            'balance_before' => $availableBalanceBefore,
                             'balance_after' => $availableBalanceBefore + $commission->commission_amount,
                             'reference_id' => (string) $commission->id,
-                            'performed_by' => null, // Cron job
+                            'performed_by' => null,
                         ]);
                         
                         $availableBalanceBefore += $commission->commission_amount;
                         $processedCount++;
                     }
 
-                    Log::channel('commission')->info("Successfully matured commissions for Creator ID: {$creatorId}. Balances adjusted: Pending (" . $pendingBalanceBefore . " -> " . max(0, $pendingBalanceBefore - $totalAmount) . "), Available (" . ($availableBalanceBefore - $totalAmount) . " -> " . $availableBalanceBefore . ")");
+                    Log::channel('commission')->info("Successfully matured commissions for Creator ID: {$creatorId}. Balances adjusted.");
                 });
+
+                // Dispatch MilestoneAlertMail immediately after the transaction commits successfully
+                if ($shouldNotifyCreator) {
+                    $creator = $this->creatorRepository->find($creatorId);
+                    if ($creator) {
+                        Mail::to($creator->email)->send(new MilestoneAlertMail(
+                            $creator,
+                            $minimumWithdrawAmount,
+                            $newAvailableBalance
+                        ));
+                    }
+                }
             } catch (\Exception $e) {
                 Log::channel('commission')->error("Failed to mature commissions for Creator ID: {$creatorId}. Error: " . $e->getMessage(), ['exception' => $e]);
             }

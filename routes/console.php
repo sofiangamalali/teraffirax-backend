@@ -18,3 +18,11 @@ Schedule::command('app:send-telegram-products')
     ->withoutOverlapping();
 
 Schedule::command('horizon:snapshot')->everyTenMinutes();
+
+Schedule::command('notifications:daily-digest')
+    ->dailyAt('21:00')
+    ->timezone('Africa/Cairo');
+
+Schedule::command('notifications:weekly-fallback')
+    ->dailyAt('21:00')
+    ->timezone('Africa/Cairo');
