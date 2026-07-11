@@ -143,4 +143,49 @@ class TrackingLinkApiTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_can_list_only_own_tracking_links_sorted_descending()
+    {
+        $otherCreator = Creator::factory()->create([
+            'country_id' => 1,
+            'is_active' => true,
+        ]);
+
+        // Links for the authenticated creator
+        $link1 = TrackingLink::create([
+            'creator_id' => $this->creator->id,
+            'slug' => 'slugabc1',
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT?tag=mytag-21',
+        ]);
+        $link1->created_at = now()->subMinutes(10);
+        $link1->save();
+
+        $link2 = TrackingLink::create([
+            'creator_id' => $this->creator->id,
+            'slug' => 'slugabc2',
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT?tag=mytag-21',
+        ]);
+        $link2->created_at = now();
+        $link2->save();
+
+        // Link for another creator
+        $linkOther = TrackingLink::create([
+            'creator_id' => $otherCreator->id,
+            'slug' => 'slugother',
+            'redirect_url' => 'https://www.amazon.eg/dp/B0FMR7H8FT?tag=mytag-21',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->withAuth()->getJson('/api/tracking-links');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // Verify only own links are returned
+        $this->assertCount(2, $data);
+
+        // Verify descending order (newest first)
+        $this->assertStringContainsString($link2->slug, $data[0]['short_url']);
+        $this->assertStringContainsString($link1->slug, $data[1]['short_url']);
+    }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface TrackingLinkRepositoryInterface
 {
-    public function paginate(int $perPage = 15): LengthAwarePaginator;
+    public function paginate(int $perPage = 15, ?int $creatorId = null): LengthAwarePaginator;
 
     public function find(int $id): ?TrackingLink;
 

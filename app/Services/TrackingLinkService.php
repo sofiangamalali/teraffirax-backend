@@ -27,9 +27,9 @@ class TrackingLinkService
     ) {
     }
 
-    public function getPaginatedLinks(int $perPage = 15): LengthAwarePaginator
+    public function getPaginatedLinks(int $perPage = 15, ?int $creatorId = null): LengthAwarePaginator
     {
-        return $this->linkRepository->paginate($perPage);
+        return $this->linkRepository->paginate($perPage, $creatorId);
     }
 
     /**

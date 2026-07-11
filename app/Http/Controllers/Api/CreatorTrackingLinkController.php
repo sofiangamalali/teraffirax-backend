@@ -23,7 +23,7 @@ class CreatorTrackingLinkController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = min((int) $request->query('per_page', 15), 100);
-        $links = $this->linkService->getPaginatedLinks($perPage);
+        $links = $this->linkService->getPaginatedLinks($perPage, $request->user()?->id);
         return $this->paginatedResponse(TrackingLinkResource::collection($links), 'messages.fetched');
     }
 

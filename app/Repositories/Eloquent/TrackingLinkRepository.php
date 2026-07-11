@@ -15,9 +15,15 @@ class TrackingLinkRepository implements TrackingLinkRepositoryInterface
     {
     }
 
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function paginate(int $perPage = 15, ?int $creatorId = null): LengthAwarePaginator
     {
-        return $this->model->paginate($perPage);
+        $query = $this->model->newQuery();
+
+        if ($creatorId) {
+            $query->where('creator_id', $creatorId);
+        }
+
+        return $query->latest()->paginate($perPage);
     }
 
     public function find(int $id): ?TrackingLink
