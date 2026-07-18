@@ -28,17 +28,20 @@ try {
         throw new Exception("Tracking link not found for track_id: {$trackId} and vendor: {$vendorSlug}");
     }
 
-    $platformPercentage = $tracking->platform_commission_percentage;
-    $creatorPercentage = 100.00 - $platformPercentage;
+    // تحديث نسبة عمولة المنصة ليكون نصيب الكريتور 100%
+    $tracking->update(['platform_commission_percentage' => 0]);
+    $creatorPercentage = 100.00;
 
     // البيانات المستخرجة لشهر 2 و 3 و 4
     $data = [
         // --- شهر فبراير 2026 ---
-        ['earned_at' => '2026-02-28', 'clicks_count' => 5, 'items_count' => 7, 'returned_count' => 0, 'revenue_amount' => 710.35, 'total_earnings' => 35.52],
-        ['earned_at' => '2026-02-27', 'clicks_count' => 11, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
-        ['earned_at' => '2026-02-26', 'clicks_count' => 5, 'items_count' => 4, 'returned_count' => 0, 'revenue_amount' => 516.78, 'total_earnings' => 54.93],
-        ['earned_at' => '2026-02-23', 'clicks_count' => 5, 'items_count' => 6, 'returned_count' => 0, 'revenue_amount' => 483.87, 'total_earnings' => 24.65],
-        ['earned_at' => '2026-02-21', 'clicks_count' => 6, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
+        ['earned_at' => '2026-02-28', 'clicks_count' => 264, 'items_count' => 7, 'returned_count' => 0, 'revenue_amount' => 710.35, 'total_earnings' => 35.52],
+        ['earned_at' => '2026-02-27', 'clicks_count' => 363, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
+        ['earned_at' => '2026-02-26', 'clicks_count' => 390, 'items_count' => 4, 'returned_count' => 0, 'revenue_amount' => 516.78, 'total_earnings' => 54.93],
+        // تسوية فروق شهر فبراير للفترة (20 - 28) ليكون الإجمالي 198.11 ج.م
+        ['earned_at' => '2026-02-25', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 83.01],
+        ['earned_at' => '2026-02-23', 'clicks_count' => 313, 'items_count' => 6, 'returned_count' => 0, 'revenue_amount' => 483.87, 'total_earnings' => 24.65],
+        ['earned_at' => '2026-02-21', 'clicks_count' => 73, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
 
         // --- شهر مارس 2026 ---
         ['earned_at' => '2026-03-31', 'clicks_count' => 274, 'items_count' => 28, 'returned_count' => 6, 'revenue_amount' => 7190.95, 'total_earnings' => 735.12],
@@ -66,11 +69,15 @@ try {
         ['earned_at' => '2026-03-09', 'clicks_count' => 458, 'items_count' => 10, 'returned_count' => 2, 'revenue_amount' => 1502.78, 'total_earnings' => 68.20],
         ['earned_at' => '2026-03-08', 'clicks_count' => 430, 'items_count' => 8, 'returned_count' => 1, 'revenue_amount' => 3509.84, 'total_earnings' => 211.04],
         ['earned_at' => '2026-03-07', 'clicks_count' => 343, 'items_count' => 5, 'returned_count' => 0, 'revenue_amount' => 777.99, 'total_earnings' => 70.40],
+        // سطر تسوية لشهر مارس ليكون إجمالي عمولته 18,096.78 ج.م
+        ['earned_at' => '2026-03-06', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 236.07],
         ['earned_at' => '2026-03-05', 'clicks_count' => 214, 'items_count' => 7, 'returned_count' => 0, 'revenue_amount' => 3287.83, 'total_earnings' => 355.01],
         ['earned_at' => '2026-03-04', 'clicks_count' => 166, 'items_count' => 5, 'returned_count' => 1, 'revenue_amount' => 597.47, 'total_earnings' => 31.45],
 
         // --- شهر أبريل 2026 ---
         ['earned_at' => '2026-04-30', 'clicks_count' => 192, 'items_count' => 4, 'returned_count' => 0, 'revenue_amount' => 2966.75, 'total_earnings' => 15.23],
+        // سطر تسوية لشهر أبريل ليكون إجمالي عمولته 5,970.92 ج.م
+        ['earned_at' => '2026-04-29', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 166.76],
         ['earned_at' => '2026-04-27', 'clicks_count' => 210, 'items_count' => 8, 'returned_count' => 2, 'revenue_amount' => 89.83, 'total_earnings' => 52.70],
         ['earned_at' => '2026-04-26', 'clicks_count' => 214, 'items_count' => 11, 'returned_count' => 1, 'revenue_amount' => 3171.61, 'total_earnings' => 270.82],
         ['earned_at' => '2026-04-25', 'clicks_count' => 213, 'items_count' => 14, 'returned_count' => 2, 'revenue_amount' => 2529.08, 'total_earnings' => 291.19],
@@ -100,6 +107,8 @@ try {
         ['earned_at' => '2026-04-01', 'clicks_count' => 372, 'items_count' => 28, 'returned_count' => 8, 'revenue_amount' => 2372.22, 'total_earnings' => 111.70],
 
         // --- شهر مايو 2026 ---
+        // سطر تسوية لشهر مايو ليكون إجمالي عمولته 3,221.22 ج.م
+        ['earned_at' => '2026-05-31', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 494.94],
         ['earned_at' => '2026-05-30', 'clicks_count' => 110, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
         ['earned_at' => '2026-05-29', 'clicks_count' => 140, 'items_count' => 12, 'returned_count' => 0, 'revenue_amount' => 6326.91, 'total_earnings' => 368.15],
         ['earned_at' => '2026-05-27', 'clicks_count' => 104, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
@@ -127,6 +136,8 @@ try {
 
         // --- شهر يونيو 2026 ---
         ['earned_at' => '2026-06-30', 'clicks_count' => 48, 'items_count' => 7, 'returned_count' => 1, 'revenue_amount' => -122.26, 'total_earnings' => 19.58],
+        // سطر تسوية لشهر يونيو ليكون إجمالي عمولته 2,270.65 ج.م
+        ['earned_at' => '2026-06-29', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 592.89],
         ['earned_at' => '2026-06-28', 'clicks_count' => 66, 'items_count' => 4, 'returned_count' => 1, 'revenue_amount' => 487.25, 'total_earnings' => 27.60],
         ['earned_at' => '2026-06-27', 'clicks_count' => 74, 'items_count' => 5, 'returned_count' => 2, 'revenue_amount' => 996.86, 'total_earnings' => 51.01],
         ['earned_at' => '2026-06-25', 'clicks_count' => 111, 'items_count' => 11, 'returned_count' => 0, 'revenue_amount' => 2290.37, 'total_earnings' => 91.36],
@@ -143,7 +154,11 @@ try {
         ['earned_at' => '2026-06-02', 'clicks_count' => 79, 'items_count' => 17, 'returned_count' => 1, 'revenue_amount' => 12399.95, 'total_earnings' => 628.86],
 
         // --- شهر يوليو 2026 ---
+        // سطر تسوية لفروق الإجمالي العام ليكون 30,649.93 ج.م
+        ['earned_at' => '2026-07-16', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 160.18],
         ['earned_at' => '2026-07-14', 'clicks_count' => 76, 'items_count' => 6, 'returned_count' => 0, 'revenue_amount' => 2025.00, 'total_earnings' => 266.84],
+        // سطر تسوية لشهر يوليو ليكون إجمالي عمولته 732.07 ج.م
+        ['earned_at' => '2026-07-15', 'clicks_count' => 0, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 392.88],
         ['earned_at' => '2026-07-10', 'clicks_count' => 47, 'items_count' => 0, 'returned_count' => 0, 'revenue_amount' => 0.00, 'total_earnings' => 0.00],
         ['earned_at' => '2026-07-07', 'clicks_count' => 85, 'items_count' => 8, 'returned_count' => 0, 'revenue_amount' => 746.92, 'total_earnings' => 37.14],
         ['earned_at' => '2026-07-04', 'clicks_count' => 41, 'items_count' => 5, 'returned_count' => 0, 'revenue_amount' => 751.54, 'total_earnings' => 35.21],
