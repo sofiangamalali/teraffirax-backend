@@ -240,6 +240,12 @@ class ValidateProductDataJob implements ShouldQueue
             }
 
             Log::channel('posting')->error($message);
+
+            if ($exception && str_contains($exception->getMessage(), 'scrape_failed')) {
+                Log::channel('posting')->warning("ValidateProductDataJob soft failed due to scrape block: " . $exception->getMessage());
+                return;
+            }
+
             $this->fail($exception ?: new \RuntimeException($message));
         }
     }
