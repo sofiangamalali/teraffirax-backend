@@ -24,7 +24,7 @@ class StoreManualCommissionRequest extends FormRequest
             'vendor_id' => ['required', 'integer', 'exists:vendors,id'],
             'earned_at' => ['required', 'date', 'before_or_equal:today'],
             'revenue_amount' => ['required', 'numeric', 'min:0'],
-            'total_commission' => ['required', 'numeric', 'min:0.01'],
+            'total_commission' => ['required', 'numeric', 'min:0.00'],
             'clicks_count' => ['nullable', 'integer', 'min:0'],
             'items_count' => ['nullable', 'integer', 'min:0'],
             'returned_count' => ['nullable', 'integer', 'min:0'],
