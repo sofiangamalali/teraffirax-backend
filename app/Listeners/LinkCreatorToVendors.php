@@ -25,7 +25,7 @@ class LinkCreatorToVendors
         $creator = $event->creator;
 
         try {
-            $vendors = Vendor::where('country_id', $creator->country_id)->get();
+            $vendors = Vendor::where('country_id', $creator->country_id)->where('is_active', true)->get();
 
             foreach ($vendors as $vendor) {
                 CreatorVendorTracking::updateOrCreate(
