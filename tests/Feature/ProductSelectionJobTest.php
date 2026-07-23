@@ -117,7 +117,7 @@ class ProductSelectionJobTest extends TestCase
             'name' => 'My Telegram Channel',
         ]);
 
-        // Mark product1 as posted to this channel within last 24h
+        // Mark product1 as posted to this channel within last 5 days
         TelegramProductPost::create([
             'social_integration_id' => $integration->id,
             'product_id' => $product1->id,

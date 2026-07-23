@@ -64,7 +64,7 @@ class ProductRepository implements ProductRepositoryInterface
      */
     public function findBestProductForCreator(int $creatorId, int $categoryId, array $excludedProductIds, int $socialIntegrationId): ?Product
     {
-        $sub24 = now()->subHours(24);
+        $sub5Days = now()->subDays(5);
         $sub3 = now()->subHours(3);
 
         return $this->model->newQuery()
@@ -81,12 +81,12 @@ class ProductRepository implements ProductRepositoryInterface
             ->where('products.status', 'active')
             ->where('products.is_blocked', false)
             ->whereNotIn('products.id', $excludedProductIds)
-            ->whereNotIn('products.id', function ($query) use ($socialIntegrationId, $sub24) {
+            ->whereNotIn('products.id', function ($query) use ($socialIntegrationId, $sub5Days) {
                 $query->select('product_id')
                     ->from('telegram_product_posts')
                     ->where('social_integration_id', $socialIntegrationId)
                     ->where('post_status', 'posted')
-                    ->where('posted_at', '>', $sub24);
+                    ->where('posted_at', '>', $sub5Days);
             })
             ->whereNotIn('products.id', function ($query) use ($sub3) {
                 $query->select('product_id')
