@@ -14,6 +14,7 @@ use App\Services\TrackingLinkService;
 use App\Services\TemplateRendererService;
 use App\Services\TelegramPublishingService;
 use App\DTOs\TrackingLinkDTO;
+use RuntimeException;
 
 class SendMessageToTelegramJob implements ShouldQueue
 {
@@ -112,7 +113,7 @@ class SendMessageToTelegramJob implements ShouldQueue
             $message = "No default content template found for creator {$this->creatorId} on channel {$this->socialIntegrationId}.";
             Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
-            $this->fail(new \RuntimeException($message));
+            $this->fail(new RuntimeException($message));
             Log::channel('posting')->info('SendMessageToTelegramJob finished', [
                 'duration_ms' => round((microtime(true) - $start) * 1000),
                 'product_id' => $this->product->id,
@@ -139,7 +140,7 @@ class SendMessageToTelegramJob implements ShouldQueue
             $message = "TELEGRAM_POSTING_BOT_TOKEN is missing.";
             Log::channel('posting')->error($message);
             Redis::del($this->lockKey);
-            $this->fail(new \RuntimeException($message));
+            $this->fail(new RuntimeException($message));
             Log::channel('posting')->info('SendMessageToTelegramJob finished', [
                 'duration_ms' => round((microtime(true) - $start) * 1000),
                 'product_id' => $this->product->id,
@@ -181,9 +182,50 @@ class SendMessageToTelegramJob implements ShouldQueue
             'body' => substr($response->body(), 0, 500)
         ]);
 
+        $responseData = $response->json() ?? [];
+        $errorMessage = $responseData['error'] ?? '';
+
+        // Check if Telegram channel has rejected the bot (e.g., kicked or chat not found)
+        $isRejectedByTelegram = str_contains($errorMessage, 'Forbidden: bot was kicked') 
+            || str_contains($errorMessage, 'Bad Request: chat not found');
+
+        if ($isRejectedByTelegram) {
+            Log::channel('posting')->warning("Telegram channel rejected the bot. Deactivating integration.", [
+                'product_id' => $this->product->id,
+                'social_integration_id' => $this->socialIntegrationId,
+                'error' => $errorMessage
+            ]);
+            $publishingService->deactivateIntegration($this->socialIntegrationId);
+            Redis::del($this->lockKey);
+            Redis::del($idempotencyLockKey);
+            $this->fail(new RuntimeException($errorMessage ?: 'Rejected by Telegram'));
+            Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
+            return;
+        }
+
+        // Check if the screenshot photo file is missing on the Flask server
+        if (str_contains($errorMessage, 'Photo file not found')) {
+            Log::channel('posting')->error("Screenshot photo file not found on Flask server. Permanently failing job.", [
+                'product_id' => $this->product->id,
+                'screenshot_url' => $this->screenshotUrl,
+                'error' => $errorMessage
+            ]);
+            Redis::del($this->lockKey);
+            Redis::del($idempotencyLockKey);
+            $this->fail(new RuntimeException($errorMessage));
+            Log::channel('posting')->info('SendMessageToTelegramJob finished', [
+                'duration_ms' => round((microtime(true) - $start) * 1000),
+                'product_id' => $this->product->id,
+            ]);
+            return;
+        }
+
         if ($response->failed()) {
             Redis::del($idempotencyLockKey);
-            throw new \RuntimeException("Flask API returned error status: " . $response->status());
+            throw new RuntimeException("Flask API returned error status: " . $response->status());
         }
 
         if (($response['status'] ?? '') === 'rate_limited') {
@@ -206,7 +248,7 @@ class SendMessageToTelegramJob implements ShouldQueue
             $publishingService->deactivateIntegration($this->socialIntegrationId);
             Redis::del($this->lockKey);
             Redis::del($idempotencyLockKey);
-            $this->fail(new \RuntimeException($response['reason'] ?? 'Rejected by Telegram'));
+            $this->fail(new RuntimeException($response['reason'] ?? 'Rejected by Telegram'));
             Log::channel('posting')->info('SendMessageToTelegramJob finished', [
                 'duration_ms' => round((microtime(true) - $start) * 1000),
                 'product_id' => $this->product->id,
@@ -219,7 +261,7 @@ class SendMessageToTelegramJob implements ShouldQueue
                 'product_id' => $this->product->id
             ]);
             Redis::del($idempotencyLockKey);
-            throw new \RuntimeException($response['reason'] ?? 'Unknown Flask scraper error');
+            throw new RuntimeException($response['reason'] ?? 'Unknown Flask scraper error');
         }
 
         Log::channel('posting')->info("DIAG STEP: success branch taken", [

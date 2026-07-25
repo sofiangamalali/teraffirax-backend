@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use RuntimeException;
+use App\Enums\SocialIntegrationStatusEnum;
 
 class SendMessageToTelegramJobTest extends TestCase
 {
@@ -181,5 +183,150 @@ class SendMessageToTelegramJobTest extends TestCase
             app(\App\Services\TemplateRendererService::class),
             app(\App\Services\TelegramPublishingService::class)
         );
+    }
+
+    public function test_deactivates_integration_on_bot_kicked_rejection()
+    {
+        Redis::shouldReceive('set')
+            ->withArgs(function ($key, $val, $ex, $time, $nx) {
+                return str_contains($key, 'telegram_post_idempotency:mock-idempotency-key');
+            })
+            ->once()
+            ->andReturn(true);
+
+        Redis::shouldReceive('del')
+            ->with('mock-lock-key')
+            ->once();
+
+        Redis::shouldReceive('del')
+            ->with('telegram_post_idempotency:mock-idempotency-key')
+            ->once();
+
+        Http::fake([
+            '*' => Http::response([
+                'success' => false,
+                'data' => null,
+                'error' => 'Telegram API Error (sendPhoto): Forbidden: bot was kicked from the channel chat'
+            ], 500)
+        ]);
+
+        $job = new SendMessageToTelegramJob(
+            socialIntegrationId: $this->integration->id,
+            externalId: $this->integration->external_id,
+            creatorId: $this->creator->id,
+            product: $this->product,
+            categoryId: $this->product->category_id,
+            trackId: 'mytag-21',
+            vendorSlug: 'amazon',
+            lockKey: 'mock-lock-key',
+            idempotencyKey: 'mock-idempotency-key'
+        );
+
+        $this->assertEquals(SocialIntegrationStatusEnum::ACTIVE, $this->integration->fresh()->status);
+
+        $job->handle(
+            app(\App\Services\TrackingLinkService::class),
+            app(\App\Services\TemplateRendererService::class),
+            app(\App\Services\TelegramPublishingService::class)
+        );
+
+        $this->assertEquals(SocialIntegrationStatusEnum::INACTIVE, $this->integration->fresh()->status);
+    }
+
+    public function test_deactivates_integration_on_chat_not_found_rejection()
+    {
+        Redis::shouldReceive('set')
+            ->withArgs(function ($key, $val, $ex, $time, $nx) {
+                return str_contains($key, 'telegram_post_idempotency:mock-idempotency-key');
+            })
+            ->once()
+            ->andReturn(true);
+
+        Redis::shouldReceive('del')
+            ->with('mock-lock-key')
+            ->once();
+
+        Redis::shouldReceive('del')
+            ->with('telegram_post_idempotency:mock-idempotency-key')
+            ->once();
+
+        Http::fake([
+            '*' => Http::response([
+                'success' => false,
+                'data' => null,
+                'error' => 'Telegram API Error (sendPhoto): Bad Request: chat not found'
+            ], 500)
+        ]);
+
+        $job = new SendMessageToTelegramJob(
+            socialIntegrationId: $this->integration->id,
+            externalId: $this->integration->external_id,
+            creatorId: $this->creator->id,
+            product: $this->product,
+            categoryId: $this->product->category_id,
+            trackId: 'mytag-21',
+            vendorSlug: 'amazon',
+            lockKey: 'mock-lock-key',
+            idempotencyKey: 'mock-idempotency-key'
+        );
+
+        $this->assertEquals(SocialIntegrationStatusEnum::ACTIVE, $this->integration->fresh()->status);
+
+        $job->handle(
+            app(\App\Services\TrackingLinkService::class),
+            app(\App\Services\TemplateRendererService::class),
+            app(\App\Services\TelegramPublishingService::class)
+        );
+
+        $this->assertEquals(SocialIntegrationStatusEnum::INACTIVE, $this->integration->fresh()->status);
+    }
+
+    public function test_fails_permanently_without_retry_on_missing_photo_error()
+    {
+        Redis::shouldReceive('set')
+            ->withArgs(function ($key, $val, $ex, $time, $nx) {
+                return str_contains($key, 'telegram_post_idempotency:mock-idempotency-key');
+            })
+            ->once()
+            ->andReturn(true);
+
+        Redis::shouldReceive('del')
+            ->with('mock-lock-key')
+            ->once();
+
+        Redis::shouldReceive('del')
+            ->with('telegram_post_idempotency:mock-idempotency-key')
+            ->once();
+
+        Http::fake([
+            '*' => Http::response([
+                'success' => false,
+                'data' => null,
+                'error' => 'Photo file not found: /www/wwwroot/some_photo.jpg'
+            ], 500)
+        ]);
+
+        $job = new SendMessageToTelegramJob(
+            socialIntegrationId: $this->integration->id,
+            externalId: $this->integration->external_id,
+            creatorId: $this->creator->id,
+            product: $this->product,
+            categoryId: $this->product->category_id,
+            trackId: 'mytag-21',
+            vendorSlug: 'amazon',
+            lockKey: 'mock-lock-key',
+            idempotencyKey: 'mock-idempotency-key'
+        );
+
+        $this->assertEquals(SocialIntegrationStatusEnum::ACTIVE, $this->integration->fresh()->status);
+
+        $job->handle(
+            app(\App\Services\TrackingLinkService::class),
+            app(\App\Services\TemplateRendererService::class),
+            app(\App\Services\TelegramPublishingService::class)
+        );
+
+        // Integration should NOT be deactivated (it's a photo issue, not bot kick)
+        $this->assertEquals(SocialIntegrationStatusEnum::ACTIVE, $this->integration->fresh()->status);
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Product;
 use App\Services\TelegramPublishingService;
+use Exception;
+use RuntimeException;
 
 class ValidateProductDataJob implements ShouldQueue
 {
@@ -59,7 +61,7 @@ class ValidateProductDataJob implements ShouldQueue
             if ($response->failed()) {
                 $responseBody = $response->body();
                 $errorDetails = json_decode($responseBody, true)['error'] ?? json_decode($responseBody, true)['message'] ?? substr($responseBody, 0, 200);
-                $this->handleFlaskError(new \RuntimeException("Flask validation failed with status " . $response->status() . " (Details: " . $errorDetails . ")"));
+                $this->handleFlaskError(new RuntimeException("Flask validation failed with status " . $response->status() . " (Details: " . $errorDetails . ")"));
                 Log::channel('posting')->info('ValidateProductDataJob finished', [
                     'duration_ms' => round((microtime(true) - $start) * 1000),
                     'product_id' => $this->product->id,
@@ -82,9 +84,9 @@ class ValidateProductDataJob implements ShouldQueue
                 $this->handleUnavailable();
             } elseif ($status === 'error') {
                 $reason = $data['reason'] ?? 'unknown_reason';
-                $this->handleFlaskError(new \RuntimeException("Flask validation failed: " . $reason));
+                $this->handleFlaskError(new RuntimeException("Flask validation failed: " . $reason));
             } else {
-                $this->handleFlaskError(new \RuntimeException("Unknown status returned from Flask: " . $status));
+                $this->handleFlaskError(new RuntimeException("Unknown status returned from Flask: " . $status));
             }
 
             Log::channel('posting')->info('ValidateProductDataJob finished', [
@@ -98,7 +100,7 @@ class ValidateProductDataJob implements ShouldQueue
                 'duration_ms' => round((microtime(true) - $start) * 1000),
                 'product_id' => $this->product->id,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->handleFlaskError($e);
             Log::channel('posting')->info('ValidateProductDataJob finished', [
                 'duration_ms' => round((microtime(true) - $start) * 1000),
@@ -241,12 +243,18 @@ class ValidateProductDataJob implements ShouldQueue
 
             Log::channel('posting')->error($message);
 
-            if ($exception && str_contains($exception->getMessage(), 'scrape_failed')) {
-                Log::channel('posting')->warning("ValidateProductDataJob soft failed due to scrape block: " . $exception->getMessage());
+            $isSoftFail = $exception && (
+                str_contains($exception->getMessage(), 'scrape_failed') ||
+                str_contains($exception->getMessage(), 'parse_error') ||
+                str_contains($exception->getMessage(), 'Product title element not found')
+            );
+
+            if ($isSoftFail) {
+                Log::channel('posting')->warning("ValidateProductDataJob soft failed due to scrape block/parse error: " . $exception->getMessage());
                 return;
             }
 
-            $this->fail($exception ?: new \RuntimeException($message));
+            $this->fail($exception ?: new RuntimeException($message));
         }
     }
 
