@@ -329,4 +329,57 @@ class SendMessageToTelegramJobTest extends TestCase
         // Integration should NOT be deactivated (it's a photo issue, not bot kick)
         $this->assertEquals(SocialIntegrationStatusEnum::ACTIVE, $this->integration->fresh()->status);
     }
+
+    public function test_escapes_html_entities_in_product_name_for_telegram_message()
+    {
+        Redis::shouldReceive('set')->andReturn(true);
+        Redis::shouldReceive('del')->andReturn(true);
+
+        // Update product name to include HTML tags and special characters
+        $this->product->update([
+            'name' => '<Brand> "Adapter" & Cable 16"'
+        ]);
+
+        // Setup a template with double curly braces
+        DB::table('content_templates')
+            ->where('creator_id', $this->creator->id)
+            ->update([
+                'content' => 'Check this out: {{product_name}} at {{product_price}} EGP. Link: {{link}}'
+            ]);
+
+        // Fake successful response from Flask
+        Http::fake([
+            '*' => Http::response([
+                'success' => true,
+                'data' => ['message_id' => 12345],
+                'error' => null
+            ], 200)
+        ]);
+
+        $job = new SendMessageToTelegramJob(
+            socialIntegrationId: $this->integration->id,
+            externalId: $this->integration->external_id,
+            creatorId: $this->creator->id,
+            product: $this->product,
+            categoryId: $this->product->category_id,
+            trackId: 'mytag-21',
+            vendorSlug: 'amazon',
+            lockKey: 'mock-lock-key',
+            idempotencyKey: 'mock-idempotency-key'
+        );
+
+        $job->handle(
+            app(\App\Services\TrackingLinkService::class),
+            app(\App\Services\TemplateRendererService::class),
+            app(\App\Services\TelegramPublishingService::class)
+        );
+
+        Http::assertSent(function ($request) {
+            // Check that the product name was escaped correctly (quotes should NOT be escaped, but tags and ampersands must be)
+            $expectedCaption = 'Check this out: &lt;Brand&gt; "Adapter" &amp; Cable 16"';
+            return str_contains($request['caption'], $expectedCaption);
+        });
+    }
 }
+
+

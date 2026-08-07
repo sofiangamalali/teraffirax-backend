@@ -127,7 +127,7 @@ class SendMessageToTelegramJob implements ShouldQueue
         ]);
 
         $caption = $templateRenderer->render($template->content, [
-            'product_name' => $this->product->name,
+            'product_name' => htmlspecialchars($this->product->name, ENT_NOQUOTES, 'UTF-8'),
             'product_price' => floor($this->product->price_after),
             'discount' => $this->product->discount_percentage ?? 0,
             'link' => $affiliateLink,
