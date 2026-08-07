@@ -9,7 +9,7 @@ class FlaskHealthCheck
     public static function isAlive(): bool
     {
         try {
-            $response = Http::timeout(3)->get(
+            $response = Http::timeout(8)->get(
                 config('services.flask.base_url') . '/health'
             );
             return $response->successful();
