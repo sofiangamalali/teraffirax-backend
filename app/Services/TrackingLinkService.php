@@ -78,16 +78,11 @@ class TrackingLinkService
      */
     public function resolveSlug(string $slug): ?TrackingLink
     {
-        try {
-            $id = $this->slugService->decodeSlug($slug);
-            $link = $this->linkRepository->find($id);
+        $link = $this->linkRepository->findBySlug($slug);
 
-            if ($link && $link->slug === $slug) {
-                $link->incrementClicks();
-                return $link;
-            }
-        } catch (\InvalidArgumentException $e) {
-            return null;
+        if ($link) {
+            $link->incrementClicks();
+            return $link;
         }
 
         return null;
